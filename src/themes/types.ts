@@ -1,0 +1,119 @@
+// src/themes/types.ts
+
+// ─── Enums do banco ────────────────────────────────────────────────────────────
+
+export type Plan = 'iniciante' | 'profissional' | 'master'
+
+export type TemplateId = 'vintage' | 'modern' | 'minimalist' | 'dark'
+
+// ─── Entidades ─────────────────────────────────────────────────────────────────
+
+export interface StoreStyle {
+  text_color: string
+  background_color: string
+  primary_color: string
+  text_button_color: string
+}
+
+export interface SocialMedia {
+  instagram?: string | null
+  facebook?: string | null
+  tiktok?: string | null
+}
+
+export interface Address {
+  city: string | null
+  country?: string | null
+  street: string
+  number: string
+  neighborhood: string
+  state: string
+  zip_code: string
+  complement?: string | null
+  latitude?: number | null
+  longitude?: number | null
+}
+
+export interface Service {
+  id: string
+  name: string
+  image_url?: string | null
+  description?: string | null
+  duration_min?: number | null
+  price?: number | null
+}
+
+export interface Barber {
+  id: string
+  name: string
+  avatar_url?: string | null
+  description?: string | null
+  is_active: boolean
+  serviceIds: string[]
+  services: string[]
+}
+
+export interface OpeningHour {
+  id: string
+  day_of_week: number   // 0 = domingo, 6 = sábado
+  opens_at: string      // "HH:mm:ss"
+  closes_at: string
+  period_order: number  // suporte a turnos (manhã/tarde)
+  is_open: boolean
+}
+
+// ─── Contrato principal ────────────────────────────────────────────────────────
+
+export interface BarbershopPageProps {
+  id: string
+  name: string
+  slug: string
+  phone?: string | null
+  description?: string | null
+  logo_url?: string | null
+  banner_url?: string | null
+
+  template: TemplateId
+  style: StoreStyle
+
+  services: Service[]
+  barbers: Barber[]
+  openingHours: OpeningHour[]
+  address?: Address | null
+  socialMedia?: SocialMedia | null
+
+  isPreview?: boolean
+}
+
+// ─── Agendamento ───────────────────────────────────────────────────────────────
+
+export type AppointmentStatus =
+  | 'scheduled'
+  | 'confirmed'
+  | 'completed'
+  | 'cancelled'
+  | 'no_show'
+
+export interface Appointment {
+  id: string
+  barbershop_id: string
+  barber_id: string | null
+  service_id: string | null
+  customer_id: string | null
+  status: AppointmentStatus
+  starts_at: string
+  ends_at: string
+  notes?: string | null
+  created_at: string
+}
+
+// ─── Cliente ───────────────────────────────────────────────────────────────────
+
+export interface Customer {
+  id: string
+  name: string
+  phone: string
+  email?: string | null
+  auth_user_id?: string | null
+  barbershop_id: string
+}
