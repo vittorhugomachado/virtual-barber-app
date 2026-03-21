@@ -124,3 +124,5 @@ export interface Customer {
   auth_user_id?: string | null
   barbershop_id: string
 }
+
+export const DAYS_FULL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']

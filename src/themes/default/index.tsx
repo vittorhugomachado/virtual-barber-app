@@ -1,91 +1,107 @@
-import type { BarbershopPageProps, OpeningHour } from "../types";
+import {
+  DAYS_FULL,
+  type BarbershopPageProps,
+} from "../types";
 import { Navbar } from "./components/nav-bar";
-import { useAuthStore } from "../../store/auth-store";
 import { Gallery } from "./components/gallery";
-import { data } from "react-router-dom";
 import { Clock, MapPin } from "lucide-react";
 import { formatTime } from "../../utils/format-time";
-import { BarberShopHours } from "./components/barbaershop-hours";
-
-function isOpenNow(openingHours: OpeningHour[]): {
-  open: boolean;
-  closesAt: string | null;
-} {
-  const now = new Date();
-  const day = now.getDay();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-  const todayPeriods = openingHours.filter(
-    h => h.day_of_week === day && h.is_open,
-  );
-
-  for (const period of todayPeriods) {
-    const [openH, openM] = period.opens_at.split(":").map(Number);
-    const [closeH, closeM] = period.closes_at.split(":").map(Number);
-    const openMinutes = openH * 60 + openM;
-    const closeMinutes = closeH * 60 + closeM;
-
-    if (currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
-      return { open: true, closesAt: formatTime(period.closes_at) };
-    }
-  }
-
-  return { open: false, closesAt: null };
-}
+import { groupByDay } from "../../utils/Group-bay-day";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
-  const { customer } = useAuthStore();
-  const { open, closesAt } = isOpenNow(props.openingHours);
+  const byDay = groupByDay(props.openingHours);
+  const today = new Date().getDay();
 
   return (
-    <div className="overflow-x-hidden">
-      <Navbar isPreview={false} />
-      <main className="mx-auto max-w-6xl px-4 py-10">
-        {/* nome + status + endereço */}
-        <div className="mb-6 flex flex-col-reverse">
-          <div>
-            <h1 className="text-4xl my-6 font-semibold tracking-tight">
-              {props.name}
-            </h1>
-
-            {/* status aberto/fechado */}
-            <div className="mt-2 flex items-center gap-2">
-              <span
-                className={`h-2.5 w-2.5 rounded-full ${open ? "bg-green-500" : "bg-red-500"}`}
-              />
-              <span
-                className={`text-sm font-medium ${open ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
-              >
-                {open ? "Aberta" : "Fechada"}
+    <div>
+      <Navbar
+        isPreview={false}
+        primaryColor={props.style.primary_color}
+        barbershopName={props.name}
+        openingHours={props.openingHours}
+      />
+      <main className="mx-auto max-w-6xl px-4 py-10 h-1500">
+        <div className="min-w-0 flex-1">
+      
+          {/* endereço */}
+          {props.address && (
+            <div className="mt-2 flex items-center gap-1.5 text-sm text-neutral-500">
+              <MapPin size={14} className="shrink-0" />
+              <span>
+                {props.address.street}, {props.address.number} ·{" "}
+                {props.address.neighborhood} · {props.address.city},{" "}
+                {props.address.state}
               </span>
-              {open && closesAt && (
-                <span className="text-sm text-neutral-500">
-                  · fecha às {closesAt}
-                </span>
-              )}
             </div>
-
-            {/* endereço */}
-            {props.address && (
-              <div className="mt-2 flex items-center gap-1.5 text-sm text-neutral-500">
-                <MapPin size={14} className="shrink-0" />
-                <span>
-                  {props.address.street}, {props.address.number} ·{" "}
-                  {props.address.neighborhood} · {props.address.city},{" "}
-                  {props.address.state}
-                </span>
-              </div>
-            )}
-          </div>
+          )}
 
           {/* galeria */}
-          <div className="-mx-4 sm:mx-0">
+          <div className="-mx-4 mt-6 sm:mx-0">
             <Gallery images={props.gallery} barbershopName={props.name} />
           </div>
         </div>
-        {/* horários */}
-        <BarberShopHours openingHours={props.openingHours}  />
-        
+        <div className="flex flex-col mt-10 gap-8 lg:flex-row lg:items-start lg:gap-10">
+          {/* horários */}
+          <div className="flex-1">
+            <div className="mb-4 flex items-center gap-2">
+              <Clock size={18} className="text-neutral-400" />
+              <h2 className="text-lg font-medium">Horários de funcionamento</h2>
+            </div>
+
+            <div className="divide-y divide-neutral-100 rounded-xl border border-neutral-100 dark:divide-neutral-800 dark:border-neutral-800">
+              {Array.from({ length: 7 }, (_, i) => {
+                const periods = byDay[i];
+                const isToday = i === today;
+                const hasPeriods = periods?.some(p => p.is_open);
+
+                return (
+                  <div
+                    key={i}
+                    className={`flex items-center justify-between px-4 py-3 ${isToday ? "bg-neutral-50 dark:bg-neutral-900" : ""}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`h-2 w-2 rounded-full ${hasPeriods ? "bg-green-500" : "bg-red-500"}`}
+                      />
+                      <span
+                        className={`text-sm ${isToday ? "font-semibold" : "text-neutral-600 dark:text-neutral-400"}`}
+                      >
+                        {DAYS_FULL[i]}
+                        {isToday && (
+                          <span className="ml-2 text-xs font-normal text-neutral-400">
+                            hoje
+                          </span>
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-0.5">
+                      {hasPeriods ? (
+                        periods
+                          .filter(p => p.is_open)
+                          .sort((a, b) => a.period_order - b.period_order)
+                          .map(p => (
+                            <span
+                              key={p.id}
+                              className="text-sm whitespace-nowrap text-neutral-600 dark:text-neutral-400"
+                            >
+                              {formatTime(p.opens_at)} –{" "}
+                              {formatTime(p.closes_at)}
+                            </span>
+                          ))
+                      ) : (
+                        <span className="text-sm text-neutral-400">
+                          Fechado
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
       </main>
       {/* <section>
         <h2>— cliente logado —</h2>

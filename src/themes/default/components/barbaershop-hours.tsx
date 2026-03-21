@@ -1,25 +1,8 @@
 import { Clock } from "lucide-react";
 import { formatTime } from "../../../utils/format-time";
-import type { OpeningHour } from "../../types";
+import { DAYS_FULL, type OpeningHour } from "../../types";
+import { groupByDay } from "../../../utils/Group-bay-day";
 
-const DAYS_FULL = [
-  "Domingo",
-  "Segunda",
-  "Terça",
-  "Quarta",
-  "Quinta",
-  "Sexta",
-  "Sábado",
-];
-
-function groupByDay(openingHours: OpeningHour[]) {
-  const map: Record<number, OpeningHour[]> = {};
-  for (const h of openingHours) {
-    if (!map[h.day_of_week]) map[h.day_of_week] = [];
-    map[h.day_of_week].push(h);
-  }
-  return map;
-}
 
 interface Props {
   openingHours: OpeningHour[];
