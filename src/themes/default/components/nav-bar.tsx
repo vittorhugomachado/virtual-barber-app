@@ -74,35 +74,34 @@ export function Navbar({ isPreview }: navBarProps) {
           Entrar
         </button>
       )}
-      <Button
-        onClick={handleAgendar}
-        className="rounded-full bg-neutral-900 px-5 text-sm text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
-      >
-        Agendar
-      </Button>
     </>
   );
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-screen border-b border-neutral-200 bg-white/90 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
-        <div className="mx-auto flex h-14 items-center justify-between px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/90 px-4 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
+        {" "}
+        <div className="mx-auto flex h-14 items-center justify-between">
           {/* logo */}
           <Logo />
 
           {/* desktop nav */}
-          <nav className="hidden items-center gap-6 md:flex">{navLinks}</nav>
+          <nav className="hidden items-center gap-6 md:flex">
+            {navLinks}{" "}
+            <Button
+              onClick={handleAgendar}
+              className="rounded-full bg-neutral-900 px-5 text-sm text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+            >
+              Agendar
+            </Button>
+          </nav>
 
           {/* mobile nav */}
           <div className="md:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <button className="p-2 text-neutral-600 dark:text-neutral-400">
-                  {isOpen ? (
-                    <X size={20} color="red" />
-                  ) : (
-                    <Menu size={20} color="red" />
-                  )}
+                  {isOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
               </SheetTrigger>
               <SheetContent
@@ -115,6 +114,12 @@ export function Navbar({ isPreview }: navBarProps) {
                 </SheetDescription>
                 <LogoMobileMenu />
                 <nav className="mx-auto flex max-w-40 flex-col gap-4">
+                  <Button
+                    onClick={handleAgendar}
+                    className="rounded-full bg-neutral-900 px-5 text-sm text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                  >
+                    Agendar
+                  </Button>
                   {navLinks}
                 </nav>
               </SheetContent>

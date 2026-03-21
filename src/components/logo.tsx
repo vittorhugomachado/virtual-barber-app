@@ -4,7 +4,7 @@ export function LogoMobileMenu() {
   const { slug } = useParams<{ slug: string }>();
 
   return (
-    <a href={`/${slug}`}>
+    <a href={`/${slug}`} className="translate-y-0.5">
       <img
         src="/logo-light.png"
         alt="logo"
@@ -23,7 +23,7 @@ export function Logo() {
   const { slug } = useParams<{ slug: string }>();
 
   return (
-    <a className="flex items-center" href={`/${slug}`}>
+    <a className="flex items-center translate-y-0.5" href={`/${slug}`}>
       <img
         src="/logo-light.png"
         alt="logo"

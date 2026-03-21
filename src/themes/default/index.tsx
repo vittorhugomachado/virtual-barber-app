@@ -1,17 +1,91 @@
-import type { BarbershopPageProps } from "../types";
+import type { BarbershopPageProps, OpeningHour } from "../types";
 import { Navbar } from "./components/nav-bar";
 import { useAuthStore } from "../../store/auth-store";
 import { Gallery } from "./components/gallery";
+import { data } from "react-router-dom";
+import { Clock, MapPin } from "lucide-react";
+import { formatTime } from "../../utils/format-time";
+import { BarberShopHours } from "./components/barbaershop-hours";
+
+function isOpenNow(openingHours: OpeningHour[]): {
+  open: boolean;
+  closesAt: string | null;
+} {
+  const now = new Date();
+  const day = now.getDay();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const todayPeriods = openingHours.filter(
+    h => h.day_of_week === day && h.is_open,
+  );
+
+  for (const period of todayPeriods) {
+    const [openH, openM] = period.opens_at.split(":").map(Number);
+    const [closeH, closeM] = period.closes_at.split(":").map(Number);
+    const openMinutes = openH * 60 + openM;
+    const closeMinutes = closeH * 60 + closeM;
+
+    if (currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
+      return { open: true, closesAt: formatTime(period.closes_at) };
+    }
+  }
+
+  return { open: false, closesAt: null };
+}
 
 export default function DefaultTheme(props: BarbershopPageProps) {
-  const { customer, isAuthenticated } = useAuthStore();
-  console.log(isAuthenticated, customer, props);
+  const { customer } = useAuthStore();
+  const { open, closesAt } = isOpenNow(props.openingHours);
+
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <Navbar isPreview={false} />
-      <h2>{customer?.name}</h2>
-      <main className="mx-auto max-w-6xl py-8">
-        <Gallery images={props.gallery} barbershopName={props.name} />
+      <main className="mx-auto max-w-6xl px-4 py-10">
+        {/* nome + status + endereço */}
+        <div className="mb-6 flex flex-col-reverse">
+          <div>
+            <h1 className="text-4xl my-6 font-semibold tracking-tight">
+              {props.name}
+            </h1>
+
+            {/* status aberto/fechado */}
+            <div className="mt-2 flex items-center gap-2">
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${open ? "bg-green-500" : "bg-red-500"}`}
+              />
+              <span
+                className={`text-sm font-medium ${open ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+              >
+                {open ? "Aberta" : "Fechada"}
+              </span>
+              {open && closesAt && (
+                <span className="text-sm text-neutral-500">
+                  · fecha às {closesAt}
+                </span>
+              )}
+            </div>
+
+            {/* endereço */}
+            {props.address && (
+              <div className="mt-2 flex items-center gap-1.5 text-sm text-neutral-500">
+                <MapPin size={14} className="shrink-0" />
+                <span>
+                  {props.address.street}, {props.address.number} ·{" "}
+                  {props.address.neighborhood} · {props.address.city},{" "}
+                  {props.address.state}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* galeria */}
+          <div className="-mx-4 sm:mx-0">
+            <Gallery images={props.gallery} barbershopName={props.name} />
+          </div>
+        </div>
+        {/* horários */}
+        <BarberShopHours openingHours={props.openingHours}  />
+        
       </main>
       {/* <section>
         <h2>— cliente logado —</h2>

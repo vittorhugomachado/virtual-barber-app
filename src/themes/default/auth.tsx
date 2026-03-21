@@ -127,8 +127,8 @@ export default function DefaultAuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-screen flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-950">
-      <header className="fixed top-0 z-50 w-screen border-b border-neutral-200 bg-white/90 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
+<div className="flex min-h-screen w-full flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-950">
+      <header className="fixed top-0 z-50 w-full border-b border-neutral-200 bg-white/90 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
         <a
           href={`/${slug}`}
           className="mx-auto flex h-14 items-center justify-between px-6"

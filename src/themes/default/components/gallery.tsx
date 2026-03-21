@@ -66,7 +66,7 @@ export function Gallery({ images, barbershopName }: GalleryProps) {
   if (!images.length) return null;
 
   return (
-    <section className="w-full px-4">
+    <section className="w-full sm:max-w-200 sm:mx-auto sm:px-4">
       {/* ── desktop grid ── */}
       <div className="hidden sm:block sm:h-105">
         {images.length === 1 && (
