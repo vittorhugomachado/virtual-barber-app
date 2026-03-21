@@ -1,6 +1,7 @@
 import type { BarbershopPageProps } from "../types";
 import { Navbar } from "./components/nav-bar";
 import { useAuthStore } from "../../store/auth-store";
+import { Gallery } from "./components/gallery";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
   const { customer, isAuthenticated } = useAuthStore();
@@ -9,7 +10,9 @@ export default function DefaultTheme(props: BarbershopPageProps) {
     <div>
       <Navbar isPreview={false} />
       <h2>{customer?.name}</h2>
-
+      <main className="mx-auto max-w-6xl py-8">
+        <Gallery images={props.gallery} barbershopName={props.name} />
+      </main>
       {/* <section>
         <h2>— cliente logado —</h2>
         {isAuthenticated && customer ? (
