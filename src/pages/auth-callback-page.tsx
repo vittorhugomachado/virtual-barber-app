@@ -10,7 +10,9 @@ export function AuthCallbackPage() {
   const [customer, setLocalCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
         subscription.unsubscribe();
 
@@ -28,7 +30,10 @@ export function AuthCallbackPage() {
             .insert({
               auth_user_id: session.user.id,
               email: session.user.email,
-              name: session.user.user_metadata?.full_name ?? session.user.email?.split("@")[0] ?? "Usuário",
+              name:
+                session.user.user_metadata?.full_name ??
+                session.user.email?.split("@")[0] ??
+                "Usuário",
               barbershop_id: barbershopId || null,
               phone: null,
             })
@@ -61,9 +66,14 @@ export function AuthCallbackPage() {
         }
 
         const redirect = localStorage.getItem("auth_redirect") ?? "/";
+        const from = localStorage.getItem("auth_from");
         localStorage.removeItem("auth_redirect");
         localStorage.removeItem("auth_barbershop_id");
-        navigate(redirect, { replace: true });
+        localStorage.removeItem("auth_from");
+
+        navigate(from === "agendar" ? redirect + "/agendar" : redirect, {
+          replace: true,
+        });
       }
     });
 

@@ -8,103 +8,97 @@ import { FaGoogle } from "react-icons/fa";
 
 export function AuthPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const redirect = searchParams.get("redirect") ?? "/";
   const { setCustomer, setLoading, isLoading } = useAuthStore();
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
   const { data } = useBarbershop(slug ?? "");
   const [phone, setPhone] = useState("");
 
-  useEffect(() => {
-    const listenerRef = {
-      current: null as { subscription: { unsubscribe: () => void } } | null,
-    };
+  const from = searchParams.get("from");
 
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate(redirect, { replace: true });
-        return;
+        navigate(`/${slug}`, { replace: true });
       }
+    });
+  }, [slug, navigate]);
 
-      const { data: listener } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          if (event === "SIGNED_IN" && session?.user) {
-            setLoading(true);
-            try {
-              const barbershopId = localStorage.getItem("auth_barbershop_id");
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event !== "SIGNED_IN" || !session?.user) return;
 
-              // verifica se já existe customer para esse auth_user_id + barbershop_id
-              const { data: existing } = await supabase
-                .from("customers")
-                .select("id")
-                .eq("auth_user_id", session.user.id)
-                .eq("barbershop_id", barbershopId ?? "")
-                .single();
+        setLoading(true);
+        try {
+          const barbershopId = localStorage.getItem("auth_barbershop_id");
 
-              if (!existing && barbershopId) {
-                // cria o customer se não existir
-                const { data: newCustomer } = await supabase
-                  .from("customers")
-                  .insert({
-                    auth_user_id: session.user.id,
-                    barbershop_id: barbershopId,
-                    name:
-                      session.user.user_metadata?.full_name ??
-                      session.user.user_metadata?.name ??
-                      "",
-                    email: session.user.email ?? "",
-                    phone: "",
-                  })
-                  .select()
-                  .single();
+          const { data: existing } = await supabase
+            .from("customers")
+            .select("id")
+            .eq("auth_user_id", session.user.id)
+            .eq("barbershop_id", barbershopId ?? "")
+            .single();
 
-                if (newCustomer) {
-                  setCustomer({
-                    id: newCustomer.id,
-                    name: newCustomer.name,
-                    phone: newCustomer.phone,
-                    email: newCustomer.email,
-                    auth_user_id: newCustomer.auth_user_id,
-                    barbershop_id: newCustomer.barbershop_id,
-                  });
-                }
-              } else if (existing) {
-                // busca o customer completo
-                const { data: customer } = await supabase
-                  .from("customers")
-                  .select("*")
-                  .eq("id", existing.id)
-                  .single();
+          if (!existing && barbershopId) {
+            const { data: newCustomer } = await supabase
+              .from("customers")
+              .insert({
+                auth_user_id: session.user.id,
+                barbershop_id: barbershopId,
+                name:
+                  session.user.user_metadata?.full_name ??
+                  session.user.user_metadata?.name ??
+                  "",
+                email: session.user.email ?? "",
+                phone: "",
+              })
+              .select()
+              .single();
 
-                if (customer) {
-                  setCustomer({
-                    id: customer.id,
-                    name: customer.name,
-                    phone: customer.phone,
-                    email: customer.email,
-                    auth_user_id: customer.auth_user_id,
-                    barbershop_id: customer.barbershop_id,
-                  });
-                }
-              }
+            if (newCustomer) {
+              setCustomer({
+                id: newCustomer.id,
+                name: newCustomer.name,
+                phone: newCustomer.phone,
+                email: newCustomer.email,
+                auth_user_id: newCustomer.auth_user_id,
+                barbershop_id: newCustomer.barbershop_id,
+              });
+            }
+          } else if (existing) {
+            const { data: customer } = await supabase
+              .from("customers")
+              .select("*")
+              .eq("id", existing.id)
+              .single();
 
-              localStorage.removeItem("auth_barbershop_id");
-              localStorage.removeItem("auth_redirect");
-              navigate(redirect, { replace: true });
-            } finally {
-              setLoading(false);
+            if (customer) {
+              setCustomer({
+                id: customer.id,
+                name: customer.name,
+                phone: customer.phone,
+                email: customer.email,
+                auth_user_id: customer.auth_user_id,
+                barbershop_id: customer.barbershop_id,
+              });
             }
           }
-        },
-      );
 
-      listenerRef.current = listener;
-    });
+          localStorage.removeItem("auth_barbershop_id");
+          localStorage.removeItem("auth_redirect");
 
-    return () => {
-      listenerRef.current?.subscription.unsubscribe();
-    };
-  }, [navigate, redirect, setCustomer, setLoading]);
+          const destination =
+            from === "agendar" ? `/${slug}/agendar` : `/${slug}`;
+          navigate(destination, { replace: true });
+        } finally {
+          setLoading(false);
+        }
+      },
+    );
+
+    return () => listener.subscription.unsubscribe();
+  }, [slug, navigate, setCustomer, setLoading, from]);
 
   function formatPhone(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -119,6 +113,7 @@ export function AuthPage() {
 
   async function handleOAuth() {
     localStorage.setItem("auth_redirect", `/${slug}`);
+    localStorage.setItem("auth_from", from ?? "");
     if (data?.id) {
       localStorage.setItem("auth_barbershop_id", data.id);
     }
@@ -134,7 +129,7 @@ export function AuthPage() {
   return (
     <div className="flex min-h-screen w-screen flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-950">
       <header className="fixed top-0 z-50 w-screen border-b border-neutral-200 bg-white/90 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
-        <div className="mx-auto flex h-14 items-center justify-between px-6">
+        <a href={`/${slug}`} className="mx-auto flex h-14 items-center justify-between px-6">
           <img
             src="/logo-light.png"
             alt="logo"
@@ -145,10 +140,10 @@ export function AuthPage() {
             alt="logo"
             className="hidden h-8 w-auto object-contain dark:block"
           />
-        </div>
+        </a>
       </header>
       {data?.name && <h2 className="mb-4 text-3xl font-medium">{data.name}</h2>}
-      <div className="mx-4 w-[90vw] max-w-md rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="mx-auto w-[90vw] max-w-md rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Entrar</h1>
           <p className="mt-1 text-sm text-neutral-500">

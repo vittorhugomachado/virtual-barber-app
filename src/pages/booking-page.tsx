@@ -14,7 +14,7 @@ export function BookingPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate(`/${slug}/entrar`);
+      navigate(`/${slug}/entrar?from=agendar`, { replace: true });
     }
   }, [isAuthenticated, slug, navigate]);
 
@@ -36,6 +36,7 @@ export function BookingPage() {
 
   return (
     <div className="min-h-screen">
+      <h1 className="text-8xl">Agendamento</h1>
       {/* BookingFlow vai aqui — implementado em components/booking/ */}
     </div>
   );
