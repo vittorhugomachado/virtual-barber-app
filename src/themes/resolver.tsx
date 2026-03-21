@@ -1,38 +1,68 @@
 import { lazy, Suspense } from 'react'
-import type { BarbershopPageProps } from './types'
+import { useParams } from 'react-router-dom'
+import { useBarbershop } from '../hooks/use-barbershop'
+import { NotFoundPage } from '../pages/not-found-page'
+
+export type PageType = 'home' | 'auth' | 'booking' | 'profile'
 
 const THEMES = {
-  default: lazy(() => import('./default')),
-  vintage: lazy(() => import('./premium-a')),
-  minimalist: lazy(() => import('./premium-b')),
-  modern: lazy(() => import('./premium-c')),
+  default: {
+    home:    lazy(() => import('./default')),
+    auth:    lazy(() => import('./default/auth')),
+    booking: lazy(() => import('./default/booking')),
+    profile: lazy(() => import('./default/profile')),
+  },
+  vintage: {
+    home:    lazy(() => import('./premium-a')),
+    auth:    lazy(() => import('./premium-a/auth')),
+    booking: lazy(() => import('./premium-a/booking')),
+    profile: lazy(() => import('./premium-a/profile')),
+  },
+  minimalist: {
+    home:    lazy(() => import('./premium-b')),
+    auth:    lazy(() => import('./premium-b/auth')),
+    booking: lazy(() => import('./premium-b/booking')),
+    profile: lazy(() => import('./premium-b/profile')),
+  },
+  modern: {
+    home:    lazy(() => import('./premium-c')),
+    auth:    lazy(() => import('./premium-c/auth')),
+    booking: lazy(() => import('./premium-c/booking')),
+    profile: lazy(() => import('./premium-c/profile')),
+  },
 }
 
 const PLAN_ALLOWED_TEMPLATES: Record<string, (keyof typeof THEMES)[]> = {
-  iniciante: ['default'],
+  iniciante:    ['default'],
   profissional: ['vintage', 'modern', 'minimalist'],
-  master: ['vintage', 'modern', 'minimalist'],
+  master:       ['vintage', 'modern', 'minimalist'],
 }
 
 function resolveTemplate(
   template: keyof typeof THEMES,
-  plan: string
+  plan: string,
 ): keyof typeof THEMES {
   const allowed = PLAN_ALLOWED_TEMPLATES[plan] ?? ['default']
   return allowed.includes(template) ? template : 'default'
 }
 
-interface ThemeResolverProps extends BarbershopPageProps {
-  plan: string
+interface ThemeResolverProps {
+  page: PageType
 }
 
-export function ThemeResolver({ plan, ...props }: ThemeResolverProps) {
-  const resolvedTemplate = resolveTemplate(props.template, plan)
-  const Theme = THEMES[resolvedTemplate]
+export function ThemeResolver({ page }: ThemeResolverProps) {
+  const { slug } = useParams<{ slug: string }>()
+  const { data, isLoading, error } = useBarbershop(slug ?? '')
+
+  if (isLoading) return <ThemeLoadingFallback />
+  if (error || !data) return <NotFoundPage />
+
+  const resolvedTemplate = resolveTemplate(data.template, data.plan)
+  const Page = THEMES[resolvedTemplate][page]
 
   return (
     <Suspense fallback={<ThemeLoadingFallback />}>
-      <Theme {...props} />
+      <Page {...data} />
     </Suspense>
   )
 }

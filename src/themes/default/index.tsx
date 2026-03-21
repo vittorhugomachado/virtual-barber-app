@@ -4,12 +4,13 @@ import { useAuthStore } from "../../store/auth-store";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
   const { customer, isAuthenticated } = useAuthStore();
-
+  console.log(isAuthenticated, customer, props);
   return (
     <div>
       <Navbar isPreview={false} />
+      <h2>{customer?.name}</h2>
 
-      <section>
+      {/* <section>
         <h2>— cliente logado —</h2>
         {isAuthenticated && customer ? (
           <>
@@ -130,7 +131,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
             </p>
           </div>
         ))}
-      </section>
+      </section> */}
     </div>
   );
 }
