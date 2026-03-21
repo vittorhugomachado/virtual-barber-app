@@ -1,11 +1,11 @@
 import { supabase } from "./supabase";
-import type { BarbershopPageProps } from "../themes/types";
+import type { BarbershopPageProps, GalleryImage } from "../themes/types";
 
 // ─── Busca todos os dados da barbearia para a página pública ──────────────────
 
 export async function getBarbershopBySlug(
   slug: string,
-): Promise<(BarbershopPageProps & { plan: string }) | null> {
+): Promise<(BarbershopPageProps & { plan: string; gallery: GalleryImage[] }) | null> {
   const { data: barbershop, error } = await supabase
     .from("barbershops")
     .select(
@@ -68,6 +68,11 @@ export async function getBarbershopBySlug(
         barber_services (
           service_id
         )
+      ),
+      barbershop_gallery (
+        id,
+        url,
+        order
       )
     `,
     )
@@ -141,5 +146,8 @@ export async function getBarbershopBySlug(
       (a, b) =>
         a.day_of_week - b.day_of_week || a.period_order - b.period_order,
     ),
+    gallery: (barbershop.barbershop_gallery ?? [])
+      .sort((a, b) => a.order - b.order)
+      .map(img => ({ id: img.id, url: img.url, order: img.order })),
   };
 }

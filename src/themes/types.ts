@@ -53,6 +53,12 @@ export interface Barber {
   services: string[]
 }
 
+export interface GalleryImage {
+  id: string
+  url: string
+  order: number
+}
+
 export interface OpeningHour {
   id: string
   day_of_week: number   // 0 = domingo, 6 = sábado
@@ -79,6 +85,7 @@ export interface BarbershopPageProps {
   services: Service[]
   barbers: Barber[]
   openingHours: OpeningHour[]
+  gallery: GalleryImage[]
   address?: Address | null
   socialMedia?: SocialMedia | null
 
