@@ -4,7 +4,7 @@
 
 export type Plan = 'iniciante' | 'profissional' | 'master'
 
-export type TemplateId = 'vintage' | 'modern' | 'minimalist' | 'dark'
+export type TemplateId = 'default' | 'vintage' | 'modern' | 'minimalist'
 
 // ─── Entidades ─────────────────────────────────────────────────────────────────
 

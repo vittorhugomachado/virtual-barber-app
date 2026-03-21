@@ -1,27 +1,25 @@
-// src/themes/resolver.tsx
-
 import { lazy, Suspense } from 'react'
 import type { BarbershopPageProps } from './types'
 
 const THEMES = {
-  vintage: lazy(() => import('./default')),
-  modern: lazy(() => import('./premium-a')),
+  default: lazy(() => import('./default')),
+  vintage: lazy(() => import('./premium-a')),
   minimalist: lazy(() => import('./premium-b')),
-  dark: lazy(() => import('./premium-c')),
+  modern: lazy(() => import('./premium-c')),
 }
 
 const PLAN_ALLOWED_TEMPLATES: Record<string, (keyof typeof THEMES)[]> = {
-  iniciante: ['vintage'],
+  iniciante: ['default'],
   profissional: ['vintage', 'modern', 'minimalist'],
-  master: ['vintage', 'modern', 'minimalist', 'dark'],
+  master: ['vintage', 'modern', 'minimalist'],
 }
 
 function resolveTemplate(
   template: keyof typeof THEMES,
   plan: string
 ): keyof typeof THEMES {
-  const allowed = PLAN_ALLOWED_TEMPLATES[plan] ?? ['vintage']
-  return allowed.includes(template) ? template : 'vintage'
+  const allowed = PLAN_ALLOWED_TEMPLATES[plan] ?? ['default']
+  return allowed.includes(template) ? template : 'default'
 }
 
 interface ThemeResolverProps extends BarbershopPageProps {
