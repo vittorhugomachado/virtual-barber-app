@@ -6,6 +6,7 @@ import { formatTime } from "../../utils/format-time";
 import { groupByDay } from "../../utils/Group-bay-day";
 import { Team } from "./components/team";
 import { StatusBadge } from "../../components/status-badge";
+import { Services } from "./components/services";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
   const byDay = groupByDay(props.openingHours);
@@ -42,6 +43,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
         <div className="mt-16">
           <Team barbers={props.barbers} />
         </div>
+        <Services services={props.services} isPreview={props.isPreview} />
         <div className="flex-1">
           <div className="mb-4 flex items-center gap-2">
             <Clock size={18} className="text-neutral-400" />

@@ -33,7 +33,7 @@ export function Team({ barbers }: TeamProps) {
             key={barber.id}
             className="flex flex-col items-center gap-2"
           >
-            <Avatar className="h-16 w-16 ring-2 ring-neutral-100 dark:ring-neutral-800">
+            <Avatar className="h-16 w-16 md:h-23 md:w-23 ring-2 ring-neutral-100 dark:ring-neutral-800">
               <AvatarImage
                 src={barber.avatar_url ?? undefined}
                 alt={barber.name}
