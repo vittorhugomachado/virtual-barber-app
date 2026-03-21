@@ -1,11 +1,32 @@
 import type { BarbershopPageProps } from "../types";
 import { Navbar } from "./components/nav-bar";
+import { useAuthStore } from "../../store/auth-store";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
+  const { customer, isAuthenticated } = useAuthStore();
+
   return (
     <div>
       <Navbar isPreview={false} />
-      {/* <section>
+
+      <section>
+        <h2>— cliente logado —</h2>
+        {isAuthenticated && customer ? (
+          <>
+            <p>id: {customer.id}</p>
+            <p>name: {customer.name}</p>
+            <p>email: {customer.email}</p>
+            <p>phone: {customer.phone ?? "—"}</p>
+            <p>auth_user_id: {customer.auth_user_id}</p>
+            <p>barbershop_id: {customer.barbershop_id ?? "—"}</p>
+          </>
+        ) : (
+          <p>não autenticado</p>
+        )}
+      </section>
+
+      <hr />
+      <section>
         <h2>— identidade —</h2>
         <p>id: {props.id}</p>
         <p>name: {props.name}</p>
@@ -109,7 +130,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
             </p>
           </div>
         ))}
-      </section> */}
+      </section>
     </div>
   );
 }
