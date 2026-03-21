@@ -1,40 +1,40 @@
-import { Scissors } from 'lucide-react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { Button } from '../../../components/ui/button'
-import { useBookingStore } from '../../../store/booking-store'
-import { useAuthStore } from '../../../store/auth-store'
-import type { Service } from '../../types'
-import { formatPrice } from '../../../utils/format-price'
-import { formatDuration } from '../../../utils/format-duration'
+import { Scissors } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "../../../components/ui/button";
+import { useBookingStore } from "../../../store/booking-store";
+import { useAuthStore } from "../../../store/auth-store";
+import type { Service } from "../../types";
+import { formatPrice } from "../../../utils/format-price";
+import { formatDuration } from "../../../utils/format-duration";
 
 interface ServicesProps {
-  services: Service[]
-  isPreview?: boolean
+  services: Service[];
+  isPreview?: boolean;
 }
 
 export function Services({ services, isPreview }: ServicesProps) {
-  const { slug } = useParams<{ slug: string }>()
-  const navigate = useNavigate()
-  const { isAuthenticated } = useAuthStore()
-  const { setService } = useBookingStore()
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
+  const { setService } = useBookingStore();
 
-  if (!services.length) return null
+  if (!services.length) return null;
 
   function handleAgendar(service: Service) {
-    if (isPreview) return
-    setService(service)
+    if (isPreview) return;
+    setService(service);
     if (isAuthenticated) {
-      navigate(`/${slug}/agendar`)
+      navigate(`/${slug}/agendar`);
     } else {
-      navigate(`/${slug}/entrar?from=agendar`)
+      navigate(`/${slug}/entrar?from=agendar`);
     }
   }
 
   return (
-    <section className='max-w-145'>
+    <section className="max-w-195 mt-16">
       <div className="mb-4 flex items-center gap-2">
-        <Scissors size={18} className="text-neutral-400" />
-        <h2 className="text-lg font-medium">Serviços</h2>
+        <Scissors size={18} />
+        <h2 className="text-2xl md:text-4xl font-medium">Serviços</h2>
       </div>
 
       <div className="flex flex-col divide-y divide-neutral-100 overflow-hidden rounded-xl border border-neutral-100 dark:divide-neutral-800 dark:border-neutral-800">
@@ -58,7 +58,7 @@ export function Services({ services, isPreview }: ServicesProps) {
               )}
 
               {/* info */}
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-sm font-medium">{service.name}</span>
                 {service.description && (
                   <span className="line-clamp-1 text-xs text-neutral-400">
@@ -67,15 +67,17 @@ export function Services({ services, isPreview }: ServicesProps) {
                 )}
                 <div className="mt-0.5 flex items-center gap-2">
                   {service.duration_min != null && (
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-xs whitespace-nowrap text-neutral-500">
                       {formatDuration(service.duration_min)}
                     </span>
                   )}
                   {service.duration_min != null && service.price != null && (
-                    <span className="text-xs text-neutral-300 dark:text-neutral-600">·</span>
+                    <span className="text-xs text-neutral-300 dark:text-neutral-600">
+                      ·
+                    </span>
                   )}
                   {service.price != null && (
-                    <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                    <span className="text-xs font-medium whitespace-nowrap text-neutral-700 dark:text-neutral-300">
                       {formatPrice(service.price)}
                     </span>
                   )}
@@ -97,5 +99,5 @@ export function Services({ services, isPreview }: ServicesProps) {
         ))}
       </div>
     </section>
-  )
+  );
 }

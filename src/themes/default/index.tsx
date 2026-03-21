@@ -7,6 +7,8 @@ import { groupByDay } from "../../utils/Group-bay-day";
 import { Team } from "./components/team";
 import { StatusBadge } from "../../components/status-badge";
 import { Services } from "./components/services";
+import { Contact } from "./components/contact";
+import { WhatsappButton } from "./components/whatsapp-button";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
   const byDay = groupByDay(props.openingHours);
@@ -21,6 +23,11 @@ export default function DefaultTheme(props: BarbershopPageProps) {
         openingHours={props.openingHours}
       />
       <StatusBadge openingHours={props.openingHours} classTailwind="pl-4" />
+      {props.phone && (
+        <WhatsappButton
+          linkWhatsapp={`https://wa.me/55${props?.phone.replace(/\D/g, "")}`}
+        />
+      )}
       <main className="mx-auto max-w-6xl px-4 py-10">
         {/* endereço */}
         {props.address && (
@@ -44,6 +51,8 @@ export default function DefaultTheme(props: BarbershopPageProps) {
           <Team barbers={props.barbers} />
         </div>
         <Services services={props.services} isPreview={props.isPreview} />
+        <Contact phone={props.phone} />
+
         <div className="flex-1">
           <div className="mb-4 flex items-center gap-2">
             <Clock size={18} className="text-neutral-400" />
@@ -100,22 +109,8 @@ export default function DefaultTheme(props: BarbershopPageProps) {
           </div>
         </div>
       </main>
-      {/* <section>
-        <h2>— cliente logado —</h2>
-        {isAuthenticated && customer ? (
-          <>
-            <p>id: {customer.id}</p>
-            <p>name: {customer.name}</p>
-            <p>email: {customer.email}</p>
-            <p>phone: {customer.phone ?? "—"}</p>
-            <p>auth_user_id: {customer.auth_user_id}</p>
-            <p>barbershop_id: {customer.barbershop_id ?? "—"}</p>
-          </>
-        ) : (
-          <p>não autenticado</p>
-        )}
-      </section>
 
+      {/* 
       <hr />
       <section>
         <h2>— identidade —</h2>
