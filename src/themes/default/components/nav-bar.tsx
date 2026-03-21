@@ -19,27 +19,8 @@ import {
 } from "../../../components/ui/dialog";
 import { useAuth } from "../../../hooks/use-auth";
 import { BarbershopLogo } from "./logo-text";
+import { StatusBadge } from "../../../components/status-badge";
 import type { OpeningHour } from "../../types";
-
-function getOpenStatus(openingHours: OpeningHour[]) {
-  const now = new Date();
-  const day = now.getDay();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const todayPeriods = openingHours.filter(
-    h => h.day_of_week === day && h.is_open,
-  );
-  for (const period of todayPeriods) {
-    const [openH, openM] = period.opens_at.split(":").map(Number);
-    const [closeH, closeM] = period.closes_at.split(":").map(Number);
-    if (
-      currentMinutes >= openH * 60 + openM &&
-      currentMinutes < closeH * 60 + closeM
-    ) {
-      return { open: true, closesAt: period.closes_at.slice(0, 5) };
-    }
-  }
-  return { open: false, closesAt: null };
-}
 
 type navBarProps = {
   barbershopName: string;
@@ -60,8 +41,6 @@ export function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  const { open, closesAt } = getOpenStatus(openingHours);
-
   function handleAgendar() {
     if (isPreview) return;
     if (isAuthenticated) {
@@ -80,22 +59,6 @@ export function Navbar({
     setShowLogoutDialog(false);
     await signOut();
   }
-
-  const statusBadge = (
-    <div className="flex items-center gap-1.5">
-      <span
-        className={`h-2 w-2 rounded-full ${open ? "bg-green-500" : "bg-red-500"}`}
-      />
-      <span
-        className={`text-sm font-medium ${open ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}
-      >
-        {open ? "Aberto" : "Fechado"}
-      </span>
-      {open && closesAt && (
-        <span className="text-sm text-neutral-400">· até {closesAt}</span>
-      )}
-    </div>
-  );
 
   const navLinks = (
     <>
@@ -130,11 +93,8 @@ export function Navbar({
       <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/90 px-4 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
         <div className="w-full h-full relative">
           <div className="mx-auto flex h-14 items-center justify-between">
-            {/* logo + status — desktop */}
-            <BarbershopLogo
-              name={barbershopName}
-              className="hidden text-3xl md:block"
-            />
+            {/* logo — desktop */}
+            <BarbershopLogo name={barbershopName} className="hidden text-3xl md:block" />
 
             {/* desktop nav */}
             <nav className="hidden items-center gap-6 md:flex">
@@ -167,10 +127,10 @@ export function Navbar({
                   <SheetDescription className="sr-only">
                     Links de navegação do site
                   </SheetDescription>
-                  <BarbershopLogo
-                    name={barbershopName}
-                    className="pl-4 text-2xl"
-                  />
+                  <div className="flex flex-col gap-1 pl-4">
+                    <BarbershopLogo name={barbershopName} className="text-2xl" />
+                    <StatusBadge openingHours={openingHours} />
+                  </div>
                   <nav className="mx-auto flex max-w-40 flex-col gap-4">
                     <Button
                       style={
@@ -189,7 +149,7 @@ export function Navbar({
               </Sheet>
             </div>
           </div>
-          <div className="absolute -bottom-6">{statusBadge}</div>
+          
         </div>
       </header>
 

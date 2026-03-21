@@ -1,106 +1,101 @@
-import {
-  DAYS_FULL,
-  type BarbershopPageProps,
-} from "../types";
+import { DAYS_FULL, type BarbershopPageProps } from "../types";
 import { Navbar } from "./components/nav-bar";
 import { Gallery } from "./components/gallery";
 import { Clock, MapPin } from "lucide-react";
 import { formatTime } from "../../utils/format-time";
 import { groupByDay } from "../../utils/Group-bay-day";
+import { Team } from "./components/team";
+import { StatusBadge } from "../../components/status-badge";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
   const byDay = groupByDay(props.openingHours);
   const today = new Date().getDay();
 
   return (
-    <div>
+    <div className="relative">
       <Navbar
         isPreview={false}
         primaryColor={props.style.primary_color}
         barbershopName={props.name}
         openingHours={props.openingHours}
       />
-      <main className="mx-auto max-w-6xl px-4 py-10 h-1500">
-        <div className="min-w-0 flex-1">
-      
-          {/* endereço */}
-          {props.address && (
-            <div className="mt-2 flex items-center gap-1.5 text-sm text-neutral-500">
-              <MapPin size={14} className="shrink-0" />
-              <span>
-                {props.address.street}, {props.address.number} ·{" "}
-                {props.address.neighborhood} · {props.address.city},{" "}
-                {props.address.state}
-              </span>
-            </div>
-          )}
-
-          {/* galeria */}
-          <div className="-mx-4 mt-6 sm:mx-0">
-            <Gallery images={props.gallery} barbershopName={props.name} />
+      <StatusBadge openingHours={props.openingHours} classTailwind="pl-4" />
+      <main className="mx-auto max-w-6xl px-4 py-10">
+        {/* endereço */}
+        {props.address && (
+          <div className="mt-2 flex items-center gap-1.5 text-sm text-neutral-500">
+            <MapPin size={14} className="shrink-0" />
+            <span>
+              {props.address.street}, {props.address.number} ·{" "}
+              {props.address.neighborhood} · {props.address.city},{" "}
+              {props.address.state}
+            </span>
           </div>
+        )}
+
+        {/* galeria */}
+        <div className="-mx-4 mt-6 sm:mx-0">
+          <Gallery images={props.gallery} barbershopName={props.name} />
         </div>
-        <div className="flex flex-col mt-10 gap-8 lg:flex-row lg:items-start lg:gap-10">
-          {/* horários */}
-          <div className="flex-1">
-            <div className="mb-4 flex items-center gap-2">
-              <Clock size={18} className="text-neutral-400" />
-              <h2 className="text-lg font-medium">Horários de funcionamento</h2>
-            </div>
+        {/* horários */}
 
-            <div className="divide-y divide-neutral-100 rounded-xl border border-neutral-100 dark:divide-neutral-800 dark:border-neutral-800">
-              {Array.from({ length: 7 }, (_, i) => {
-                const periods = byDay[i];
-                const isToday = i === today;
-                const hasPeriods = periods?.some(p => p.is_open);
+        <div className="mt-16">
+          <Team barbers={props.barbers} />
+        </div>
+        <div className="flex-1">
+          <div className="mb-4 flex items-center gap-2">
+            <Clock size={18} className="text-neutral-400" />
+            <h2 className="text-lg font-medium">Horários de funcionamento</h2>
+          </div>
 
-                return (
-                  <div
-                    key={i}
-                    className={`flex items-center justify-between px-4 py-3 ${isToday ? "bg-neutral-50 dark:bg-neutral-900" : ""}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`h-2 w-2 rounded-full ${hasPeriods ? "bg-green-500" : "bg-red-500"}`}
-                      />
-                      <span
-                        className={`text-sm ${isToday ? "font-semibold" : "text-neutral-600 dark:text-neutral-400"}`}
-                      >
-                        {DAYS_FULL[i]}
-                        {isToday && (
-                          <span className="ml-2 text-xs font-normal text-neutral-400">
-                            hoje
-                          </span>
-                        )}
-                      </span>
-                    </div>
+          <div className="divide-y divide-neutral-100 rounded-xl border border-neutral-100 dark:divide-neutral-800 dark:border-neutral-800">
+            {Array.from({ length: 7 }, (_, i) => {
+              const periods = byDay[i];
+              const isToday = i === today;
+              const hasPeriods = periods?.some(p => p.is_open);
 
-                    <div className="flex flex-col items-end gap-0.5">
-                      {hasPeriods ? (
-                        periods
-                          .filter(p => p.is_open)
-                          .sort((a, b) => a.period_order - b.period_order)
-                          .map(p => (
-                            <span
-                              key={p.id}
-                              className="text-sm whitespace-nowrap text-neutral-600 dark:text-neutral-400"
-                            >
-                              {formatTime(p.opens_at)} –{" "}
-                              {formatTime(p.closes_at)}
-                            </span>
-                          ))
-                      ) : (
-                        <span className="text-sm text-neutral-400">
-                          Fechado
+              return (
+                <div
+                  key={i}
+                  className={`flex items-center justify-between px-4 py-3 ${isToday ? "bg-neutral-50 dark:bg-neutral-900" : ""}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`h-2 w-2 rounded-full ${hasPeriods ? "bg-green-500" : "bg-red-500"}`}
+                    />
+                    <span
+                      className={`text-sm ${isToday ? "font-semibold" : "text-neutral-600 dark:text-neutral-400"}`}
+                    >
+                      {DAYS_FULL[i]}
+                      {isToday && (
+                        <span className="ml-2 text-xs font-normal text-neutral-400">
+                          hoje
                         </span>
                       )}
-                    </div>
+                    </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
 
+                  <div className="flex flex-col items-end gap-0.5">
+                    {hasPeriods ? (
+                      periods
+                        .filter(p => p.is_open)
+                        .sort((a, b) => a.period_order - b.period_order)
+                        .map(p => (
+                          <span
+                            key={p.id}
+                            className="text-sm whitespace-nowrap text-neutral-600 dark:text-neutral-400"
+                          >
+                            {formatTime(p.opens_at)} – {formatTime(p.closes_at)}
+                          </span>
+                        ))
+                    ) : (
+                      <span className="text-sm text-neutral-400">Fechado</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </main>
       {/* <section>
