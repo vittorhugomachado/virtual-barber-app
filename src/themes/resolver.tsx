@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 import { useBarbershop } from '../hooks/use-barbershop'
 import { NotFoundPage } from '../pages/not-found-page'
+import { CartProvider } from '../contexts/cart-context'
 
 export type PageType = 'home' | 'auth' | 'booking' | 'profile'
 
@@ -61,9 +62,11 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
   const Page = THEMES[resolvedTemplate][page]
 
   return (
-    <Suspense fallback={<ThemeLoadingFallback />}>
-      <Page {...data} />
-    </Suspense>
+    <CartProvider slug={slug ?? ''}>
+      <Suspense fallback={<ThemeLoadingFallback />}>
+        <Page {...data} />
+      </Suspense>
+    </CartProvider>
   )
 }
 
