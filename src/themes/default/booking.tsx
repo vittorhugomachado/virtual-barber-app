@@ -6,14 +6,14 @@ import { useCart } from "../../hooks/use-cart";
 import { Navbar } from "./components/nav-bar";
 import { Footer } from "../../components/footer";
 import { StepServices } from "./components/booking/step-services";
-import { StepBarber } from "./components/booking/step-barber";
 import { StepDate } from "./components/booking/step-date";
-import { StepTime } from "./components/booking/step-time";
+import { StepBarberTime } from "./components/booking/step-barber-time";
 import { StepConfirm } from "./components/booking/step-confirm";
-import type { BarbershopPageProps, Barber } from "../types";
+import type { ServiceSelection } from "./components/booking/step-barber-time";
+import type { BarbershopPageProps } from "../types";
 import { Button } from "../../components/ui/button";
 
-const STEPS = ["Serviços", "Profissional", "Data", "Horário", "Confirmação"];
+const STEPS = ["Serviços", "Data", "Profissional & Horário", "Confirmação"];
 
 export default function DefaultBookingPage(props: BarbershopPageProps) {
   const navigate = useNavigate();
@@ -21,25 +21,29 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   const { items, clearCart } = useCart();
 
   const [step, setStep] = useState(0);
-  const [barber, setBarber] = useState<Barber | null>(null);
   const [date, setDate] = useState<string | null>(null);
-  const [time, setTime] = useState<string | null>(null);
+  const [serviceSelections, setServiceSelections] = useState<Record<string, ServiceSelection>>({});
   const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) navigate(`/${props.slug}/entrar?from=agendar`);
   }, [isAuthenticated, props.slug, navigate]);
 
-  const totalDuration = items.reduce(
-    (sum, s) => sum + (s.duration_min ?? 0),
-    0,
-  );
   const primary = props.style.primary_color;
+
+  function handleDateSelect(newDate: string) {
+    if (newDate !== date) {
+      setServiceSelections({});
+    }
+    setDate(newDate);
+  }
 
   function handleSuccess() {
     clearCart();
     setDone(true);
   }
+
+  const allSelected = items.length > 0 && items.every(s => !!serviceSelections[s.id]);
 
   if (done) {
     return (
@@ -90,32 +94,31 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
       />
 
       <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
-        <h2 className="text-3xl font-bold text-center mb-8">Agendar</h2>
+        <h2 className="mb-8 text-center text-3xl font-bold">Agendar</h2>
+
         {/* Progress */}
-        <div className="max-w-86 md:max-w-126 mb-8 relative mx-auto">
+        <div className="max-w-86 md:max-w-126 relative mx-auto mb-8">
           <div className="mb-3 flex items-center justify-between">
             {STEPS.map((label, i) => (
-            <>
-              <div key={label} className="w-20 flex flex-col items-center gap-1">
+              <div key={label} className="flex w-20 flex-col items-center gap-1">
                 <div
-                  className={`flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full text-xs sm:text-md font-bold transition-colors ${
-                    i < step
+                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors sm:h-9 sm:w-9 sm:text-md ${
+                    i <= step
                       ? "text-white"
-                      : i === step
-                        ? "text-white"
-                        : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
+                      : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
                   }`}
                   style={i <= step ? { backgroundColor: primary } : undefined}
                 >
                   {i < step ? "✓" : i + 1}
                 </div>
                 <span
-                  className={`hidden text-[13px] sm:block ${i === step ? "font-medium" : "text-neutral-400"}`}
+                  className={`hidden text-[13px] sm:block ${
+                    i === step ? "font-medium" : "text-neutral-400"
+                  }`}
                 >
                   {label}
                 </span>
               </div>
-            </>
             ))}
           </div>
         </div>
@@ -133,51 +136,39 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         )}
 
         {step === 1 && (
-          <StepBarber
-            barbers={props.barbers}
-            selectedServices={items}
-            selected={barber}
-            onSelect={setBarber}
+          <StepDate
+            selected={date}
+            openingHours={props.openingHours}
+            onSelect={handleDateSelect}
             onContinue={() => setStep(2)}
             primaryColor={primary}
           />
         )}
 
-        {step === 2 && (
-          <StepDate
-            selected={date}
+        {step === 2 && date && (
+          <StepBarberTime
+            services={items}
+            barbers={props.barbers}
+            barbershopId={props.id}
+            date={date}
             openingHours={props.openingHours}
-            onSelect={setDate}
+            selections={serviceSelections}
+            onSelectionsChange={setServiceSelections}
             onContinue={() => setStep(3)}
             primaryColor={primary}
           />
         )}
 
-        {step === 3 && barber && date && (
-          <StepTime
-            barbershopId={props.id}
-            barberId={barber.id}
-            date={date}
-            totalDuration={totalDuration}
-            openingHours={props.openingHours}
-            selected={time}
-            onSelect={setTime}
-            onContinue={() => setStep(4)}
-            primaryColor={primary}
-          />
-        )}
-
-        {step === 4 && barber && date && time && customer && (
+        {step === 3 && date && allSelected && customer && (
           <StepConfirm
             barbershopId={props.id}
             customerId={customer.id}
             services={items}
-            barber={barber}
             date={date}
-            time={time}
+            serviceSelections={serviceSelections}
             primaryColor={primary}
             onSuccess={handleSuccess}
-            onBack={() => setStep(3)}
+            onBack={() => setStep(2)}
           />
         )}
       </main>

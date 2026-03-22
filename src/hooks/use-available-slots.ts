@@ -75,8 +75,10 @@ export function useAvailableSlots({
           }
 
           const isBlocked = appointments.some(appt => {
-            const apptStart = timeToMinutes(appt.starts_at);
-            const apptEnd = timeToMinutes(appt.ends_at);
+            const s = new Date(appt.starts_at);
+            const e = new Date(appt.ends_at);
+            const apptStart = s.getHours() * 60 + s.getMinutes();
+            const apptEnd = e.getHours() * 60 + e.getMinutes();
             return current < apptEnd && slotEnd > apptStart;
           });
 

@@ -7,14 +7,15 @@ export async function getAppointmentsForBarberOnDate(
 ) {
   const { data } = await supabase
     .from("appointments")
-    .select("starts_at, ends_at")
+    .select("starts_at, ends_at, status")
     .eq("barbershop_id", barbershopId)
     .eq("barber_id", barberId)
     .gte("starts_at", `${date}T00:00:00`)
-    .lte("starts_at", `${date}T23:59:59`)
-    .in("status", ["scheduled", "confirmed"]);
+    .lte("starts_at", `${date}T23:59:59`);
 
-  return (data ?? []) as { starts_at: string; ends_at: string }[];
+  return (data ?? []).filter(a =>
+    a.status === "scheduled" || a.status === "confirmed",
+  ) as { starts_at: string; ends_at: string; status: string }[];
 }
 
 export async function createAppointments(
