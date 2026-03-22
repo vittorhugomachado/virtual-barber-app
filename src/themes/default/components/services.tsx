@@ -31,13 +31,13 @@ export function Services({ services, isPreview }: ServicesProps) {
   }
 
   return (
-    <section className="max-w-195 mt-16">
-      <div className="mb-4 flex items-center gap-2">
+    <section className="max-w-195 mt-8 lg:mt-16">
+      <div className="mb-4 flex justify-center lg:justify-start items-center gap-2">
         <Scissors size={18} />
         <h2 className="text-2xl md:text-4xl font-medium">Serviços</h2>
       </div>
 
-      <div className="flex flex-col divide-y divide-neutral-100 overflow-hidden rounded-xl border border-neutral-100 dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="flex flex-col divide-y divide-zinc-300 overflow-hidden rounded-xl border border-zinc-300 dark:divide-neutral-800 dark:border-neutral-800">
         {services.map(service => (
           <div
             key={service.id}

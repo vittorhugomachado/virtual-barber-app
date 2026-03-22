@@ -7,7 +7,6 @@ interface BarbershopLogoProps {
 
 export function BarbershopLogo({ name, className }: BarbershopLogoProps) {
   const { slug } = useParams<{ slug: string }>();
-
   return (
     <a
       href={`/${slug}`}

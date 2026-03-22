@@ -3,7 +3,6 @@ import { formatTime } from "../../../utils/format-time";
 import { DAYS_FULL, type OpeningHour } from "../../types";
 import { groupByDay } from "../../../utils/Group-bay-day";
 
-
 interface Props {
   openingHours: OpeningHour[];
 }
@@ -13,13 +12,13 @@ export function BarberShopHours({ openingHours }: Props) {
   const today = new Date().getDay();
 
   return (
-    <div className="mt-10 max-w-156">
+    <div className="flex flex-col items-center mt-18">
       <div className="mb-4 flex items-center gap-2">
-        <Clock size={18} className="text-neutral-400" />
-        <h2 className="text-lg font-medium">Horários de funcionamento</h2>
+        <Clock size={18} />
+        <h2 className="text-2xl md:text-4xl font-medium">Horários</h2>
       </div>
 
-      <div className="rounded-xl">
+      <div className="divide-y w-full max-w-156 divide-zinc-300 rounded-xl border border-zinc-300 dark:divide-neutral-800 dark:border-neutral-800 overflow-hidden">
         {Array.from({ length: 7 }, (_, i) => {
           const periods = byDay[i];
           const isToday = i === today;
@@ -28,11 +27,11 @@ export function BarberShopHours({ openingHours }: Props) {
           return (
             <div
               key={i}
-              className={`dark:border-neut flex items-center justify-between border-b border-zinc-500 px-4 py-3 last:border-b-0 ${isToday ? "bg-neutral-50 dark:bg-neutral-900" : ""}`}
+              className={`flex items-center justify-between px-4 py-3 ${isToday ? "bg-neutral-50 dark:bg-neutral-900" : ""}`}
             >
               <div className="flex items-center gap-2">
                 <span
-                  className={`h-2 w-2 shrink-0 rounded-full ${hasPeriods ? "bg-green-500" : "bg-red-500"}`}
+                  className={`h-2 w-2 rounded-full ${hasPeriods ? "bg-green-500" : "bg-red-500"}`}
                 />
                 <span
                   className={`text-sm ${isToday ? "font-semibold" : "text-neutral-600 dark:text-neutral-400"}`}

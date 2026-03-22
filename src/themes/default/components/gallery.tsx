@@ -66,7 +66,7 @@ export function Gallery({ images, barbershopName }: GalleryProps) {
   if (!images.length) return null;
 
   return (
-    <section className="w-full sm:max-w-200 sm:mx-auto sm:px-4">
+    <section className="w-full sm:mx-auto sm:max-w-200 sm:px-4">
       {/* ── desktop grid ── */}
       <div className="hidden sm:block sm:h-105">
         {images.length === 1 && (
@@ -243,12 +243,8 @@ export function Gallery({ images, barbershopName }: GalleryProps) {
         )}
       </div>
       {/* ── mobile carousel ── */}
-      <div className="sm:hidden">
-        <Carousel
-          key={lightboxIndex}
-          setApi={setApi}
-          opts={{ loop: true, startIndex: lightboxIndex ?? 0 }}
-        >
+      <div className="relative sm:hidden">
+        <Carousel opts={{ loop: true, dragFree: false, align: "center" }}>
           <CarouselContent className="ml-0">
             {images.map((img, i) => (
               <CarouselItem
@@ -262,15 +258,16 @@ export function Gallery({ images, barbershopName }: GalleryProps) {
                     alt={`${barbershopName} ${i + 1}`}
                     className="h-full w-full object-cover"
                   />
-                  {/* contador */}
-                  <div className="absolute right-4 bottom-6 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
-                    {i + 1} / {images.length}
-                  </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
+
+        {/* contador fora do carousel, absoluto sobre tudo */}
+        <div className="pointer-events-none absolute right-4 bottom-4 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
+          {current + 1} / {images.length}
+        </div>
       </div>
       {/* ── lightbox ── */}
       {lightboxIndex !== null && (
