@@ -5,13 +5,13 @@ import { useAuthStore } from "../../store/auth-store";
 import { useCart } from "../../hooks/use-cart";
 import { Navbar } from "./components/nav-bar";
 import { Footer } from "../../components/footer";
-import { StepServices } from "./components/booking/step-services";
-import { StepDate } from "./components/booking/step-date";
-import { StepBarberTime } from "./components/booking/step-barber-time";
-import { StepConfirm } from "./components/booking/step-confirm";
-import type { ServiceSelection } from "./components/booking/step-barber-time";
+import { StepServices } from "./components/booking/step-1/step-services";
+import { StepDate } from "./components/booking/step-2/step-date";
+import { StepConfirm } from "./components/booking/step-4/step-confirm";
+import type { ServiceSelection } from "../types";
 import type { BarbershopPageProps } from "../types";
 import { Button } from "../../components/ui/button";
+import { StepBarberTime } from "./components/booking/step-3/step-barber-time";
 
 const STEPS = ["Serviços", "Data", "Profissional & Horário", "Confirmação"];
 
@@ -22,7 +22,9 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
 
   const [step, setStep] = useState(0);
   const [date, setDate] = useState<string | null>(null);
-  const [serviceSelections, setServiceSelections] = useState<Record<string, ServiceSelection>>({});
+  const [serviceSelections, setServiceSelections] = useState<
+    Record<string, ServiceSelection>
+  >({});
   const [done, setDone] = useState(false);
 
   useEffect(() => {
@@ -43,7 +45,8 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
     setDone(true);
   }
 
-  const allSelected = items.length > 0 && items.every(s => !!serviceSelections[s.id]);
+  const allSelected =
+    items.length > 0 && items.every(s => !!serviceSelections[s.id]);
 
   if (done) {
     return (
@@ -97,12 +100,15 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         <h2 className="mb-8 text-center text-3xl font-bold">Agendar</h2>
 
         {/* Progress */}
-        <div className="max-w-86 md:max-w-126 relative mx-auto mb-8">
+        <div className="relative mx-auto mb-8 max-w-86 md:max-w-126">
           <div className="mb-3 flex items-center justify-between">
             {STEPS.map((label, i) => (
-              <div key={label} className="flex w-20 flex-col items-center gap-1">
+              <div
+                key={label}
+                className="flex w-20 flex-col items-center gap-1"
+              >
                 <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors sm:h-9 sm:w-9 sm:text-md ${
+                  className={`sm:text-md flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors sm:h-9 sm:w-9 ${
                     i <= step
                       ? "text-white"
                       : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
@@ -124,7 +130,9 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         </div>
 
         {/* Step title */}
-        <h1 className="mb-6 text-center text-2xl font-semibold">{STEPS[step]}</h1>
+        <h1 className="mb-6 text-center text-2xl font-semibold">
+          {STEPS[step]}
+        </h1>
 
         {/* Steps */}
         {step === 0 && (

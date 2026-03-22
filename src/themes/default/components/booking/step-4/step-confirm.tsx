@@ -1,25 +1,12 @@
 import { useState } from "react";
 import { User, Calendar, Clock, Scissors } from "lucide-react";
-import { Button } from "../../../../components/ui/button";
-import { createAppointments } from "../../../../lib/booking-queries";
-import type { Service } from "../../../types";
-import type { ServiceSelection } from "./step-barber-time";
-import { formatPrice } from "../../../../utils/format-price";
-import { formatDuration } from "../../../../utils/format-duration";
-
-const DAYS_FULL = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-const MONTHS_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr + "T12:00:00");
-  return `${DAYS_FULL[d.getDay()]}, ${d.getDate()} de ${MONTHS_SHORT[d.getMonth()]}`;
-}
-
-function addMinutes(time: string, minutes: number) {
-  const [h, m] = time.split(":").map(Number);
-  const total = h * 60 + m + minutes;
-  return `${Math.floor(total / 60).toString().padStart(2, "0")}:${(total % 60).toString().padStart(2, "0")}`;
-}
+import { Button } from "../../../../../components/ui/button";
+import { createAppointments } from "../../../../../lib/booking-queries";
+import type { Service } from "../../../../types";
+import type { ServiceSelection } from "../../../../types";
+import { formatPrice } from "../../../../../utils/format-price";
+import { formatDuration } from "../../../../../utils/format-duration";
+import { addMinutes, formatDate } from "../../../../../utils/format-time";
 
 interface StepConfirmProps {
   barbershopId: string;
@@ -55,7 +42,9 @@ export function StepConfirm({
       const sel = serviceSelections[service.id];
       const duration = service.duration_min ?? 30;
       const starts = new Date(`${date}T${sel.time}:00`).toISOString();
-      const ends = new Date(`${date}T${addMinutes(sel.time, duration)}:00`).toISOString();
+      const ends = new Date(
+        `${date}T${addMinutes(sel.time, duration)}:00`,
+      ).toISOString();
       return {
         barbershop_id: barbershopId,
         barber_id: sel.barber.id,
@@ -68,7 +57,16 @@ export function StepConfirm({
 
     const { error: err } = await createAppointments(appointments);
     if (err) {
-      setError("Erro ao confirmar agendamento. Tente novamente.");
+      console.error("Erro ao confirmar agendamento", {
+        message: err.message,
+        details: err.details,
+        hint: err.hint,
+        code: err.code,
+        appointments,
+      });
+      setError(
+        err.message || "Erro ao confirmar agendamento. Tente novamente.",
+      );
       setLoading(false);
       return;
     }
@@ -140,7 +138,9 @@ export function StepConfirm({
                         <User size={12} className="text-neutral-400" />
                       </div>
                     )}
-                    <span className="text-xs font-medium">{sel.barber.name}</span>
+                    <span className="text-xs font-medium">
+                      {sel.barber.name}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                     <Clock size={12} />
@@ -159,7 +159,9 @@ export function StepConfirm({
             <div className="border-t border-neutral-100 dark:border-neutral-800" />
             <div className="flex items-center justify-between">
               <span className="text-sm text-neutral-500">Total</span>
-              <span className="text-sm font-semibold">{formatPrice(total)}</span>
+              <span className="text-sm font-semibold">
+                {formatPrice(total)}
+              </span>
             </div>
           </>
         )}
@@ -172,7 +174,11 @@ export function StepConfirm({
       )}
 
       <div className="flex gap-3">
-        <Button variant="outline" className="h-11 flex-1 rounded-full" onClick={onBack}>
+        <Button
+          variant="outline"
+          className="h-11 flex-1 rounded-full"
+          onClick={onBack}
+        >
           Voltar
         </Button>
         <Button

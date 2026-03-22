@@ -19,3 +19,12 @@ export function getOpenStatus(openingHours: OpeningHour[]) {
   }
   return { open: false, closesAt: null };
 }
+
+export function getClosedDays(openingHours: OpeningHour[]): Set<number> {
+  const closed = new Set<number>();
+  for (let d = 0; d <= 6; d++) {
+    const hasOpen = openingHours.some(h => h.day_of_week === d && h.is_open);
+    if (!hasOpen) closed.add(d);
+  }
+  return closed;
+}

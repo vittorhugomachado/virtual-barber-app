@@ -5,7 +5,7 @@ import { Team } from "./components/team";
 import { Services } from "./components/services";
 import { WhatsappButton } from "./components/whatsapp-button";
 import { Location } from "./components/location";
-import { BarberShopHours } from "./components/barbaershop-hours";
+import { BarberShopHours } from "./components/barbershop-hours";
 import { Footer } from "../../components/footer";
 import { SectionNav } from "./components/section-nav";
 import { CartPanel } from "./components/cart-panel";

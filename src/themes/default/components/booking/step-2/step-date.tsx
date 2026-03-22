@@ -1,22 +1,8 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "../../../../components/ui/button";
-import type { OpeningHour } from "../../../types";
-
-const DAYS_SHORT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-const MONTHS = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
-];
-
-function getClosedDays(openingHours: OpeningHour[]): Set<number> {
-  const closed = new Set<number>();
-  for (let d = 0; d <= 6; d++) {
-    const hasOpen = openingHours.some(h => h.day_of_week === d && h.is_open);
-    if (!hasOpen) closed.add(d);
-  }
-  return closed;
-}
+import { Button } from "../../../../../components/ui/button";
+import { DAYS_SHORT, MONTHS_FULL, type OpeningHour } from "../../../../types";
+import { getClosedDays } from "../../../../../utils/open-status";
 
 interface StepDateProps {
   selected: string | null;
@@ -26,7 +12,13 @@ interface StepDateProps {
   primaryColor?: string;
 }
 
-export function StepDate({ selected, openingHours, onSelect, onContinue, primaryColor }: StepDateProps) {
+export function StepDate({
+  selected,
+  openingHours,
+  onSelect,
+  onContinue,
+  primaryColor,
+}: StepDateProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -38,13 +30,17 @@ export function StepDate({ selected, openingHours, onSelect, onContinue, primary
   maxDate.setDate(today.getDate() + 60);
 
   function prevMonth() {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
-    else setViewMonth(m => m - 1);
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(y => y - 1);
+    } else setViewMonth(m => m - 1);
   }
 
   function nextMonth() {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
-    else setViewMonth(m => m + 1);
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(y => y + 1);
+    } else setViewMonth(m => m + 1);
   }
 
   const firstDayOfMonth = new Date(viewYear, viewMonth, 1).getDay();
@@ -86,7 +82,7 @@ export function StepDate({ selected, openingHours, onSelect, onContinue, primary
             <ChevronLeft size={18} />
           </button>
           <span className="text-sm font-semibold">
-            {MONTHS[viewMonth]} {viewYear}
+            {MONTHS_FULL[viewMonth]} {viewYear}
           </span>
           <button
             onClick={nextMonth}
@@ -100,7 +96,10 @@ export function StepDate({ selected, openingHours, onSelect, onContinue, primary
         {/* Day headers */}
         <div className="mb-2 grid grid-cols-7">
           {DAYS_SHORT.map(d => (
-            <div key={d} className="py-1 text-center text-xs font-medium text-neutral-400">
+            <div
+              key={d}
+              className="py-1 text-center text-xs font-medium text-neutral-400"
+            >
               {d}
             </div>
           ))}
@@ -123,10 +122,14 @@ export function StepDate({ selected, openingHours, onSelect, onContinue, primary
                   isSelected
                     ? "text-white"
                     : disabled
-                    ? "cursor-not-allowed text-neutral-300 dark:text-neutral-600"
-                    : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      ? "cursor-not-allowed text-neutral-300 dark:text-neutral-600"
+                      : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 }`}
-                style={isSelected && primaryColor ? { backgroundColor: primaryColor } : undefined}
+                style={
+                  isSelected && primaryColor
+                    ? { backgroundColor: primaryColor }
+                    : undefined
+                }
               >
                 {day}
               </button>

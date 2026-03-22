@@ -28,10 +28,9 @@ export async function createAppointments(
     ends_at: string;
   }[],
 ) {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("appointments")
-    .insert(appointments.map(a => ({ ...a, status: "scheduled" })))
-    .select();
+    .insert(appointments.map(a => ({ ...a, status: "scheduled" })));
 
-  return { data, error };
+  return { error };
 }
