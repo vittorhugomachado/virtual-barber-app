@@ -90,7 +90,7 @@ export function Navbar({
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/90 px-4 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
+      <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-background px-4 dark:border-neutral-800">
         <div className="w-full h-full relative">
           <div className="mx-auto flex h-14 items-center justify-between">
             {/* logo — desktop */}

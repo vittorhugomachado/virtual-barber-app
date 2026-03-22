@@ -31,7 +31,7 @@ export function Services({ services, isPreview }: ServicesProps) {
   }
 
   return (
-    <section className="max-w-195 mt-8 lg:mt-16">
+    <section id="servicos" className="max-w-195 mt-8 lg:mt-16">
       <div className="mb-4 flex justify-center lg:justify-start items-center gap-2">
         <Scissors size={18} />
         <h2 className="text-2xl md:text-4xl font-medium">Serviços</h2>

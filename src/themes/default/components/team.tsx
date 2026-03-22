@@ -21,7 +21,7 @@ export function Team({ barbers }: TeamProps) {
   if (!barbers.length) return null
 
   return (
-    <section>
+    <section id='equipe' className='mt-16'>
       <div className="mb-4 flex items-center justify-center gap-2">
         <Users size={18} />
         <h2 className="text-2xl md:text-4xl font-medium">Nossa equipe</h2>

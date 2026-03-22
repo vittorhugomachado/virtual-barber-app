@@ -1,5 +1,6 @@
 import { MapPin, Phone } from "lucide-react";
 import type { BarbershopPageProps } from "../../types";
+import { formatPhone } from "../../../utils/forma-phone";
 
 interface LocationProps {
   address?: BarbershopPageProps["address"];
@@ -9,20 +10,21 @@ interface LocationProps {
 export function Location({ address, phone }: LocationProps) {
   if (!address) return null;
 
-  const mapQuery = address.latitude && address.longitude
-    ? `${address.latitude},${address.longitude}`
-    : `${address.street} ${address.number}, ${address.neighborhood}, ${address.city}, ${address.state}`;
+  const mapQuery =
+    address.latitude && address.longitude
+      ? `${address.latitude},${address.longitude}`
+      : `${address.street} ${address.number}, ${address.neighborhood}, ${address.city}, ${address.state}`;
 
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed&z=16`;
 
   return (
-    <div className="mt-18">
-      <div className="mb-4 flex justify-center items-center gap-2">
+    <section id="localizacao" className="mt-18">
+      <div className="mb-4 flex items-center justify-center gap-2">
         <MapPin size={18} />
-        <h2 className="text-2xl md:text-4xl font-medium">Localização</h2>
+        <h2 className="text-2xl font-medium md:text-4xl">Localização</h2>
       </div>
       <div className="flex flex-col gap-6 lg:flex-row">
-        <div className="w-full overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800 lg:flex-1">
+        <div className="w-full overflow-hidden rounded-xl border border-neutral-200 lg:flex-1 dark:border-neutral-800">
           <iframe
             src={mapSrc}
             width="100%"
@@ -37,7 +39,9 @@ export function Location({ address, phone }: LocationProps) {
 
         <div className="flex flex-col gap-4 lg:w-72 lg:shrink-0">
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Endereço</span>
+            <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+              Endereço
+            </span>
             <span className="text-sm text-neutral-600 dark:text-neutral-400">
               {address.street}, {address.number}
             </span>
@@ -56,18 +60,17 @@ export function Location({ address, phone }: LocationProps) {
 
           {phone && (
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Contato</span>
-              <a
-                href={`tel:${phone}`}
-                className="flex items-center gap-1.5 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-              >
+              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                Contato
+              </span>
+              <p className="flex items-center gap-1.5 text-sm text-neutral-600 transition-colors dark:text-neutral-400">
                 <Phone size={14} className="shrink-0" />
-                {phone}
-              </a>
+                {formatPhone(phone)}
+              </p>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

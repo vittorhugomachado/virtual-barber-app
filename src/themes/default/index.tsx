@@ -7,6 +7,7 @@ import { WhatsappButton } from "./components/whatsapp-button";
 import { Location } from "./components/location";
 import { BarberShopHours } from "./components/barbaershop-hours";
 import { Footer } from "../../components/footer";
+import { SectionNav } from "./components/section-nav";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
   return (
@@ -22,16 +23,13 @@ export default function DefaultTheme(props: BarbershopPageProps) {
           linkWhatsapp={`https://wa.me/55${props?.phone.replace(/\D/g, "")}`}
         />
       )}
-      <main className="mx-auto max-w-6xl px-4 pb-10">
-        <div className="-mx-4 md:mt-8 sm:mx-0">
-          <Gallery images={props.gallery} barbershopName={props.name} />
-        </div>
+      <SectionNav primaryColor={props.style.primary_color} />
+      <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
+        <Gallery images={props.gallery} barbershopName={props.name} />
         <Services services={props.services} isPreview={props.isPreview} />
-        <div className="mt-16">
           <Team barbers={props.barbers} />
-        </div>
-        <BarberShopHours openingHours={props.openingHours} />
-        <Location address={props.address} phone={props.phone} />
+          <BarberShopHours openingHours={props.openingHours} />
+          <Location address={props.address} phone={props.phone} />
       </main>
       <Footer />
     </div>

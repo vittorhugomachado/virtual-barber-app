@@ -12,13 +12,13 @@ export function BarberShopHours({ openingHours }: Props) {
   const today = new Date().getDay();
 
   return (
-    <div className="flex flex-col items-center mt-18">
+    <section id="horarios" className="mt-18 flex flex-col items-center">
       <div className="mb-4 flex items-center gap-2">
         <Clock size={18} />
-        <h2 className="text-2xl md:text-4xl font-medium">Horários</h2>
+        <h2 className="text-2xl font-medium md:text-4xl">Horários</h2>
       </div>
 
-      <div className="divide-y w-full max-w-156 divide-zinc-300 rounded-xl border border-zinc-300 dark:divide-neutral-800 dark:border-neutral-800 overflow-hidden">
+      <div className="w-full max-w-156 divide-y divide-zinc-300 overflow-hidden rounded-xl border border-zinc-300 dark:divide-neutral-800 dark:border-neutral-800">
         {Array.from({ length: 7 }, (_, i) => {
           const periods = byDay[i];
           const isToday = i === today;
@@ -66,6 +66,6 @@ export function BarberShopHours({ openingHours }: Props) {
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }
