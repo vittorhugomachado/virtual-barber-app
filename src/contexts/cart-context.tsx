@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import type { Service } from "../themes/types";
 
 interface CartContextType {
@@ -11,7 +11,7 @@ interface CartContextType {
   totalDuration: number;
 }
 
-const CartContext = createContext<CartContextType | null>(null);
+export const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({
   slug,
@@ -61,23 +61,9 @@ export function CartProvider({
 
   return (
     <CartContext.Provider
-      value={{
-        items,
-        addService,
-        removeService,
-        clearCart,
-        hasService,
-        total,
-        totalDuration,
-      }}
+      value={{ items, addService, removeService, clearCart, hasService, total, totalDuration }}
     >
       {children}
     </CartContext.Provider>
   );
-}
-
-export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be used within CartProvider");
-  return ctx;
 }

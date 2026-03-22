@@ -1,7 +1,7 @@
 import { ShoppingCart, X, Clock } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
-import { useCart } from "../../../contexts/cart-context";
+import { useCart } from "../../../hooks/use-cart";
 import { useAuthStore } from "../../../store/auth-store";
 import { formatPrice } from "../../../utils/format-price";
 import { formatDuration } from "../../../utils/format-duration";
@@ -27,7 +27,7 @@ export function CartPanel({ primaryColor, isPreview }: CartPanelProps) {
   }
 
   return (
-    <div className="lg:w-80 lg:shrink-0 lg:sticky lg:top-28 pt-14">
+    <div className="lg:w-80 lg:shrink-0 lg:sticky lg:top-28 lg:pt-14">
       <div className="rounded-2xl border border-zinc-300 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-4 flex items-center gap-2">
           <ShoppingCart size={16} className="text-neutral-400" />
@@ -83,7 +83,7 @@ export function CartPanel({ primaryColor, isPreview }: CartPanelProps) {
 
             <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-3 dark:border-neutral-800">
               <div className="flex flex-col gap-0.5">
-                <span className="text-xs text-neutral-400">Total estimado</span>
+                <span className="text-xs text-neutral-400">Total</span>
                 <span className="text-sm font-semibold">{formatPrice(total)}</span>
               </div>
               {totalDuration > 0 && (

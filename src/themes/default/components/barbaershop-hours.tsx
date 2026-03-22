@@ -1,7 +1,7 @@
 import { Clock } from "lucide-react";
 import { formatTime } from "../../../utils/format-time";
 import { DAYS_FULL, type OpeningHour } from "../../types";
-import { groupByDay } from "../../../utils/Group-bay-day";
+import { groupByDay } from "../../../utils/group-bay-day";
 
 interface Props {
   openingHours: OpeningHour[];

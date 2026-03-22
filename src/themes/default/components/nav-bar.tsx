@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { useAuth } from "../../../hooks/use-auth";
+import { useCart } from "../../../hooks/use-cart";
 import { BarbershopLogo } from "./logo-text";
 import { StatusBadge } from "../../../components/status-badge";
 import type { OpeningHour } from "../../types";
@@ -38,6 +39,8 @@ export function Navbar({
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, signOut } = useAuth();
+  const { items } = useCart();
+  const cartCount = items.length;
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
@@ -101,12 +104,18 @@ export function Navbar({
               {navLinks}
               <Button
                 onClick={handleAgendar}
-                className="rounded-full px-5 text-sm text-white"
-                style={
-                  primaryColor ? { backgroundColor: primaryColor } : undefined
-                }
+                className="relative rounded-full px-5 text-sm text-white"
+                style={primaryColor ? { backgroundColor: primaryColor } : undefined}
               >
                 Agendar
+                {cartCount > 0 && (
+                  <span
+                    className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold"
+                    style={{ color: primaryColor ?? "#000" }}
+                  >
+                    {cartCount}
+                  </span>
+                )}
               </Button>
             </nav>
 
@@ -133,15 +142,19 @@ export function Navbar({
                   </div>
                   <nav className="mx-auto flex max-w-40 flex-col gap-4">
                     <Button
-                      style={
-                        primaryColor
-                          ? { backgroundColor: primaryColor }
-                          : undefined
-                      }
                       onClick={handleAgendar}
-                      className="rounded-full px-5 text-sm text-white"
+                      className="relative rounded-full px-5 text-sm text-white"
+                      style={primaryColor ? { backgroundColor: primaryColor } : undefined}
                     >
                       Agendar
+                      {cartCount > 0 && (
+                        <span
+                          className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold"
+                          style={{ color: primaryColor ?? "#000" }}
+                        >
+                          {cartCount}
+                        </span>
+                      )}
                     </Button>
                     {navLinks}
                   </nav>

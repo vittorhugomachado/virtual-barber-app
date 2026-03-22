@@ -27,7 +27,6 @@ export default function DefaultTheme(props: BarbershopPageProps) {
             <Services
               services={props.services}
               isPreview={props.isPreview}
-              primaryColor={props.style.primary_color}
             />
             <CartPanel
               primaryColor={props.style.primary_color}
