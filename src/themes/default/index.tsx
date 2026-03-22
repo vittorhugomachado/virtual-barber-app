@@ -18,18 +18,14 @@ export default function DefaultTheme(props: BarbershopPageProps) {
         barbershopName={props.name}
         openingHours={props.openingHours}
       />
-      {props.phone && (
-        <WhatsappButton
-          linkWhatsapp={`https://wa.me/55${props?.phone.replace(/\D/g, "")}`}
-        />
-      )}
+      {props.phone && <WhatsappButton linkWhatsapp={props?.phone} />}
       <SectionNav primaryColor={props.style.primary_color} />
       <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
         <Gallery images={props.gallery} barbershopName={props.name} />
         <Services services={props.services} isPreview={props.isPreview} />
-          <Team barbers={props.barbers} />
-          <BarberShopHours openingHours={props.openingHours} />
-          <Location address={props.address} phone={props.phone} />
+        <Team barbers={props.barbers} />
+        <BarberShopHours openingHours={props.openingHours} />
+        <Location address={props.address} phone={props.phone} />
       </main>
       <Footer />
     </div>

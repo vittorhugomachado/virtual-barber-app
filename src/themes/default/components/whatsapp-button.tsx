@@ -2,7 +2,7 @@ import { IoLogoWhatsapp } from "react-icons/io";
 
 export function WhatsappButton({ linkWhatsapp }: { linkWhatsapp: string }) {
   return (
-    <a href={linkWhatsapp} target="_blank" className="fixed right-4 bottom-4 z-50">
+    <a href={`https://wa.me/55${linkWhatsapp.replace(/\D/g, "")}`} target="_blank" className="fixed right-4 bottom-4 z-50">
       {/* Container relativo para empilhar os elementos */}
       <div className="relative">
         {/* Div de fundo (atrás) */}
