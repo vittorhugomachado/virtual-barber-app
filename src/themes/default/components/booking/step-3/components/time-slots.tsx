@@ -14,6 +14,7 @@ interface TimeSlotsProps {
   availableSet: Set<string>;
   selection?: ServiceSelection;
   primaryColor?: string;
+  textButtonColor?: string;
   loading: boolean;
   onBack: () => void;
   onTimeClick: (time: string) => void;
@@ -25,6 +26,7 @@ export function TimeSlots({
   availableSet,
   selection,
   primaryColor,
+  textButtonColor,
   loading,
   onBack,
   onTimeClick,
@@ -99,14 +101,14 @@ export function TimeSlots({
                       disabled={!available}
                       className={`rounded-xl border py-2 text-sm font-medium transition-colors ${
                         isSelected
-                          ? "border-transparent text-white"
+                          ? "border-transparent"
                           : available
                             ? "border-neutral-200 hover:border-neutral-400 dark:border-neutral-800"
                             : "cursor-not-allowed border-neutral-200 opacity-35 dark:border-neutral-800"
                       }`}
                       style={
                         isSelected && primaryColor
-                          ? { backgroundColor: primaryColor }
+                          ? { backgroundColor: primaryColor, color: textButtonColor }
                           : undefined
                       }
                     >

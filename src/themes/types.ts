@@ -193,6 +193,7 @@ export interface ServiceSlotCardProps {
   otherSelections: OtherSelection[];
   onSelect: (sel: ServiceSelection) => void;
   primaryColor?: string;
+  textButtonColor?: string;
   autoOpen?: boolean;
 }
 

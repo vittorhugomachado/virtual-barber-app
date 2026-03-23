@@ -10,6 +10,7 @@ interface StepDateProps {
   onSelect: (date: string) => void;
   onContinue: () => void;
   primaryColor?: string;
+  textButtonColor?: string;
 }
 
 export function StepDate({
@@ -18,6 +19,7 @@ export function StepDate({
   onSelect,
   onContinue,
   primaryColor,
+  textButtonColor,
 }: StepDateProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -120,14 +122,14 @@ export function StepDate({
                 disabled={disabled}
                 className={`mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors ${
                   isSelected
-                    ? "text-white"
+                    ? ""
                     : disabled
                       ? "cursor-not-allowed text-neutral-300 dark:text-neutral-600"
                       : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 }`}
                 style={
                   isSelected && primaryColor
-                    ? { backgroundColor: primaryColor }
+                    ? { backgroundColor: primaryColor, color: textButtonColor }
                     : undefined
                 }
               >
@@ -139,8 +141,8 @@ export function StepDate({
       </div>
 
       <Button
-        className="h-11 w-full rounded-full text-white"
-        style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+        className="h-11 w-full rounded-full"
+        style={{ backgroundColor: primaryColor, color: textButtonColor }}
         disabled={!selected}
         onClick={onContinue}
       >

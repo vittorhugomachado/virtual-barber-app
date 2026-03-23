@@ -23,6 +23,7 @@ export function ServiceSlotCard({
   otherSelections,
   onSelect,
   primaryColor,
+  textButtonColor,
   autoOpen,
 }: ServiceSlotCardProps) {
   const [open, setOpen] = useState(autoOpen ?? false);
@@ -113,9 +114,9 @@ export function ServiceSlotCard({
           {isComplete ? (
             <div
               className="flex h-5 w-5 items-center justify-center rounded-full"
-              style={{ backgroundColor: primaryColor }}
+              style={{ backgroundColor: primaryColor, color: textButtonColor }}
             >
-              <Check size={10} className="text-white" />
+              <Check size={10} />
             </div>
           ) : (
             <span className="text-xs text-neutral-400">Selecionar</span>
@@ -135,6 +136,7 @@ export function ServiceSlotCard({
               eligible={eligible}
               selection={selection}
               primaryColor={primaryColor}
+              textButtonColor={textButtonColor}
               onSelect={setViewBarber}
             />
           ) : (
@@ -144,6 +146,7 @@ export function ServiceSlotCard({
               availableSet={availableSet}
               selection={selection}
               primaryColor={primaryColor}
+              textButtonColor={textButtonColor}
               loading={loading}
               onBack={() => setViewBarber(null)}
               onTimeClick={handleTimeClick}

@@ -85,7 +85,7 @@ export function Services({ services, isPreview }: ServicesProps) {
                 variant={inCart ? "default" : "outline"}
                 style={
                   inCart
-                    ? { backgroundColor: "#299E69" }
+                    ? { backgroundColor: "#299E69", color: "#09090B" }
                     : { border: "1px solid" }
                 }
                 onClick={() => handleToggle(service)}

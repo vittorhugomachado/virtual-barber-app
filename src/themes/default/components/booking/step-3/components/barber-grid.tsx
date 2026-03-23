@@ -6,6 +6,7 @@ interface BarberGridProps {
   eligible: Barber[];
   selection?: ServiceSelection;
   primaryColor?: string;
+  textButtonColor?: string;
   onSelect: (barber: Barber) => void;
 }
 
@@ -13,6 +14,7 @@ export function BarberGrid({
   eligible,
   selection,
   primaryColor,
+  textButtonColor: _textButtonColor,
   onSelect,
 }: BarberGridProps) {
   if (eligible.length === 0) {

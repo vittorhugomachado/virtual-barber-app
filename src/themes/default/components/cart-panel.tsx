@@ -8,10 +8,11 @@ import { formatDuration } from "../../../utils/format-duration";
 
 interface CartPanelProps {
   primaryColor?: string;
+  textButtonColor?: string;
   isPreview?: boolean;
 }
 
-export function CartPanel({ primaryColor, isPreview }: CartPanelProps) {
+export function CartPanel({ primaryColor, textButtonColor, isPreview }: CartPanelProps) {
   const { items, removeService, total, totalDuration } = useCart();
   const { isAuthenticated } = useAuthStore();
   const { slug } = useParams<{ slug: string }>();
@@ -95,8 +96,8 @@ export function CartPanel({ primaryColor, isPreview }: CartPanelProps) {
             </div>
 
             <Button
-              className="mt-4 h-11 w-full rounded-full text-sm font-medium text-white"
-              style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+              className="mt-4 h-11 w-full rounded-full text-sm font-medium"
+              style={{ backgroundColor: primaryColor, color: textButtonColor }}
               onClick={handleAgendar}
               disabled={isPreview}
             >

@@ -16,6 +16,7 @@ interface StepBarberTimeProps {
   onSelectionsChange: (selections: Record<string, ServiceSelection>) => void;
   onContinue: () => void;
   primaryColor?: string;
+  textButtonColor?: string;
 }
 
 export function StepBarberTime({
@@ -28,6 +29,7 @@ export function StepBarberTime({
   onSelectionsChange,
   onContinue,
   primaryColor,
+  textButtonColor,
 }: StepBarberTimeProps) {
   const allSelected = services.length > 0 && services.every(s => !!selections[s.id]);
   const totalDuration = services.reduce((acc, s) => acc + (s.duration_min ?? 0), 0);
@@ -54,6 +56,7 @@ export function StepBarberTime({
             onSelectionsChange({ ...selections, [service.id]: sel })
           }
           primaryColor={primaryColor}
+          textButtonColor={textButtonColor}
           autoOpen={index === 0}
         />
       ))}
@@ -76,8 +79,8 @@ export function StepBarberTime({
       </div>
 
       <Button
-        className="h-11 w-full rounded-full text-white"
-        style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+        className="h-11 w-full rounded-full"
+        style={{ backgroundColor: primaryColor, color: textButtonColor }}
         disabled={!allSelected}
         onClick={onContinue}
       >

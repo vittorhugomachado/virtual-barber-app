@@ -8,12 +8,14 @@ import { formatDuration } from "../../../../../utils/format-duration";
 interface StepServicesProps {
   services: Service[];
   primaryColor?: string;
+  textButtonColor?: string;
   onContinue: () => void;
 }
 
 export function StepServices({
   services,
   primaryColor,
+  textButtonColor,
   onContinue,
 }: StepServicesProps) {
   const { items, addService, removeService, hasService, total, totalDuration } =
@@ -63,8 +65,8 @@ export function StepServices({
                 variant={inCart ? "default" : "outline"}
                 className="shrink-0 rounded-full"
                 style={
-                  inCart && primaryColor
-                    ? { backgroundColor: primaryColor }
+                  inCart
+                    ? { backgroundColor: "#299E69", color: "#09090B" }
                     : undefined
                 }
                 onClick={() => handleToggle(service)}
@@ -96,8 +98,8 @@ export function StepServices({
         </span>
       </div>
       <Button
-        className="h-11 w-full rounded-full text-white"
-        style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+        className="h-11 w-full rounded-full"
+        style={{ backgroundColor: primaryColor, color: textButtonColor }}
         disabled={items.length === 0}
         onClick={onContinue}
       >

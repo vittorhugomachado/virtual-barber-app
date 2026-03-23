@@ -31,6 +31,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
             />
             <CartPanel
               primaryColor={props.style.primary_color}
+              textButtonColor={props.style.text_button_color}
               isPreview={props.isPreview}
             />
           </section>

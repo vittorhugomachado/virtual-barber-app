@@ -13,7 +13,7 @@ import type { BarbershopPageProps } from "../types";
 import { Button } from "../../components/ui/button";
 import { StepBarberTime } from "./components/booking/step-3/step-barber-time";
 
-const STEPS = ["Serviços", "Data", "Profissional & Horário", "Confirmação"];
+const STEPS = ["Serviços", "Data", "Profissional", "Confirmação"];
 
 export default function DefaultBookingPage(props: BarbershopPageProps) {
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   }, [isAuthenticated, props.slug, navigate]);
 
   const primary = props.style.primary_color;
+  const textButtonColor = props.style.text_button_color;
 
   function handleDateSelect(newDate: string) {
     if (newDate !== date) {
@@ -54,6 +55,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         <Navbar
           isPreview={false}
           primaryColor={primary}
+          textButtonColor={props.style.text_button_color}
           barbershopName={props.name}
           openingHours={props.openingHours}
         />
@@ -65,17 +67,17 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
               Seu horário foi reservado com sucesso.
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex justify-center flex-wrap gap-3">
             <Button
               variant="outline"
-              className="rounded-full"
+              className="rounded-full px-5 py-1"
               onClick={() => navigate(`/${props.slug}/perfil`)}
             >
               Meus agendamentos
             </Button>
             <Button
-              className="rounded-full text-white"
-              style={{ backgroundColor: primary }}
+              className="rounded-full px-5 py-1"
+              style={{ backgroundColor: primary, color: textButtonColor }}
               onClick={() => navigate(`/${props.slug}`)}
             >
               Voltar à loja
@@ -92,6 +94,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
       <Navbar
         isPreview={false}
         primaryColor={primary}
+        textButtonColor={props.style.text_button_color}
         barbershopName={props.name}
         openingHours={props.openingHours}
       />
@@ -110,10 +113,10 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
                 <div
                   className={`sm:text-md flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors sm:h-9 sm:w-9 ${
                     i <= step
-                      ? "text-white"
+                      ? ""
                       : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
                   }`}
-                  style={i <= step ? { backgroundColor: primary } : undefined}
+                  style={i <= step ? { backgroundColor: primary, color: textButtonColor } : undefined}
                 >
                   {i < step ? "✓" : i + 1}
                 </div>
@@ -139,6 +142,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           <StepServices
             services={props.services}
             primaryColor={primary}
+            textButtonColor={textButtonColor}
             onContinue={() => setStep(1)}
           />
         )}
@@ -150,6 +154,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
             onSelect={handleDateSelect}
             onContinue={() => setStep(2)}
             primaryColor={primary}
+            textButtonColor={textButtonColor}
           />
         )}
 
@@ -164,6 +169,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
             onSelectionsChange={setServiceSelections}
             onContinue={() => setStep(3)}
             primaryColor={primary}
+            textButtonColor={textButtonColor}
           />
         )}
 
@@ -175,6 +181,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
             date={date}
             serviceSelections={serviceSelections}
             primaryColor={primary}
+            textButtonColor={textButtonColor}
             onSuccess={handleSuccess}
             onBack={() => setStep(2)}
           />

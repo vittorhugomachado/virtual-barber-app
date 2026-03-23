@@ -15,6 +15,7 @@ interface StepConfirmProps {
   date: string;
   serviceSelections: Record<string, ServiceSelection>;
   primaryColor?: string;
+  textButtonColor?: string;
   onSuccess: () => void;
   onBack: () => void;
 }
@@ -26,6 +27,7 @@ export function StepConfirm({
   date,
   serviceSelections,
   primaryColor,
+  textButtonColor,
   onSuccess,
   onBack,
 }: StepConfirmProps) {
@@ -182,8 +184,8 @@ export function StepConfirm({
           Voltar
         </Button>
         <Button
-          className="h-11 flex-1 rounded-full text-white"
-          style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+          className="h-11 flex-1 rounded-full"
+          style={{ backgroundColor: primaryColor, color: textButtonColor }}
           onClick={handleConfirm}
           disabled={loading}
         >
