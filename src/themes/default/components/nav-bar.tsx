@@ -92,7 +92,7 @@ export function Navbar({
       )}
     </>
   );
-console.log(textButtonColor)
+
   return (
     <>
       <header className="bg-background sticky top-0 z-50 w-full border-b border-neutral-200 px-4 dark:border-neutral-800">
