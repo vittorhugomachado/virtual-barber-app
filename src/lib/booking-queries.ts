@@ -1,5 +1,24 @@
 import { supabase } from "./supabase";
 
+export async function getCurrentCustomer(barbershopId: string) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { data: null, error: null };
+
+  const { data, error } = await supabase
+    .from("customers")
+    .select("id, name, phone, email, created_at")
+    .eq("auth_user_id", user.id)
+    .eq("barbershop_id", barbershopId)
+    .single();
+
+  if (error) return { data: null, error };
+  console.log(data)
+  return { data, error: null };
+}
+
 export async function getCustomerAppointments(
   customerId: string,
   barbershopId: string,
@@ -21,8 +40,9 @@ export async function getCustomerAppointments(
     .eq("barbershop_id", barbershopId)
     .eq("customer_id", customerId)
     .order("starts_at", { ascending: false });
-  console.log(data);
+
   if (error) return { data: null, error };
+  console.log(data)
   return { data: data ?? [], error: null };
 }
 

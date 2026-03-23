@@ -26,7 +26,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
     Record<string, ServiceSelection>
   >({});
   const [done, setDone] = useState(false);
-
+console.log(customer)
   useEffect(() => {
     if (!isAuthenticated) navigate(`/${props.slug}/entrar?from=agendar`);
   }, [isAuthenticated, props.slug, navigate]);
