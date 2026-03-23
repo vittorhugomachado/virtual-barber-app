@@ -56,7 +56,7 @@ export type TemplateId = "default" | "vintage" | "modern" | "minimalist";
 
 export interface StoreStyle {
   text_color: string;
-  background_color: string;
+  theme_is_dark: boolean;
   primary_color: string;
   text_button_color: string;
 }
