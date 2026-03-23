@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useBarbershop } from '../hooks/use-barbershop'
 import { NotFoundPage } from '../pages/not-found-page'
@@ -54,6 +54,13 @@ interface ThemeResolverProps {
 export function ThemeResolver({ page }: ThemeResolverProps) {
   const { slug } = useParams<{ slug: string }>()
   const { data, isLoading, error } = useBarbershop(slug ?? '')
+
+  useEffect(() => {
+    document.documentElement.classList.toggle(
+      'dark',
+      Boolean(data?.style.theme_is_dark),
+    )
+  }, [data?.style.theme_is_dark])
 
   if (isLoading) return <ThemeLoadingFallback />
   if (error || !data) return <NotFoundPage />
