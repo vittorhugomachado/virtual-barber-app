@@ -43,10 +43,8 @@ export function StepConfirm({
     const appointments = services.map(service => {
       const sel = serviceSelections[service.id];
       const duration = service.duration_min ?? 30;
-      const starts = new Date(`${date}T${sel.time}:00`).toISOString();
-      const ends = new Date(
-        `${date}T${addMinutes(sel.time, duration)}:00`,
-      ).toISOString();
+      const starts = `${date}T${sel.time}:00`;
+      const ends = `${date}T${addMinutes(sel.time, duration)}:00`;
       return {
         barbershop_id: barbershopId,
         barber_id: sel.barber.id,

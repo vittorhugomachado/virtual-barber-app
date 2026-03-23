@@ -142,9 +142,9 @@ export interface BarbershopPageProps {
 
 export type AppointmentStatus =
   | "scheduled"
-  | "confirmed"
   | "completed"
-  | "cancelled"
+  | "cancelled_by_customer"
+  | "cancelled_by_barbershop"
   | "no_show";
 
 export interface Appointment {
