@@ -16,6 +16,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
       <Navbar
         isPreview={false}
         primaryColor={props.style.primary_color}
+        textButtonColor={props.style.text_button_color}
         barbershopName={props.name}
         openingHours={props.openingHours}
       />

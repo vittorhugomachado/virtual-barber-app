@@ -117,14 +117,17 @@ export async function getBarbershopBySlug(
     banner_url: barbershop.banner_url ?? null,
     template: barbershop.template as BarbershopPageProps["template"],
     plan: barbershop.plan,
-    style: (Array.isArray(barbershop.store_style)
-      ? barbershop.store_style[0]
-      : barbershop.store_style) ?? {
-      text_color: "#FFFFFF",
-      background_color: "#000000",
-      primary_color: "#CF2820",
-      text_button_color: "#000000",
-    },
+    style: (() => {
+      const s = (Array.isArray(barbershop.store_style)
+        ? barbershop.store_style[0]
+        : barbershop.store_style) ?? {};
+      return {
+        text_color: s.text_color ?? "#FFFFFF",
+        background_color: s.background_color ?? "#000000",
+        primary_color: s.primary_color ?? "#CF2820",
+        text_button_color: s.text_button_color ?? "#000000",
+      };
+    })(),
     socialMedia:
       (Array.isArray(barbershop.social_media)
         ? barbershop.social_media[0]

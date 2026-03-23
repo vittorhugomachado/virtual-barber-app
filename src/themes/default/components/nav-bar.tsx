@@ -27,12 +27,14 @@ type navBarProps = {
   barbershopName: string;
   isPreview: boolean;
   primaryColor?: string;
+  textButtonColor?: string;
   openingHours: OpeningHour[];
 };
 
 export function Navbar({
   isPreview,
   primaryColor,
+  textButtonColor,
   barbershopName,
   openingHours,
 }: navBarProps) {
@@ -90,29 +92,32 @@ export function Navbar({
       )}
     </>
   );
-
+console.log(textButtonColor)
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-background px-4 dark:border-neutral-800">
-        <div className="w-full h-full relative">
+      <header className="bg-background sticky top-0 z-50 w-full border-b border-neutral-200 px-4 dark:border-neutral-800">
+        <div className="relative h-full w-full">
           <div className="mx-auto flex h-14 items-center justify-between">
             {/* logo — desktop */}
-            <BarbershopLogo name={barbershopName} className="hidden text-3xl md:block" />
+            <BarbershopLogo
+              name={barbershopName}
+              className="hidden text-3xl md:block"
+            />
 
             {/* desktop nav */}
             <nav className="hidden items-center gap-6 md:flex">
               {navLinks}
               <Button
                 onClick={handleAgendar}
-                className="relative rounded-full px-5 text-sm text-white"
-                style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+                className="relative rounded-full px-5 text-sm"
+                style={{
+                  backgroundColor: primaryColor,
+                  color: textButtonColor,
+                }}
               >
                 Agendar
                 {cartCount > 0 && (
-                  <span
-                    className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold"
-                    style={{ color: primaryColor ?? "#000" }}
-                  >
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
                     {cartCount}
                   </span>
                 )}
@@ -137,21 +142,24 @@ export function Navbar({
                     Links de navegação do site
                   </SheetDescription>
                   <div className="flex flex-col gap-1 pl-4">
-                    <BarbershopLogo name={barbershopName} className="text-2xl" />
+                    <BarbershopLogo
+                      name={barbershopName}
+                      className="text-2xl"
+                    />
                     <StatusBadge openingHours={openingHours} />
                   </div>
                   <nav className="mx-auto flex max-w-40 flex-col gap-4">
                     <Button
                       onClick={handleAgendar}
-                      className="relative rounded-full px-5 text-sm text-white"
-                      style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+                      className="relative rounded-full px-5 text-sm"
+                      style={{
+                        backgroundColor: primaryColor,
+                        color: textButtonColor,
+                      }}
                     >
                       Agendar
                       {cartCount > 0 && (
-                        <span
-                          className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold"
-                          style={{ color: primaryColor ?? "#000" }}
-                        >
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
                           {cartCount}
                         </span>
                       )}
@@ -162,7 +170,6 @@ export function Navbar({
               </Sheet>
             </div>
           </div>
-          
         </div>
       </header>
 
