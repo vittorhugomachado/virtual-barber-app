@@ -1,6 +1,9 @@
 import { supabase } from "./supabase";
 
-export async function getCustomerAppointments(customerId: string) {
+export async function getCustomerAppointments(
+  customerId: string,
+  barbershopId: string,
+) {
   const { data, error } = await supabase
     .from("appointments")
     .select(
@@ -15,9 +18,10 @@ export async function getCustomerAppointments(customerId: string) {
       services ( id, name, price, duration_min )
     `,
     )
+    .eq("barbershop_id", barbershopId)
     .eq("customer_id", customerId)
     .order("starts_at", { ascending: false });
-
+  console.log(data);
   if (error) return { data: null, error };
   return { data: data ?? [], error: null };
 }
@@ -25,7 +29,7 @@ export async function getCustomerAppointments(customerId: string) {
 export async function getAppointmentsForBarberOnDate(
   barbershopId: string,
   barberId: string,
-  date: string, // YYYY-MM-DD
+  date: string,
 ) {
   const { data } = await supabase
     .from("appointments")
@@ -35,8 +39,11 @@ export async function getAppointmentsForBarberOnDate(
     .gte("starts_at", `${date}T00:00:00`)
     .lte("starts_at", `${date}T23:59:59`);
 
-  return (data ?? []).filter(a =>
-    !["cancelled_by_customer", "cancelled_by_barbershop", "no_show"].includes(a.status),
+  return (data ?? []).filter(
+    a =>
+      !["cancelled_by_customer", "cancelled_by_barbershop", "no_show"].includes(
+        a.status,
+      ),
   ) as { starts_at: string; ends_at: string; status: string }[];
 }
 

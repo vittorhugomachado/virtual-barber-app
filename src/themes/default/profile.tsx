@@ -122,11 +122,11 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
 
   useEffect(() => {
     if (!customer) return;
-    getCustomerAppointments(customer.id).then(({ data }) => {
+    getCustomerAppointments(customer.id, props.id).then(({ data }) => {
       if (data) setAppointments((data as AppointmentRow[]).map(normalize));
       setLoading(false);
     });
-  }, [customer]);
+  }, [customer, props.id]);
 
   const filtered = useMemo(() => {
     let list = appointments;
