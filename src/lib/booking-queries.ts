@@ -15,7 +15,7 @@ export async function getCurrentCustomer(barbershopId: string) {
     .single();
 
   if (error) return { data: null, error };
-  console.log(data)
+
   return { data, error: null };
 }
 
@@ -42,7 +42,7 @@ export async function getCustomerAppointments(
     .order("starts_at", { ascending: false });
 
   if (error) return { data: null, error };
-  console.log(data)
+
   return { data: data ?? [], error: null };
 }
 
