@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import type { OpeningHour } from "../themes/types";
+import type { BarberAvailability, OpeningHour } from "../themes/types";
 import { getAppointmentsForBarberOnDate } from "../lib/booking-queries";
+import { getEffectivePeriodsForDay } from "../utils/format-time";
 
 function timeToMinutes(time: string) {
   const [h, m] = time.slice(0, 5).split(":").map(Number);
@@ -19,12 +20,14 @@ export function useAvailableSlots({
   date,
   totalDuration,
   openingHours,
+  barberAvailability,
 }: {
   barbershopId: string;
   barberId: string | null;
   date: string | null;
   totalDuration: number;
   openingHours: OpeningHour[];
+  barberAvailability?: BarberAvailability[];
 }) {
   const [slots, setSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,9 +42,12 @@ export function useAvailableSlots({
       setLoading(true);
 
       const dayOfWeek = new Date(date + "T12:00:00").getDay();
-      const periods = openingHours.filter(
-        h => h.day_of_week === dayOfWeek && h.is_open,
-      );
+      const periods =
+        barberAvailability && barberAvailability.length > 0
+          ? getEffectivePeriodsForDay(dayOfWeek, openingHours, barberAvailability)
+          : openingHours
+              .filter(h => h.day_of_week === dayOfWeek && h.is_open)
+              .map(h => ({ opens_at: h.opens_at, closes_at: h.closes_at }));
 
       if (periods.length === 0) {
         setSlots([]);
@@ -62,8 +68,8 @@ export function useAvailableSlots({
       const available: string[] = [];
 
       for (const period of periods) {
-        const openMin = timeToMinutes(period.opens_at);
-        const closeMin = timeToMinutes(period.closes_at);
+        const openMin = timeToMinutes(period.opens_at.slice(0, 5));
+        const closeMin = timeToMinutes(period.closes_at.slice(0, 5));
         let current = openMin;
 
         while (current + totalDuration <= closeMin) {
@@ -90,7 +96,7 @@ export function useAvailableSlots({
     }
 
     load();
-  }, [barberId, date, totalDuration, barbershopId, openingHours]);
+  }, [barberId, date, totalDuration, barbershopId, openingHours, barberAvailability]);
 
   return { slots, loading };
 }

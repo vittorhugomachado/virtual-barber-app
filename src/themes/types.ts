@@ -89,6 +89,18 @@ export interface Service {
   price?: number | null;
 }
 
+export interface BarberAvailability {
+  id: string;
+  barber_id: string;
+  barbershop_id: string;
+  day_of_week: number;
+  is_day_off: boolean;
+  use_custom_hours: boolean;
+  starts_at: string | null;
+  ends_at: string | null;
+  period_order: number;
+}
+
 export interface Barber {
   id: string;
   name: string;
@@ -97,6 +109,7 @@ export interface Barber {
   is_active: boolean;
   serviceIds: string[];
   services: string[];
+  availability: BarberAvailability[];
 }
 
 export interface GalleryImage {

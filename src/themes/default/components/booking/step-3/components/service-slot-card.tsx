@@ -38,6 +38,7 @@ export function ServiceSlotCard({
     date,
     totalDuration: duration,
     openingHours,
+    barberAvailability: viewBarber?.availability,
   });
 
   const availableSlots = slots.filter(slot => {
@@ -52,7 +53,7 @@ export function ServiceSlotCard({
 
   const availableSet = new Set(availableSlots);
   const allSlotsForDay = viewBarber
-    ? getAllSlotsForDay(openingHours, date, duration)
+    ? getAllSlotsForDay(openingHours, date, duration, viewBarber.availability)
     : [];
   const isComplete = !!selection;
 
