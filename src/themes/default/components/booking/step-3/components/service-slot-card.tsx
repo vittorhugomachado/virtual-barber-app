@@ -53,7 +53,7 @@ export function ServiceSlotCard({
 
   const availableSet = new Set(availableSlots);
   const allSlotsForDay = viewBarber
-    ? getAllSlotsForDay(openingHours, date, duration, viewBarber.availability)
+    ? getAllSlotsForDay(openingHours, date, duration)
     : [];
   const isComplete = !!selection;
 

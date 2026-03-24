@@ -33,12 +33,12 @@ export function useAvailableSlots({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!barberId || !date || totalDuration === 0) {
-      setSlots([]);
-      return;
-    }
-
     async function load() {
+      if (!barberId || !date || totalDuration === 0) {
+        setSlots([]);
+        return;
+      }
+
       setLoading(true);
 
       const dayOfWeek = new Date(date + "T12:00:00").getDay();
@@ -95,7 +95,7 @@ export function useAvailableSlots({
       setLoading(false);
     }
 
-    load();
+    void load();
   }, [barberId, date, totalDuration, barbershopId, openingHours, barberAvailability]);
 
   return { slots, loading };
