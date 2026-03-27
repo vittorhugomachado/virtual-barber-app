@@ -56,7 +56,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   if (done) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar isPreview={false} />
+        <Navbar />
         <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-20">
           <CheckCircle size={56} style={{ color: primaryColor }} />
           <div className="text-center">
@@ -89,7 +89,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar isPreview={false} />
+      <Navbar />
 
       <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
         <h2 className="mb-8 text-center text-3xl font-bold">Agendar</h2>
@@ -150,12 +150,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         </h1>
 
         {/* Steps */}
-        {step === 0 && (
-          <StepServices
-            services={props.services}
-            onContinue={() => setStep(1)}
-          />
-        )}
+        {step === 0 && <StepServices onContinue={() => setStep(1)} />}
 
         {step === 1 && (
           <StepDate

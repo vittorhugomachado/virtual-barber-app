@@ -5,13 +5,14 @@ import { useStyle } from "../../../../../contexts/style-context/style-context";
 import type { Service } from "../../../../types";
 import { formatPrice } from "../../../../../utils/format-price";
 import { formatDuration } from "../../../../../utils/format-duration";
+import { useBarbershopData } from "../../../../../contexts/barbershop-data/barbershop-data-context";
 
 interface StepServicesProps {
-  services: Service[];
   onContinue: () => void;
 }
 
-export function StepServices({ services, onContinue }: StepServicesProps) {
+export function StepServices({ onContinue }: StepServicesProps) {
+    const { services } = useBarbershopData();
   const { primaryColor, textButtonColor } = useStyle();
   const { items, addService, removeService, hasService, total, totalDuration } =
     useCart();

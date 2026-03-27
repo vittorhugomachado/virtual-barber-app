@@ -1,39 +1,36 @@
-// src/themes/default/components/team.tsx
-
-import { Users } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '../../../components/ui/avatar'
-import type { Barber } from '../../types'
-
-interface TeamProps {
-  barbers: Barber[]
-}
+import { Users } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../../components/ui/avatar";
+import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 
 function getInitials(name: string): string {
   return name
-    .split(' ')
+    .split(" ")
     .slice(0, 2)
     .map(n => n[0])
-    .join('')
-    .toUpperCase()
+    .join("")
+    .toUpperCase();
 }
 
-export function Team({ barbers }: TeamProps) {
-  if (!barbers.length) return null
+export function Team() {
+  const { barbers } = useBarbershopData();
+  
+  if (!barbers.length) return null;
 
   return (
-    <section id='equipe' className='mt-16'>
+    <section id="equipe" className="mt-16">
       <div className="mb-4 flex items-center justify-center gap-2">
         <Users size={18} />
-        <h2 className="text-2xl md:text-4xl font-medium">Nossa equipe</h2>
+        <h2 className="text-2xl font-medium md:text-4xl">Nossa equipe</h2>
       </div>
 
-      <div className="flex justify-center flex-wrap gap-6">
+      <div className="flex flex-wrap justify-center gap-6">
         {barbers.map(barber => (
-          <div
-            key={barber.id}
-            className="flex flex-col items-center gap-2"
-          >
-            <Avatar className="h-16 w-16 md:h-23 md:w-23 ring-2 ring-neutral-100 dark:ring-neutral-800">
+          <div key={barber.id} className="flex flex-col items-center gap-2">
+            <Avatar className="h-16 w-16 ring-2 ring-neutral-100 md:h-23 md:w-23 dark:ring-neutral-800">
               <AvatarImage
                 src={barber.avatar_url ?? undefined}
                 alt={barber.name}
@@ -43,12 +40,12 @@ export function Team({ barbers }: TeamProps) {
                 {getInitials(barber.name)}
               </AvatarFallback>
             </Avatar>
-            <span className="max-w-20 text-center text-sm font-medium leading-tight">
+            <span className="max-w-20 text-center text-sm leading-tight font-medium">
               {barber.name}
             </span>
           </div>
         ))}
       </div>
     </section>
-  )
+  );
 }

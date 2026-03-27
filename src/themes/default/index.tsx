@@ -33,21 +33,21 @@ export default function DefaultTheme(props: BarbershopPageProps) {
 
   return (
     <div className="relative">
-      <Navbar isPreview={false} />
+      <Navbar />
       {props.phone && <WhatsappButton linkWhatsapp={props?.phone} />}
       <SectionNav sections={sections} />
       <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
-        <Gallery images={props.gallery} barbershopName={props.name} />
+        <Gallery />
         <section
           id="servicos"
           className="mt-8 flex flex-col gap-6 lg:mt-16 lg:flex-row lg:items-start"
         >
-          <Services services={props.services} isPreview={props.isPreview} />
-          <CartPanel isPreview={props.isPreview} />
+          <Services />
+          <CartPanel />
         </section>
-        {hasMultipleBarbers && <Team barbers={props.barbers} />}
-        <BarberShopHours openingHours={props.openingHours} />
-        <Location address={props.address} phone={props.phone} />
+        {hasMultipleBarbers && <Team />}
+        <BarberShopHours />
+        <Location />
       </main>
       <Footer />
     </div>

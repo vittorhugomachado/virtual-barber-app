@@ -24,7 +24,7 @@ import { BarbershopLogo } from "./logo-text";
 import { StatusBadge } from "../../../components/status-badge";
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 
-export function Navbar({ isPreview }: { isPreview: boolean }) {
+export function Navbar() {
   const { name, openingHours } = useBarbershopData();
   const { primaryColor, textButtonColor } = useStyle();
   const { isAuthenticated, signOut } = useAuth();
@@ -38,7 +38,6 @@ export function Navbar({ isPreview }: { isPreview: boolean }) {
   const shouldHideScheduleButton = location.pathname.includes("agendar");
 
   function handleAgendar() {
-    if (isPreview) return;
     if (isAuthenticated) {
       navigate(`/${slug}/agendar`);
     } else {
@@ -47,7 +46,6 @@ export function Navbar({ isPreview }: { isPreview: boolean }) {
   }
 
   function handlePerfil() {
-    if (isPreview) return;
     navigate(`/${slug}/perfil`);
   }
 
@@ -75,7 +73,7 @@ export function Navbar({ isPreview }: { isPreview: boolean }) {
         </>
       ) : (
         <button
-          onClick={() => !isPreview && navigate(`/${slug}/entrar`)}
+          onClick={() => navigate(`/${slug}/entrar`)}
           className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
         >
           Entrar

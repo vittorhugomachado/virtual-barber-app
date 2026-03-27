@@ -2,22 +2,18 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { useStyle } from "../../../../../contexts/style-context/style-context";
-import { DAYS_SHORT, MONTHS_FULL, type OpeningHour } from "../../../../types";
+import { DAYS_SHORT, MONTHS_FULL } from "../../../../types";
 import { getClosedDays } from "../../../../../utils/open-status";
+import { useBarbershopData } from "../../../../../contexts/barbershop-data/barbershop-data-context";
 
 interface StepDateProps {
   selected: string | null;
-  openingHours: OpeningHour[];
   onSelect: (date: string) => void;
   onContinue: () => void;
 }
 
-export function StepDate({
-  selected,
-  openingHours,
-  onSelect,
-  onContinue,
-}: StepDateProps) {
+export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
+  const { openingHours } = useBarbershopData();
   const { primaryColor, textButtonColor } = useStyle();
   const today = new Date();
   today.setHours(0, 0, 0, 0);

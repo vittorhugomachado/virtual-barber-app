@@ -1,13 +1,10 @@
 import { MapPin, Phone } from "lucide-react";
-import type { BarbershopPageProps } from "../../types";
 import { formatPhone } from "../../../utils/format-phone";
+import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 
-interface LocationProps {
-  address?: BarbershopPageProps["address"];
-  phone?: string | null;
-}
+export function Location() {
+  const { address, phone } = useBarbershopData();
 
-export function Location({ address, phone }: LocationProps) {
   if (!address) return null;
 
   const mapQuery =

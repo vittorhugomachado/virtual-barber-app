@@ -1,13 +1,11 @@
 import { Clock } from "lucide-react";
 import { formatTime } from "../../../utils/format-time";
-import { DAYS_FULL, type OpeningHour } from "../../types";
+import { DAYS_FULL } from "../../types";
 import { groupByDay } from "../../../utils/group-bay-day";
+import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 
-interface Props {
-  openingHours: OpeningHour[];
-}
-
-export function BarberShopHours({ openingHours }: Props) {
+export function BarberShopHours() {
+    const { openingHours } = useBarbershopData();
   const byDay = groupByDay(openingHours);
   const today = new Date().getDay();
 

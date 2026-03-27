@@ -1,6 +1,13 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Clock, Scissors, User, ChevronRight, ArrowUpDown } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Scissors,
+  User,
+  ChevronRight,
+  ArrowUpDown,
+} from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
 import { getCustomerAppointments } from "../../lib/booking-queries";
 import { Navbar } from "./components/nav-bar";
@@ -18,8 +25,24 @@ type AppointmentRow = {
   ends_at: string;
   notes?: string | null;
   created_at: string;
-  barbers: { id: string; name: string; avatar_url?: string | null } | { id: string; name: string; avatar_url?: string | null }[] | null;
-  services: { id: string; name: string; price?: number | null; duration_min?: number | null } | { id: string; name: string; price?: number | null; duration_min?: number | null }[] | null;
+  barbers:
+    | { id: string; name: string; avatar_url?: string | null }
+    | { id: string; name: string; avatar_url?: string | null }[]
+    | null;
+  services:
+    | {
+        id: string;
+        name: string;
+        price?: number | null;
+        duration_min?: number | null;
+      }
+    | {
+        id: string;
+        name: string;
+        price?: number | null;
+        duration_min?: number | null;
+      }[]
+    | null;
 };
 
 type NormalizedAppointment = {
@@ -30,14 +53,21 @@ type NormalizedAppointment = {
   notes?: string | null;
   created_at: string;
   barber: { id: string; name: string; avatar_url?: string | null } | null;
-  service: { id: string; name: string; price?: number | null; duration_min?: number | null } | null;
+  service: {
+    id: string;
+    name: string;
+    price?: number | null;
+    duration_min?: number | null;
+  } | null;
 };
 
 function normalize(raw: AppointmentRow): NormalizedAppointment {
   return {
     ...raw,
     barber: Array.isArray(raw.barbers) ? (raw.barbers[0] ?? null) : raw.barbers,
-    service: Array.isArray(raw.services) ? (raw.services[0] ?? null) : raw.services,
+    service: Array.isArray(raw.services)
+      ? (raw.services[0] ?? null)
+      : raw.services,
   };
 }
 
@@ -52,9 +82,12 @@ const STATUS_LABEL: Record<AppointmentStatus, string> = {
 const STATUS_CLASS: Record<AppointmentStatus, string> = {
   scheduled: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400",
   completed: "bg-[#299E69] text-[#09090B]",
-  cancelled_by_customer: "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
-  cancelled_by_barbershop: "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
-  no_show: "bg-orange-50 text-orange-500 dark:bg-orange-950 dark:text-orange-400",
+  cancelled_by_customer:
+    "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
+  cancelled_by_barbershop:
+    "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
+  no_show:
+    "bg-orange-50 text-orange-500 dark:bg-orange-950 dark:text-orange-400",
 };
 
 type FilterTab = "all" | "upcoming" | "past";
@@ -74,7 +107,9 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
             {appt.service?.name ?? "Serviço"}
           </span>
         </div>
-        <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASS[appt.status]}`}>
+        <span
+          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASS[appt.status]}`}
+        >
           {STATUS_LABEL[appt.status]}
         </span>
       </div>
@@ -84,7 +119,9 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
           <Clock size={12} />
           <span>{appt.starts_at.slice(11, 16)}</span>
           {appt.service?.duration_min != null && (
-            <span className="text-neutral-400">· {formatDuration(appt.service.duration_min)}</span>
+            <span className="text-neutral-400">
+              · {formatDuration(appt.service.duration_min)}
+            </span>
           )}
         </div>
         {appt.barber && (
@@ -98,7 +135,9 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
       {appt.service?.price != null && (
         <div className="flex items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
           <span className="text-xs text-neutral-400">Valor</span>
-          <span className="text-sm font-semibold">{formatPrice(appt.service.price)}</span>
+          <span className="text-sm font-semibold">
+            {formatPrice(appt.service.price)}
+          </span>
         </div>
       )}
     </div>
@@ -130,7 +169,8 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
 
   const filtered = useMemo(() => {
     let list = appointments;
-    if (filter === "upcoming") list = list.filter(a => a.status === "scheduled");
+    if (filter === "upcoming")
+      list = list.filter(a => a.status === "scheduled");
     if (filter === "past") list = list.filter(a => a.status !== "scheduled");
     return [...list].sort((a, b) => {
       const cmp = a.starts_at.localeCompare(b.starts_at);
@@ -151,20 +191,14 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar
-        isPreview={false}
-        primaryColor={primary}
-        textButtonColor={textButtonColor}
-        barbershopName={props.name}
-        openingHours={props.openingHours}
-      />
+      <Navbar />
 
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-2xl text-nowrap font-bold">Meus agendamentos</h1>
+          <h1 className="text-2xl font-bold text-nowrap">Meus agendamentos</h1>
           <Button
-            className="rounded-full px-5 text-sm mx-auto sm:mr-0 sm:ml-auto"
+            className="mx-auto rounded-full px-5 text-sm sm:mr-0 sm:ml-auto"
             style={{ backgroundColor: primary, color: textButtonColor }}
             onClick={() => navigate(`/${props.slug}/agendar`)}
           >
@@ -185,7 +219,11 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                     ? "text-white"
                     : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
                 }`}
-                style={filter === tab.key ? { backgroundColor: primary, color: textButtonColor } : undefined}
+                style={
+                  filter === tab.key
+                    ? { backgroundColor: primary, color: textButtonColor }
+                    : undefined
+                }
               >
                 {tab.label}
               </button>
@@ -214,7 +252,9 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
               <>
                 <div>
                   <p className="font-medium">Nenhum agendamento ainda</p>
-                  <p className="mt-1 text-sm text-neutral-400">Que tal agendar seu próximo corte?</p>
+                  <p className="mt-1 text-sm text-neutral-400">
+                    Que tal agendar seu próximo corte?
+                  </p>
                 </div>
                 <Button
                   className="mt-2 rounded-full px-6"
@@ -225,7 +265,9 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                 </Button>
               </>
             ) : (
-              <p className="text-sm text-neutral-400">Nenhum agendamento neste filtro.</p>
+              <p className="text-sm text-neutral-400">
+                Nenhum agendamento neste filtro.
+              </p>
             )}
           </div>
         ) : (
@@ -247,7 +289,9 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
 
                 {/* Content */}
                 <div className="flex flex-1 flex-col gap-2 pt-1.5 pb-4.5">
-                  <p className="mt-1 text-sm font-semibold">{formatDate(day)}</p>
+                  <p className="mt-1 text-sm font-semibold">
+                    {formatDate(day)}
+                  </p>
                   {appts.map(appt => (
                     <AppointmentCard key={appt.id} appt={appt} />
                   ))}

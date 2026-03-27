@@ -4,19 +4,15 @@ import { useCart } from "../../../hooks/use-cart";
 import type { Service } from "../../types";
 import { formatPrice } from "../../../utils/format-price";
 import { formatDuration } from "../../../utils/format-duration";
+import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 
-interface ServicesProps {
-  services: Service[];
-  isPreview?: boolean;
-}
-
-export function Services({ services, isPreview }: ServicesProps) {
+export function Services() {
+  const { services } = useBarbershopData();
   const { addService, removeService, hasService } = useCart();
 
   if (!services.length) return null;
 
   function handleToggle(service: Service) {
-    if (isPreview) return;
     if (hasService(service.id)) {
       removeService(service.id);
     } else {
@@ -89,7 +85,6 @@ export function Services({ services, isPreview }: ServicesProps) {
                     : { border: "1px solid" }
                 }
                 onClick={() => handleToggle(service)}
-                disabled={isPreview}
               >
                 {inCart ? (
                   <>

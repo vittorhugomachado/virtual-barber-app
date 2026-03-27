@@ -7,11 +7,7 @@ import { useStyle } from "../../../contexts/style-context/style-context";
 import { formatPrice } from "../../../utils/format-price";
 import { formatDuration } from "../../../utils/format-duration";
 
-interface CartPanelProps {
-  isPreview?: boolean;
-}
-
-export function CartPanel({ isPreview }: CartPanelProps) {
+export function CartPanel() {
   const { primaryColor, textButtonColor } = useStyle();
   const { items, removeService, total, totalDuration } = useCart();
   const { isAuthenticated } = useAuthStore();
@@ -19,7 +15,6 @@ export function CartPanel({ isPreview }: CartPanelProps) {
   const navigate = useNavigate();
 
   function handleAgendar() {
-    if (isPreview) return;
     if (isAuthenticated) {
       navigate(`/${slug}/agendar`);
     } else {
@@ -101,7 +96,6 @@ export function CartPanel({ isPreview }: CartPanelProps) {
               className="mt-4 h-11 w-full rounded-full text-sm font-medium"
               style={{ backgroundColor: primaryColor, color: textButtonColor }}
               onClick={handleAgendar}
-              disabled={isPreview}
             >
               Agendar selecionados
             </Button>
