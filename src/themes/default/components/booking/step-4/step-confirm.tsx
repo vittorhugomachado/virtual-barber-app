@@ -6,6 +6,7 @@ import {
   createAppointments,
   getAppointmentErrorMessage,
 } from "../../../../../lib/booking-queries";
+import { useAuthStore } from "../../../../../store/auth-store";
 import type { Service } from "../../../../types";
 import type { ServiceSelection } from "../../../../types";
 import { formatPrice } from "../../../../../utils/format-price";
@@ -34,13 +35,45 @@ export function StepConfirm({
   const { primaryColor, textButtonColor } = useStyle();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState(customer?.name?.trim() ?? "");
 
   const total = services.reduce((sum, s) => sum + (s.price ?? 0), 0);
+  const normalizedStoredName = customer?.name?.trim() ?? "";
+  const requiresName = normalizedStoredName.length < 2;
+  const hasNameValidationError =
+    requiresName && error === "Informe como podemos te chamar.";
+
+  function hasValidName(value: string) {
+    return value.trim().length >= 2;
+  }
 
   async function handleConfirm() {
     setLoading(true);
     setError(null);
     try {
+      const normalizedDisplayName = displayName.trim();
+
+      if (requiresName && !hasValidName(normalizedDisplayName)) {
+        setError("Informe um nome com pelo menos 2 letras.");
+        return;
+      }
+
+      if (requiresName) {
+        const { error: customerError } = await supabase
+          .from("customers_auth")
+          .update({ name: normalizedDisplayName })
+          .eq("id", customerId);
+
+        if (customerError) {
+          setError("Não foi possível salvar seu nome. Tente novamente.");
+          return;
+        }
+
+        if (customer) {
+          setCustomer({ ...customer, name: normalizedDisplayName });
+        }
+      }
+
       const appointments = services.map(service => {
         const sel = serviceSelections[service.id];
         const duration = service.duration_min ?? 30;
@@ -78,6 +111,31 @@ export function StepConfirm({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800">
+        {requiresName && (
+          <>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                Como podemos te chamar?
+              </label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={e => setDisplayName(e.target.value)}
+                placeholder="Digite seu nome"
+                className={`h-11 w-full rounded-xl bg-transparent px-4 text-sm ring-offset-2 transition-colors outline-none placeholder:text-neutral-400 focus:ring-2 ${
+                  hasNameValidationError
+                    ? "border border-red-500 focus:ring-red-500 dark:border-red-500"
+                    : "border border-neutral-200 focus:ring-neutral-900 dark:border-neutral-700 dark:focus:ring-neutral-100"
+                }`}
+              />
+              <p className="text-xs text-neutral-500">
+                Precisamos de um nome para confirmar o agendamento.
+              </p>
+            </div>
+            <div className="border-t border-neutral-100 dark:border-neutral-800" />
+          </>
+        )}
+
         {/* Date */}
         <div className="flex items-center gap-2">
           <Calendar size={16} className="text-neutral-400" />

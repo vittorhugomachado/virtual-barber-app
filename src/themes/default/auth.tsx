@@ -8,7 +8,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { BarbershopLogo } from "./components/logo-text";
 import { formatPhone } from "../../utils/format-phone";
 
-const OTP_CHANNEL: "sms" | "whatsapp" = "sms";
+const OTP_CHANNEL: "sms" | "whatsapp" = "whatsapp";
 
 export default function DefaultAuthPage() {
   const navigate = useNavigate();

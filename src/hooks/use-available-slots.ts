@@ -71,7 +71,8 @@ export function useAvailableSlots({
         customerId
           ? getAppointmentsForCustomerOnDate(barbershopId, customerId, date)
           : Promise.resolve([]),
-      ]);;
+      ]);
+
       const now = new Date();
       const isToday = date === now.toISOString().slice(0, 10);
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
