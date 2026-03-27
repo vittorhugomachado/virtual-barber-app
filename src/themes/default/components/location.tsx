@@ -1,6 +1,6 @@
 import { MapPin, Phone } from "lucide-react";
 import type { BarbershopPageProps } from "../../types";
-import { formatPhone } from "../../../utils/forma-phone";
+import { formatPhone } from "../../../utils/format-phone";
 
 interface LocationProps {
   address?: BarbershopPageProps["address"];

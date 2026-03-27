@@ -38,10 +38,10 @@ export function Navbar({
   barbershopName,
   openingHours,
 }: navBarProps) {
-  const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate();
   const { isAuthenticated, signOut } = useAuth();
+  const { slug } = useParams<{ slug: string }>();
   const { items } = useCart();
+  const navigate = useNavigate();
   const cartCount = items.length;
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -83,12 +83,20 @@ export function Navbar({
           </button>
         </>
       ) : (
-        <button
-          onClick={() => !isPreview && navigate(`/${slug}/entrar`)}
-          className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-        >
-          Entrar
-        </button>
+        <>
+          <button
+            onClick={() => setShowLogoutDialog(true)}
+            className="text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+          >
+            Sair
+          </button>
+          <button
+            onClick={() => !isPreview && navigate(`/${slug}/entrar`)}
+            className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+          >
+            Entrar
+          </button>
+        </>
       )}
     </>
   );
