@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
 import { useCart } from "../../hooks/use-cart";
 import { Navbar } from "./components/nav-bar";
@@ -44,6 +44,11 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   function handleSuccess() {
     clearCart();
     setDone(true);
+  }
+
+  function handleBack() {
+    if (step === 0) return;
+    setStep(current => current - 1);
   }
 
   const allSelected =
@@ -132,6 +137,19 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           </div>
         </div>
 
+        {step > 0 && (
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            >
+              <ArrowLeft size={16} />
+              Voltar
+            </button>
+          </div>
+        )}
+
         {/* Step title */}
         <h1 className="mb-6 text-center text-2xl font-semibold">
           {STEPS[step]}
@@ -158,12 +176,12 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           />
         )}
 
-        {step === 2 && date && (
+        {step === 2 && date && customer && (
           <StepBarberTime
             services={items}
             barbers={props.barbers}
             barbershopId={props.id}
-            customerId={customer?.id}
+            customerId={customer.id}
             date={date}
             openingHours={props.openingHours}
             selections={serviceSelections}
