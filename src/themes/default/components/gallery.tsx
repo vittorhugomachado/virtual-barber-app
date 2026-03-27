@@ -68,7 +68,7 @@ export function Gallery({ images, barbershopName }: GalleryProps) {
   return (
     <section className="w-full sm:mx-auto sm:max-w-200 sm:px-4">
       {/* ── desktop grid ── */}
-      <div className="hidden sm:block sm:h-105">
+      <div className="hidden sm:block">
         {images.length === 1 && (
           <div
             className="group relative h-full cursor-pointer overflow-hidden rounded-2xl"

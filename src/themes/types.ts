@@ -181,7 +181,7 @@ export interface Customer {
   phone: string;
   email?: string | null;
   auth_user_id?: string | null;
-  barbershop_id: string;
+  barbershop_id?: string | null;
 }
 
 export interface ServiceSelection {

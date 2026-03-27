@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-export async function getCurrentCustomer(barbershopId: string) {
+export async function getCurrentCustomer() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -11,8 +11,7 @@ export async function getCurrentCustomer(barbershopId: string) {
     .from("customers")
     .select("id, name, phone, email, created_at")
     .eq("auth_user_id", user.id)
-    .eq("barbershop_id", barbershopId)
-    .single();
+    .maybeSingle();
 
   if (error) return { data: null, error };
 

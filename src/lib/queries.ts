@@ -160,7 +160,7 @@ export async function getBarbershopBySlug(
         return {
           text_color: styleSource.text_color ?? "#FFFFFF",
           theme_is_dark: styleSource.theme_is_dark ?? true,
-          primary_color: styleSource.primary_color ?? "#CF2820",
+          primary_color: styleSource.primary_color ?? "#0458EE",
           text_button_color: styleSource.text_button_color ?? "#000000",
         };
       })(),

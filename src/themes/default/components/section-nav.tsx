@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 
-const SECTIONS = [
-  { id: "servicos", label: "Serviços" },
-  { id: "equipe", label: "Equipe" },
-  { id: "horarios", label: "Horários" },
-  { id: "localizacao", label: "Localização" },
-];
+type Section = {
+  id: string;
+  label: string;
+};
 
 type SectionNavProps = {
   primaryColor: string;
+  sections: Section[]; // <-- recebe as seções dinamicamente
 };
 
-export function SectionNav({ primaryColor }: SectionNavProps) {
+export function SectionNav({ primaryColor, sections }: SectionNavProps) {
   const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
@@ -26,7 +25,7 @@ export function SectionNav({ primaryColor }: SectionNavProps) {
       { rootMargin: "-130px 0px -50% 0px" },
     );
 
-    SECTIONS.forEach(({ id }) => {
+    sections.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
@@ -44,7 +43,7 @@ export function SectionNav({ primaryColor }: SectionNavProps) {
       observer.disconnect();
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [sections]); // <-- adiciona sections como dependência
 
   function scrollTo(id: string) {
     const element = document.getElementById(id);
@@ -58,7 +57,7 @@ export function SectionNav({ primaryColor }: SectionNavProps) {
   return (
     <nav className="bg-background fixed top-14 right-0 left-0 z-40 flex w-full items-center py-1.5">
       <div className="scrollbar-none mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4">
-        {SECTIONS.map(({ id, label }) => (
+        {sections.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => scrollTo(id)}

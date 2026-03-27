@@ -31,21 +31,17 @@ export default function DefaultAuthPage() {
 
         setLoading(true);
         try {
-          const barbershopId = localStorage.getItem("auth_barbershop_id");
-
           const { data: existing } = await supabase
             .from("customers")
             .select("id")
             .eq("auth_user_id", session.user.id)
-            .eq("barbershop_id", barbershopId ?? "")
-            .single();
+            .maybeSingle();
 
-          if (!existing && barbershopId) {
+          if (!existing) {
             const { data: newCustomer } = await supabase
               .from("customers")
               .insert({
                 auth_user_id: session.user.id,
-                barbershop_id: barbershopId,
                 name:
                   session.user.user_metadata?.full_name ??
                   session.user.user_metadata?.name ??
@@ -63,10 +59,9 @@ export default function DefaultAuthPage() {
                 phone: newCustomer.phone,
                 email: newCustomer.email,
                 auth_user_id: newCustomer.auth_user_id,
-                barbershop_id: newCustomer.barbershop_id,
               });
             }
-          } else if (existing) {
+          } else {
             const { data: customer } = await supabase
               .from("customers")
               .select("*")
@@ -80,12 +75,10 @@ export default function DefaultAuthPage() {
                 phone: customer.phone,
                 email: customer.email,
                 auth_user_id: customer.auth_user_id,
-                barbershop_id: customer.barbershop_id,
               });
             }
           }
 
-          localStorage.removeItem("auth_barbershop_id");
           localStorage.removeItem("auth_redirect");
 
           const destination =
@@ -113,10 +106,7 @@ export default function DefaultAuthPage() {
 
   async function handleOAuth() {
     localStorage.setItem("auth_redirect", `/${slug}`);
-    localStorage.setItem("auth_from", from ?? ""); // ← adiciona isso
-    if (data?.id) {
-      localStorage.setItem("auth_barbershop_id", data.id);
-    }
+    localStorage.setItem("auth_from", from ?? "");
 
     await supabase.auth.signInWithOAuth({
       provider: "google",
