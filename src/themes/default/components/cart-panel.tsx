@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { useCart } from "../../../hooks/use-cart";
 import { useAuthStore } from "../../../store/auth-store";
-import { useStyle } from "../../../contexts/style-context";
+import { useStyle } from "../../../contexts/style-context/style-context";
 import { formatPrice } from "../../../utils/format-price";
 import { formatDuration } from "../../../utils/format-duration";
 
@@ -28,7 +28,7 @@ export function CartPanel({ isPreview }: CartPanelProps) {
   }
 
   return (
-    <div className="lg:w-80 lg:shrink-0 lg:sticky lg:top-28 lg:pt-14">
+    <div className="lg:sticky lg:top-28 lg:w-80 lg:shrink-0 lg:pt-14">
       <div className="rounded-2xl border border-zinc-300 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-4 flex items-center gap-2">
           <ShoppingCart size={16} className="text-neutral-400" />
@@ -43,7 +43,7 @@ export function CartPanel({ isPreview }: CartPanelProps) {
         </div>
 
         {items.length === 0 ? (
-          <p className="text-center text-sm text-neutral-400 py-6">
+          <p className="py-6 text-center text-sm text-neutral-400">
             Nenhum serviço selecionado
           </p>
         ) : (
@@ -85,7 +85,9 @@ export function CartPanel({ isPreview }: CartPanelProps) {
             <div className="mt-4 flex items-center justify-between border-t border-neutral-100 pt-3 dark:border-neutral-800">
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs text-neutral-400">Total</span>
-                <span className="text-sm font-semibold">{formatPrice(total)}</span>
+                <span className="text-sm font-semibold">
+                  {formatPrice(total)}
+                </span>
               </div>
               {totalDuration > 0 && (
                 <span className="flex items-center gap-1 text-xs text-neutral-400">

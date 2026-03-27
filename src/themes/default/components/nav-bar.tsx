@@ -19,7 +19,7 @@ import {
 } from "../../../components/ui/dialog";
 import { useAuth } from "../../../hooks/use-auth";
 import { useCart } from "../../../hooks/use-cart";
-import { useStyle } from "../../../contexts/style-context";
+import { useStyle } from "../../../contexts/style-context/style-context";
 import { BarbershopLogo } from "./logo-text";
 import { StatusBadge } from "../../../components/status-badge";
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";

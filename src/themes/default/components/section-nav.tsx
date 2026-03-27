@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useStyle } from "../../../contexts/style-context";
+import { useStyle } from "../../../contexts/style-context/style-context";
 
 type Section = {
   id: string;

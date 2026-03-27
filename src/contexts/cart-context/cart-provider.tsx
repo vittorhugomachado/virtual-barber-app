@@ -1,17 +1,6 @@
-import { createContext, useState, useEffect } from "react";
-import type { Service } from "../themes/types";
-
-interface CartContextType {
-  items: Service[];
-  addService: (service: Service) => void;
-  removeService: (serviceId: string) => void;
-  clearCart: () => void;
-  hasService: (serviceId: string) => boolean;
-  total: number;
-  totalDuration: number;
-}
-
-export const CartContext = createContext<CartContextType | null>(null);
+import { useState, useEffect } from "react";
+import type { Service } from "../../themes/types";
+import { CartContext } from "./cart-context";
 
 export function CartProvider({
   slug,
@@ -61,7 +50,15 @@ export function CartProvider({
 
   return (
     <CartContext.Provider
-      value={{ items, addService, removeService, clearCart, hasService, total, totalDuration }}
+      value={{
+        items,
+        addService,
+        removeService,
+        clearCart,
+        hasService,
+        total,
+        totalDuration,
+      }}
     >
       {children}
     </CartContext.Provider>

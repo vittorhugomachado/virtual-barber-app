@@ -1,7 +1,7 @@
 import { Check, Clock, DollarSign, Plus, Scissors } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { useCart } from "../../../../../hooks/use-cart";
-import { useStyle } from "../../../../../contexts/style-context";
+import { useStyle } from "../../../../../contexts/style-context/style-context";
 import type { Service } from "../../../../types";
 import { formatPrice } from "../../../../../utils/format-price";
 import { formatDuration } from "../../../../../utils/format-duration";

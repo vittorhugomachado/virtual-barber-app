@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { User, Calendar, Clock, Scissors } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
-import { useStyle } from "../../../../../contexts/style-context";
+import { useStyle } from "../../../../../contexts/style-context/style-context";
 import {
   createAppointments,
   getAppointmentErrorMessage,
 } from "../../../../../lib/booking-queries";
 import { useAuthStore } from "../../../../../store/auth-store";
+import { supabase } from "../../../../../lib/supabase";
 import type { Service } from "../../../../types";
 import type { ServiceSelection } from "../../../../types";
 import { formatPrice } from "../../../../../utils/format-price";
@@ -33,6 +34,7 @@ export function StepConfirm({
   onBack,
 }: StepConfirmProps) {
   const { primaryColor, textButtonColor } = useStyle();
+  const { customer, setCustomer } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState(customer?.name?.trim() ?? "");

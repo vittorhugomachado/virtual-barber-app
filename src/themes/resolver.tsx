@@ -1,77 +1,77 @@
-import { lazy, Suspense, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import { useBarbershop } from '../hooks/use-barbershop'
-import { NotFoundPage } from '../pages/not-found-page'
-import { CartProvider } from '../contexts/cart-context'
-import { StyleProvider } from '../contexts/style-context'
-import { BarbershopDataProvider } from '../contexts/barbershop-data-provider'
+import { lazy, Suspense, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useBarbershop } from "../hooks/use-barbershop";
+import { NotFoundPage } from "../pages/not-found-page";
+import { CartProvider } from "../contexts/cart-context/cart-provider";
+import { StyleProvider } from "../contexts/style-context/style-provider";
+import { BarbershopDataProvider } from "../contexts/barbershop-data/barbershop-data-provider";
 
-export type PageType = 'home' | 'auth' | 'booking' | 'profile'
+export type PageType = "home" | "auth" | "booking" | "profile";
 
 const THEMES = {
   default: {
-    home:    lazy(() => import('./default')),
-    auth:    lazy(() => import('./default/auth')),
-    booking: lazy(() => import('./default/booking')),
-    profile: lazy(() => import('./default/profile')),
+    home: lazy(() => import("./default")),
+    auth: lazy(() => import("./default/auth")),
+    booking: lazy(() => import("./default/booking")),
+    profile: lazy(() => import("./default/profile")),
   },
   vintage: {
-    home:    lazy(() => import('./premium-a')),
-    auth:    lazy(() => import('./premium-a/auth')),
-    booking: lazy(() => import('./premium-a/booking')),
-    profile: lazy(() => import('./premium-a/profile')),
+    home: lazy(() => import("./premium-a")),
+    auth: lazy(() => import("./premium-a/auth")),
+    booking: lazy(() => import("./premium-a/booking")),
+    profile: lazy(() => import("./premium-a/profile")),
   },
   minimalist: {
-    home:    lazy(() => import('./premium-b')),
-    auth:    lazy(() => import('./premium-b/auth')),
-    booking: lazy(() => import('./premium-b/booking')),
-    profile: lazy(() => import('./premium-b/profile')),
+    home: lazy(() => import("./premium-b")),
+    auth: lazy(() => import("./premium-b/auth")),
+    booking: lazy(() => import("./premium-b/booking")),
+    profile: lazy(() => import("./premium-b/profile")),
   },
   modern: {
-    home:    lazy(() => import('./premium-c')),
-    auth:    lazy(() => import('./premium-c/auth')),
-    booking: lazy(() => import('./premium-c/booking')),
-    profile: lazy(() => import('./premium-c/profile')),
+    home: lazy(() => import("./premium-c")),
+    auth: lazy(() => import("./premium-c/auth")),
+    booking: lazy(() => import("./premium-c/booking")),
+    profile: lazy(() => import("./premium-c/profile")),
   },
-}
+};
 
 const PLAN_ALLOWED_TEMPLATES: Record<string, (keyof typeof THEMES)[]> = {
-  iniciante:    ['default'],
-  profissional: ['vintage', 'modern', 'minimalist'],
-  master:       ['vintage', 'modern', 'minimalist'],
-}
+  iniciante: ["default"],
+  profissional: ["vintage", "modern", "minimalist"],
+  master: ["vintage", "modern", "minimalist"],
+};
 
 function resolveTemplate(
   template: keyof typeof THEMES,
   plan: string,
 ): keyof typeof THEMES {
-  const allowed = PLAN_ALLOWED_TEMPLATES[plan] ?? ['default']
-  return allowed.includes(template) ? template : 'default'
+  const allowed = PLAN_ALLOWED_TEMPLATES[plan] ?? ["default"];
+  return allowed.includes(template) ? template : "default";
 }
 
 interface ThemeResolverProps {
-  page: PageType
+  page: PageType;
 }
 
 export function ThemeResolver({ page }: ThemeResolverProps) {
-  const { slug } = useParams<{ slug: string }>()
-  const { data, isLoading, error } = useBarbershop(slug ?? '')
+  const { slug } = useParams<{ slug: string }>();
+  const { data, isLoading, error } = useBarbershop(slug ?? "");
 
   useEffect(() => {
     document.documentElement.classList.toggle(
-      'dark',
+      "dark",
       Boolean(data?.style.theme_is_dark),
-    )
-  }, [data?.style.theme_is_dark])
+    );
+  }, [data?.style.theme_is_dark]);
 
-  if (isLoading) return <ThemeLoadingFallback />
-  if (error || !data) return <NotFoundPage />
+  if (isLoading) return <ThemeLoadingFallback />;
+  if (error || !data) return <NotFoundPage />;
 
-  const resolvedTemplate = resolveTemplate(data.template, data.plan)
-  const Page = THEMES[resolvedTemplate][page]
+  const resolvedTemplate = resolveTemplate(data.template, data.plan);
+  const Page = THEMES[resolvedTemplate][page];
 
   return (
-    <CartProvider slug={slug ?? ''}>
+    <CartProvider slug={slug ?? ""}>
       <StyleProvider
         primaryColor={data.style.primary_color}
         textButtonColor={data.style.text_button_color}
@@ -83,7 +83,7 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
         </BarbershopDataProvider>
       </StyleProvider>
     </CartProvider>
-  )
+  );
 }
 
 function ThemeLoadingFallback() {
@@ -94,5 +94,5 @@ function ThemeLoadingFallback() {
         <span className="text-sm text-neutral-500">Carregando...</span>
       </div>
     </div>
-  )
+  );
 }

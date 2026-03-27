@@ -3,7 +3,7 @@ import type { Barber } from "../../../../../types";
 import type { ServiceSelection } from "../../../../../types";
 import { getTimePeriod } from "../../../../../../utils/format-time";
 import { PERIOD_LABELS } from "../../../../../types";
-import { useStyle } from "../../../../../../contexts/style-context";
+import { useStyle } from "../../../../../../contexts/style-context/style-context";
 
 interface SlotWithStatus {
   time: string;
@@ -106,7 +106,10 @@ export function TimeSlots({
                       }`}
                       style={
                         isSelected && primaryColor
-                          ? { backgroundColor: primaryColor, color: textButtonColor }
+                          ? {
+                              backgroundColor: primaryColor,
+                              color: textButtonColor,
+                            }
                           : undefined
                       }
                     >

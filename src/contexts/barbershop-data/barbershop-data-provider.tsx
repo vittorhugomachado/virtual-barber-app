@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import type { BarbershopPageProps } from "../themes/types";
-import { BarbershopDataContext } from "./barbershop-data/barbershop-data-context";
+import type { BarbershopPageProps } from "../../themes/types";
+import { BarbershopDataContext } from "../barbershop-data/barbershop-data-context";
 
 interface BarbershopDataProviderProps {
   children: ReactNode;

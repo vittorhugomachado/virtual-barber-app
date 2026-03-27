@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import type { Barber } from "../../../../../types";
 import type { ServiceSelection } from "../../../../../types";
-import { useStyle } from "../../../../../../contexts/style-context";
+import { useStyle } from "../../../../../../contexts/style-context/style-context";
 
 interface BarberGridProps {
   eligible: Barber[];

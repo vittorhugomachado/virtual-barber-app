@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Check, Scissors } from "lucide-react";
 import { useAvailableSlots } from "../../../../../../hooks/use-available-slots";
-import { useStyle } from "../../../../../../contexts/style-context";
+import { useStyle } from "../../../../../../contexts/style-context/style-context";
 import type { Barber } from "../../../../../types";
 import { formatDuration } from "../../../../../../utils/format-duration";
 import { formatPrice } from "../../../../../../utils/format-price";

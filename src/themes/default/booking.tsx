@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
 import { useCart } from "../../hooks/use-cart";
-import { useStyle } from "../../contexts/style-context";
+import { useStyle } from "../../contexts/style-context/style-context";
 import { Navbar } from "./components/nav-bar";
 import { Footer } from "../../components/footer";
 import { StepServices } from "./components/booking/step-1/step-services";
@@ -56,11 +56,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   if (done) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar
-          isPreview={false}
-          barbershopName={props.name}
-          openingHours={props.openingHours}
-        />
+        <Navbar isPreview={false} />
         <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-20">
           <CheckCircle size={56} style={{ color: primaryColor }} />
           <div className="text-center">
@@ -69,7 +65,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
               Seu horário foi reservado com sucesso.
             </p>
           </div>
-          <div className="flex justify-center flex-wrap gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <Button
               variant="outline"
               className="rounded-full px-5 py-1"
@@ -93,11 +89,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar
-        isPreview={false}
-        barbershopName={props.name}
-        openingHours={props.openingHours}
-      />
+      <Navbar isPreview={false} />
 
       <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
         <h2 className="mb-8 text-center text-3xl font-bold">Agendar</h2>
@@ -116,7 +108,14 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
                       ? ""
                       : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
                   }`}
-                  style={i <= step ? { backgroundColor: primaryColor, color: textButtonColor } : undefined}
+                  style={
+                    i <= step
+                      ? {
+                          backgroundColor: primaryColor,
+                          color: textButtonColor,
+                        }
+                      : undefined
+                  }
                 >
                   {i < step ? "✓" : i + 1}
                 </div>
