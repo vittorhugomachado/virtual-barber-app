@@ -196,12 +196,9 @@ export interface OtherSelection {
 // ─── Agendamento ────────────────────────────────────────────────────────────
 
 export interface ServiceSlotCardProps {
-  service: Service;
-  barbers: Barber[];
-  barbershopId: string;
+  serviceId: string;
   customerId?: string | null;
   date: string;
-  openingHours: OpeningHour[];
   selection?: ServiceSelection;
   otherSelections: OtherSelection[];
   onSelect: (sel: ServiceSelection) => void;
@@ -209,12 +206,8 @@ export interface ServiceSlotCardProps {
 }
 
 export interface StepBarberTimeProps {
-  services: Service[];
-  barbers: Barber[];
-  barbershopId: string;
   customerId?: string | null;
   date: string;
-  openingHours: OpeningHour[];
   selections: Record<string, ServiceSelection>;
   onSelectionsChange: (selections: Record<string, ServiceSelection>) => void;
   onContinue: () => void;

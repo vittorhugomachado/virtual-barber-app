@@ -1,36 +1,31 @@
 import { FileText, Clock, DollarSign } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
+import { useBarbershopData } from "../../../../../contexts/barbershop-data/barbershop-data-context";
+import { useCart } from "../../../../../hooks/use-cart";
 import { ServiceSlotCard } from "./components/service-slot-card";
 import { useStyle } from "../../../../../contexts/style-context/style-context";
-import type { Service, Barber, OpeningHour } from "../../../../types";
 import type { ServiceSelection } from "../../../../types";
 import { formatDuration } from "../../../../../utils/format-duration";
 import { formatPrice } from "../../../../../utils/format-price";
 
 interface StepBarberTimeProps {
-  services: Service[];
-  barbers: Barber[];
-  barbershopId: string;
   customerId: string;
   date: string;
-  openingHours: OpeningHour[];
   selections: Record<string, ServiceSelection>;
   onSelectionsChange: (selections: Record<string, ServiceSelection>) => void;
   onContinue: () => void;
 }
 
 export function StepBarberTime({
-  services,
-  barbers,
-  barbershopId,
   customerId,
   date,
-  openingHours,
   selections,
   onSelectionsChange,
   onContinue,
 }: StepBarberTimeProps) {
   const { primaryColor, textButtonColor } = useStyle();
+  const { items: services } = useCart();
+  const { services: allServices } = useBarbershopData();
   const allSelected =
     services.length > 0 && services.every(s => !!selections[s.id]);
   const totalDuration = services.reduce(
@@ -43,14 +38,11 @@ export function StepBarberTime({
       {services.map((service, index) => (
         <ServiceSlotCard
           key={service.id}
-          service={service}
-          barbers={barbers}
-          barbershopId={barbershopId}
+          serviceId={service.id}
           customerId={customerId}
           date={date}
-          openingHours={openingHours}
           selection={selections[service.id]}
-          otherSelections={services
+          otherSelections={allServices
             .filter(s => s.id !== service.id && !!selections[s.id])
             .map(s => ({
               time: selections[s.id].time,

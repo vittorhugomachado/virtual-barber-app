@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Check, Scissors } from "lucide-react";
 import { useAvailableSlots } from "../../../../../../hooks/use-available-slots";
+import { useBarbershopData } from "../../../../../../contexts/barbershop-data/barbershop-data-context";
 import { useStyle } from "../../../../../../contexts/style-context/style-context";
 import type { Barber } from "../../../../../types";
 import { formatDuration } from "../../../../../../utils/format-duration";
@@ -15,23 +16,21 @@ import {
 } from "../../../../../../utils/format-time";
 
 export function ServiceSlotCard({
-  service,
-  barbers,
-  barbershopId,
+  serviceId,
   customerId,
   date,
-  openingHours,
   selection,
   otherSelections,
   onSelect,
   autoOpen,
 }: ServiceSlotCardProps) {
   const { primaryColor, textButtonColor } = useStyle();
+  const { id: barbershopId, openingHours, services } = useBarbershopData();
   const [open, setOpen] = useState(autoOpen ?? false);
   const [viewBarber, setViewBarber] = useState<Barber | null>(null);
 
-  const eligible = barbers.filter(b => b.serviceIds.includes(service.id));
-  const duration = service.duration_min ?? 30;
+  const service = services.find(currentService => currentService.id === serviceId);
+  const duration = service?.duration_min ?? 30;
 
   const { slots, loading } = useAvailableSlots({
     barbershopId,
@@ -57,6 +56,8 @@ export function ServiceSlotCard({
     ? getAllSlotsForDay(openingHours, date, duration)
     : [];
   const isComplete = !!selection;
+
+  if (!service) return null;
 
   function handleToggle() {
     if (!open) setViewBarber(selection?.barber ?? null);
@@ -133,7 +134,7 @@ export function ServiceSlotCard({
         <div className="border-t border-neutral-100 px-4 pt-3 pb-4 dark:border-neutral-800">
           {!viewBarber ? (
             <BarberGrid
-              eligible={eligible}
+              serviceId={service.id}
               selection={selection}
               onSelect={setViewBarber}
             />

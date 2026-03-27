@@ -155,7 +155,6 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         {step === 1 && (
           <StepDate
             selected={date}
-            openingHours={props.openingHours}
             onSelect={handleDateSelect}
             onContinue={() => setStep(2)}
           />
@@ -163,12 +162,8 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
 
         {step === 2 && date && customer && (
           <StepBarberTime
-            services={items}
-            barbers={props.barbers}
-            barbershopId={props.id}
             customerId={customer.id}
             date={date}
-            openingHours={props.openingHours}
             selections={serviceSelections}
             onSelectionsChange={setServiceSelections}
             onContinue={() => setStep(3)}

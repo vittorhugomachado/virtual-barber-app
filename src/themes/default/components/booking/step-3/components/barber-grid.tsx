@@ -1,16 +1,20 @@
 import { User } from "lucide-react";
+import { useBarbershopData } from "../../../../../../contexts/barbershop-data/barbershop-data-context";
 import type { Barber } from "../../../../../types";
 import type { ServiceSelection } from "../../../../../types";
 import { useStyle } from "../../../../../../contexts/style-context/style-context";
 
 interface BarberGridProps {
-  eligible: Barber[];
+  serviceId: string;
   selection?: ServiceSelection;
   onSelect: (barber: Barber) => void;
 }
 
-export function BarberGrid({ eligible, selection, onSelect }: BarberGridProps) {
+export function BarberGrid({ serviceId, selection, onSelect }: BarberGridProps) {
   const { primaryColor } = useStyle();
+  const { barbers } = useBarbershopData();
+  const eligible = barbers.filter(barber => barber.serviceIds.includes(serviceId));
+
   if (eligible.length === 0) {
     return (
       <p className="py-4 text-center text-sm text-neutral-400">
