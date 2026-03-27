@@ -13,7 +13,7 @@ import { CartPanel } from "./components/cart-panel";
 export default function DefaultTheme(props: BarbershopPageProps) {
   const activeBarber = props.barbers?.filter(barber => barber.is_active === true) || [];
   const hasMultipleBarbers = activeBarber.length > 1
-console.log(props.barbers)
+
   // Define as seções baseado na quantidade de barbeiros
   const getSections = () => {
     const sections = [

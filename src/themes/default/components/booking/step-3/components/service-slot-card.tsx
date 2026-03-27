@@ -42,7 +42,7 @@ export function ServiceSlotCard({
     openingHours,
     barberAvailability: viewBarber?.availability,
   });
-console.log(slots)
+
   const availableSlots = slots.filter(slot => {
     const start = timeToMinutes(slot);
     const end = start + duration;
@@ -63,7 +63,7 @@ console.log(slots)
     if (!open) setViewBarber(selection?.barber ?? null);
     setOpen(o => !o);
   }
-console.log(availableSlots)
+
   function handleTimeClick(time: string) {
     if (!viewBarber) return;
     onSelect({ barber: viewBarber, time });

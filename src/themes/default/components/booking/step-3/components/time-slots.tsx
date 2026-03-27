@@ -35,7 +35,7 @@ export function TimeSlots({
     time,
     available: availableSet.has(time),
   }));
-console.log(availableSet)
+
   const periods = [
     {
       key: "manha" as const,
