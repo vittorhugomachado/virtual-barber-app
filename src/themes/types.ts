@@ -205,8 +205,6 @@ export interface ServiceSlotCardProps {
   selection?: ServiceSelection;
   otherSelections: OtherSelection[];
   onSelect: (sel: ServiceSelection) => void;
-  primaryColor?: string;
-  textButtonColor?: string;
   autoOpen?: boolean;
 }
 
@@ -220,5 +218,4 @@ export interface StepBarberTimeProps {
   selections: Record<string, ServiceSelection>;
   onSelectionsChange: (selections: Record<string, ServiceSelection>) => void;
   onContinue: () => void;
-  primaryColor?: string;
 }

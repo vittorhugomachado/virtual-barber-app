@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { User, Calendar, Clock, Scissors } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
-import { supabase } from "../../../../../lib/supabase";
+import { useStyle } from "../../../../../contexts/style-context";
 import {
   createAppointments,
   getAppointmentErrorMessage,
@@ -19,8 +19,6 @@ interface StepConfirmProps {
   services: Service[];
   date: string;
   serviceSelections: Record<string, ServiceSelection>;
-  primaryColor?: string;
-  textButtonColor?: string;
   onSuccess: () => void;
   onBack: () => void;
 }
@@ -31,12 +29,10 @@ export function StepConfirm({
   services,
   date,
   serviceSelections,
-  primaryColor,
-  textButtonColor,
   onSuccess,
   onBack,
 }: StepConfirmProps) {
-  const { customer, setCustomer } = useAuthStore();
+  const { primaryColor, textButtonColor } = useStyle();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState(customer?.name?.trim() ?? "");

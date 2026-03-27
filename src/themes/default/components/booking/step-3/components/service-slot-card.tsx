@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Check, Scissors } from "lucide-react";
 import { useAvailableSlots } from "../../../../../../hooks/use-available-slots";
+import { useStyle } from "../../../../../../contexts/style-context";
 import type { Barber } from "../../../../../types";
 import { formatDuration } from "../../../../../../utils/format-duration";
 import { formatPrice } from "../../../../../../utils/format-price";
@@ -23,10 +24,9 @@ export function ServiceSlotCard({
   selection,
   otherSelections,
   onSelect,
-  primaryColor,
-  textButtonColor,
   autoOpen,
 }: ServiceSlotCardProps) {
+  const { primaryColor, textButtonColor } = useStyle();
   const [open, setOpen] = useState(autoOpen ?? false);
   const [viewBarber, setViewBarber] = useState<Barber | null>(null);
 
@@ -42,7 +42,6 @@ export function ServiceSlotCard({
     openingHours,
     barberAvailability: viewBarber?.availability,
   });
-
   const availableSlots = slots.filter(slot => {
     const start = timeToMinutes(slot);
     const end = start + duration;
@@ -63,7 +62,6 @@ export function ServiceSlotCard({
     if (!open) setViewBarber(selection?.barber ?? null);
     setOpen(o => !o);
   }
-
   function handleTimeClick(time: string) {
     if (!viewBarber) return;
     onSelect({ barber: viewBarber, time });
@@ -137,8 +135,6 @@ export function ServiceSlotCard({
             <BarberGrid
               eligible={eligible}
               selection={selection}
-              primaryColor={primaryColor}
-              textButtonColor={textButtonColor}
               onSelect={setViewBarber}
             />
           ) : (
@@ -147,8 +143,6 @@ export function ServiceSlotCard({
               allSlotsForDay={allSlotsForDay}
               availableSet={availableSet}
               selection={selection}
-              primaryColor={primaryColor}
-              textButtonColor={textButtonColor}
               loading={loading}
               onBack={() => setViewBarber(null)}
               onTimeClick={handleTimeClick}

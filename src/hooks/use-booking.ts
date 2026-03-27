@@ -1,6 +1,6 @@
 import { useBookingStore } from '../store/booking-store'
 import { useAuthStore } from '../store/auth-store'
-import { supabase } from '../lib/supabase'
+import { createAppointments, getAppointmentErrorMessage } from '../lib/booking-queries'
 
 export function useBooking() {
   const booking = useBookingStore()
@@ -20,23 +20,20 @@ export function useBooking() {
       return { success: false, error: 'Dados incompletos' }
     }
 
-    // monta starts_at e ends_at
+    const duration = selection.service.duration_min ?? 30
     const startsAt = new Date(`${selection.date}T${selection.time}:00`)
-    const endsAt = new Date(
-      startsAt.getTime() + (selection.service.duration_min ?? 30) * 60000
-    )
+    const endsAt = new Date(startsAt.getTime() + duration * 60000)
 
-    const { error } = await supabase.from('appointments').insert({
+    const { error } = await createAppointments([{
       barbershop_id: barbershopId,
       customer_id: customer.id,
       barber_id: selection.barber.id,
       service_id: selection.service.id,
       starts_at: startsAt.toISOString(),
       ends_at: endsAt.toISOString(),
-      status: 'scheduled',
-    })
+    }])
 
-    if (error) return { success: false, error: error.message }
+    if (error) return { success: false, error: getAppointmentErrorMessage(error) }
 
     booking.resetBooking()
     return { success: true, error: null }

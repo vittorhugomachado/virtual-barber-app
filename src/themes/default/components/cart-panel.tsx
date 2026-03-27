@@ -3,16 +3,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { useCart } from "../../../hooks/use-cart";
 import { useAuthStore } from "../../../store/auth-store";
+import { useStyle } from "../../../contexts/style-context";
 import { formatPrice } from "../../../utils/format-price";
 import { formatDuration } from "../../../utils/format-duration";
 
 interface CartPanelProps {
-  primaryColor?: string;
-  textButtonColor?: string;
   isPreview?: boolean;
 }
 
-export function CartPanel({ primaryColor, textButtonColor, isPreview }: CartPanelProps) {
+export function CartPanel({ isPreview }: CartPanelProps) {
+  const { primaryColor, textButtonColor } = useStyle();
   const { items, removeService, total, totalDuration } = useCart();
   const { isAuthenticated } = useAuthStore();
   const { slug } = useParams<{ slug: string }>();
