@@ -22,19 +22,10 @@ import { useCart } from "../../../hooks/use-cart";
 import { useStyle } from "../../../contexts/style-context";
 import { BarbershopLogo } from "./logo-text";
 import { StatusBadge } from "../../../components/status-badge";
-import type { OpeningHour } from "../../types";
+import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 
-type navBarProps = {
-  barbershopName: string;
-  isPreview: boolean;
-  openingHours: OpeningHour[];
-};
-
-export function Navbar({
-  isPreview,
-  barbershopName,
-  openingHours,
-}: navBarProps) {
+export function Navbar({ isPreview }: { isPreview: boolean }) {
+  const { name, openingHours } = useBarbershopData();
   const { primaryColor, textButtonColor } = useStyle();
   const { isAuthenticated, signOut } = useAuth();
   const { slug } = useParams<{ slug: string }>();
@@ -99,10 +90,7 @@ export function Navbar({
         <div className="relative h-full w-full">
           <div className="mx-auto flex h-14 items-center justify-between">
             {/* logo — desktop */}
-            <BarbershopLogo
-              name={barbershopName}
-              className="hidden text-3xl md:block"
-            />
+            <BarbershopLogo name={name} className="hidden text-3xl md:block" />
 
             {/* desktop nav */}
             <nav className="hidden items-center gap-6 md:flex">
@@ -128,7 +116,7 @@ export function Navbar({
 
             {/* logo + status + menu — mobile */}
             <div className="flex flex-1 items-center justify-between md:hidden">
-              <BarbershopLogo name={barbershopName} className="text-2xl" />
+              <BarbershopLogo name={name} className="text-2xl" />
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
                   <button className="p-2 text-neutral-600 dark:text-neutral-400">
@@ -144,10 +132,7 @@ export function Navbar({
                     Links de navegação do site
                   </SheetDescription>
                   <div className="flex flex-col gap-1 pl-4">
-                    <BarbershopLogo
-                      name={barbershopName}
-                      className="text-2xl"
-                    />
+                    <BarbershopLogo name={name} className="text-2xl" />
                     <StatusBadge openingHours={openingHours} />
                   </div>
                   <nav className="mx-auto flex max-w-40 flex-col gap-4">

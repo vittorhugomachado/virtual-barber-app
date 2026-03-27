@@ -4,6 +4,7 @@ import { useBarbershop } from '../hooks/use-barbershop'
 import { NotFoundPage } from '../pages/not-found-page'
 import { CartProvider } from '../contexts/cart-context'
 import { StyleProvider } from '../contexts/style-context'
+import { BarbershopDataProvider } from '../contexts/barbershop-data-provider'
 
 export type PageType = 'home' | 'auth' | 'booking' | 'profile'
 
@@ -75,9 +76,11 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
         primaryColor={data.style.primary_color}
         textButtonColor={data.style.text_button_color}
       >
-        <Suspense fallback={<ThemeLoadingFallback />}>
-          <Page {...data} />
-        </Suspense>
+        <BarbershopDataProvider value={data}>
+          <Suspense fallback={<ThemeLoadingFallback />}>
+            <Page {...data} />
+          </Suspense>
+        </BarbershopDataProvider>
       </StyleProvider>
     </CartProvider>
   )

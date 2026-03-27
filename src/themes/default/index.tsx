@@ -11,8 +11,9 @@ import { SectionNav } from "./components/section-nav";
 import { CartPanel } from "./components/cart-panel";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
-  const activeBarber = props.barbers?.filter(barber => barber.is_active === true) || [];
-  const hasMultipleBarbers = activeBarber.length > 1
+  const activeBarber =
+    props.barbers?.filter(barber => barber.is_active === true) || [];
+  const hasMultipleBarbers = activeBarber.length > 1;
   // Define as seções baseado na quantidade de barbeiros
   const getSections = () => {
     const sections = [
@@ -20,7 +21,6 @@ export default function DefaultTheme(props: BarbershopPageProps) {
       { id: "horarios", label: "Horários" },
       { id: "localizacao", label: "Localização" },
     ];
-
     // Se tiver mais de um barbeiro, insere a seção "Equipe" depois de "Serviços"
     if (hasMultipleBarbers) {
       sections.splice(1, 0, { id: "equipe", label: "Equipe" });
@@ -33,11 +33,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
 
   return (
     <div className="relative">
-      <Navbar
-        isPreview={false}
-        barbershopName={props.name}
-        openingHours={props.openingHours}
-      />
+      <Navbar isPreview={false} />
       {props.phone && <WhatsappButton linkWhatsapp={props?.phone} />}
       <SectionNav sections={sections} />
       <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
