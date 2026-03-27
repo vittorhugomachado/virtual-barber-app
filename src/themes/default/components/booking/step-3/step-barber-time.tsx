@@ -1,6 +1,7 @@
 import { FileText, Clock, DollarSign } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { ServiceSlotCard } from "./components/service-slot-card";
+import { useStyle } from "../../../../../contexts/style-context";
 import type { Service, Barber, OpeningHour } from "../../../../types";
 import type { ServiceSelection } from "../../../../types";
 import { formatDuration } from "../../../../../utils/format-duration";
@@ -16,8 +17,6 @@ interface StepBarberTimeProps {
   selections: Record<string, ServiceSelection>;
   onSelectionsChange: (selections: Record<string, ServiceSelection>) => void;
   onContinue: () => void;
-  primaryColor?: string;
-  textButtonColor?: string;
 }
 
 export function StepBarberTime({
@@ -30,9 +29,8 @@ export function StepBarberTime({
   selections,
   onSelectionsChange,
   onContinue,
-  primaryColor,
-  textButtonColor,
 }: StepBarberTimeProps) {
+  const { primaryColor, textButtonColor } = useStyle();
   const allSelected = services.length > 0 && services.every(s => !!selections[s.id]);
   const totalDuration = services.reduce((acc, s) => acc + (s.duration_min ?? 0), 0);
   const total = services.reduce((acc, s) => acc + (s.price ?? 0), 0);
@@ -57,8 +55,6 @@ export function StepBarberTime({
           onSelect={sel =>
             onSelectionsChange({ ...selections, [service.id]: sel })
           }
-          primaryColor={primaryColor}
-          textButtonColor={textButtonColor}
           autoOpen={index === 0}
         />
       ))}

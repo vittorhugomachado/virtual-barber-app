@@ -13,7 +13,6 @@ import { CartPanel } from "./components/cart-panel";
 export default function DefaultTheme(props: BarbershopPageProps) {
   const activeBarber = props.barbers?.filter(barber => barber.is_active === true) || [];
   const hasMultipleBarbers = activeBarber.length > 1
-console.log(props.barbers)
   // Define as seções baseado na quantidade de barbeiros
   const getSections = () => {
     const sections = [
@@ -36,16 +35,11 @@ console.log(props.barbers)
     <div className="relative">
       <Navbar
         isPreview={false}
-        primaryColor={props.style.primary_color}
-        textButtonColor={props.style.text_button_color}
         barbershopName={props.name}
         openingHours={props.openingHours}
       />
       {props.phone && <WhatsappButton linkWhatsapp={props?.phone} />}
-      <SectionNav
-        primaryColor={props.style.primary_color}
-        sections={sections} // <-- passa as seções dinâmicas
-      />
+      <SectionNav sections={sections} />
       <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
         <Gallery images={props.gallery} barbershopName={props.name} />
         <section
@@ -53,11 +47,7 @@ console.log(props.barbers)
           className="mt-8 flex flex-col gap-6 lg:mt-16 lg:flex-row lg:items-start"
         >
           <Services services={props.services} isPreview={props.isPreview} />
-          <CartPanel
-            primaryColor={props.style.primary_color}
-            textButtonColor={props.style.text_button_color}
-            isPreview={props.isPreview}
-          />
+          <CartPanel isPreview={props.isPreview} />
         </section>
         {hasMultipleBarbers && <Team barbers={props.barbers} />}
         <BarberShopHours openingHours={props.openingHours} />

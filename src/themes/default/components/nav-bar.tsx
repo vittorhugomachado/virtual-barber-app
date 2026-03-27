@@ -19,6 +19,7 @@ import {
 } from "../../../components/ui/dialog";
 import { useAuth } from "../../../hooks/use-auth";
 import { useCart } from "../../../hooks/use-cart";
+import { useStyle } from "../../../contexts/style-context";
 import { BarbershopLogo } from "./logo-text";
 import { StatusBadge } from "../../../components/status-badge";
 import type { OpeningHour } from "../../types";
@@ -26,18 +27,15 @@ import type { OpeningHour } from "../../types";
 type navBarProps = {
   barbershopName: string;
   isPreview: boolean;
-  primaryColor?: string;
-  textButtonColor?: string;
   openingHours: OpeningHour[];
 };
 
 export function Navbar({
   isPreview,
-  primaryColor,
-  textButtonColor,
   barbershopName,
   openingHours,
 }: navBarProps) {
+  const { primaryColor, textButtonColor } = useStyle();
   const { isAuthenticated, signOut } = useAuth();
   const { slug } = useParams<{ slug: string }>();
   const location = useLocation();

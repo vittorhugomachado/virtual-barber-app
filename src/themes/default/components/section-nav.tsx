@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useStyle } from "../../../contexts/style-context";
 
 type Section = {
   id: string;
@@ -6,11 +7,11 @@ type Section = {
 };
 
 type SectionNavProps = {
-  primaryColor: string;
-  sections: Section[]; // <-- recebe as seções dinamicamente
+  sections: Section[];
 };
 
-export function SectionNav({ primaryColor, sections }: SectionNavProps) {
+export function SectionNav({ sections }: SectionNavProps) {
+  const { primaryColor } = useStyle();
   const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {

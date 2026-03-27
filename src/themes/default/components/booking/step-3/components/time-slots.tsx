@@ -3,6 +3,8 @@ import type { Barber } from "../../../../../types";
 import type { ServiceSelection } from "../../../../../types";
 import { getTimePeriod } from "../../../../../../utils/format-time";
 import { PERIOD_LABELS } from "../../../../../types";
+import { useStyle } from "../../../../../../contexts/style-context";
+
 interface SlotWithStatus {
   time: string;
   available: boolean;
@@ -13,8 +15,6 @@ interface TimeSlotsProps {
   allSlotsForDay: string[];
   availableSet: Set<string>;
   selection?: ServiceSelection;
-  primaryColor?: string;
-  textButtonColor?: string;
   loading: boolean;
   onBack: () => void;
   onTimeClick: (time: string) => void;
@@ -25,17 +25,15 @@ export function TimeSlots({
   allSlotsForDay,
   availableSet,
   selection,
-  primaryColor,
-  textButtonColor,
   loading,
   onBack,
   onTimeClick,
 }: TimeSlotsProps) {
+  const { primaryColor, textButtonColor } = useStyle();
   const allSlotsWithStatus: SlotWithStatus[] = allSlotsForDay.map(time => ({
     time,
     available: availableSet.has(time),
   }));
-console.log(availableSet)
   const periods = [
     {
       key: "manha" as const,

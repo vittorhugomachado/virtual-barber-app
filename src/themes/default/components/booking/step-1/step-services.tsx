@@ -1,23 +1,18 @@
 import { Check, Clock, DollarSign, Plus, Scissors } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { useCart } from "../../../../../hooks/use-cart";
+import { useStyle } from "../../../../../contexts/style-context";
 import type { Service } from "../../../../types";
 import { formatPrice } from "../../../../../utils/format-price";
 import { formatDuration } from "../../../../../utils/format-duration";
 
 interface StepServicesProps {
   services: Service[];
-  primaryColor?: string;
-  textButtonColor?: string;
   onContinue: () => void;
 }
 
-export function StepServices({
-  services,
-  primaryColor,
-  textButtonColor,
-  onContinue,
-}: StepServicesProps) {
+export function StepServices({ services, onContinue }: StepServicesProps) {
+  const { primaryColor, textButtonColor } = useStyle();
   const { items, addService, removeService, hasService, total, totalDuration } =
     useCart();
 

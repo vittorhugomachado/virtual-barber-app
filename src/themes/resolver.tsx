@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useBarbershop } from '../hooks/use-barbershop'
 import { NotFoundPage } from '../pages/not-found-page'
 import { CartProvider } from '../contexts/cart-context'
+import { StyleProvider } from '../contexts/style-context'
 
 export type PageType = 'home' | 'auth' | 'booking' | 'profile'
 
@@ -70,9 +71,14 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
 
   return (
     <CartProvider slug={slug ?? ''}>
-      <Suspense fallback={<ThemeLoadingFallback />}>
-        <Page {...data} />
-      </Suspense>
+      <StyleProvider
+        primaryColor={data.style.primary_color}
+        textButtonColor={data.style.text_button_color}
+      >
+        <Suspense fallback={<ThemeLoadingFallback />}>
+          <Page {...data} />
+        </Suspense>
+      </StyleProvider>
     </CartProvider>
   )
 }
