@@ -68,7 +68,6 @@ export function ServiceSlotCard({
     setOpen(false);
     setViewBarber(null);
   }
-
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
       <button

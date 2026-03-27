@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { User, Calendar, Clock, Scissors } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
-import { createAppointments } from "../../../../../lib/booking-queries";
+import {
+  createAppointments,
+  getAppointmentErrorMessage,
+} from "../../../../../lib/booking-queries";
 import type { Service } from "../../../../types";
 import type { ServiceSelection } from "../../../../types";
 import { formatPrice } from "../../../../../utils/format-price";
@@ -39,40 +42,39 @@ export function StepConfirm({
   async function handleConfirm() {
     setLoading(true);
     setError(null);
-
-    const appointments = services.map(service => {
-      const sel = serviceSelections[service.id];
-      const duration = service.duration_min ?? 30;
-      const starts = `${date}T${sel.time}:00`;
-      const ends = `${date}T${addMinutes(sel.time, duration)}:00`;
-      return {
-        barbershop_id: barbershopId,
-        barber_id: sel.barber.id,
-        service_id: service.id,
-        customer_id: customerId,
-        starts_at: starts,
-        ends_at: ends,
-      };
-    });
-
-    const { error: err } = await createAppointments(appointments);
-    if (err) {
-      console.error("Erro ao confirmar agendamento", {
-        message: err.message,
-        details: err.details,
-        hint: err.hint,
-        code: err.code,
-        appointments,
+    try {
+      const appointments = services.map(service => {
+        const sel = serviceSelections[service.id];
+        const duration = service.duration_min ?? 30;
+        const starts = `${date}T${sel.time}:00`;
+        const ends = `${date}T${addMinutes(sel.time, duration)}:00`;
+        return {
+          barbershop_id: barbershopId,
+          barber_id: sel.barber.id,
+          service_id: service.id,
+          customer_id: customerId,
+          starts_at: starts,
+          ends_at: ends,
+        };
       });
-      setError(
-        err.message || "Erro ao confirmar agendamento. Tente novamente.",
-      );
-      setLoading(false);
-      return;
-    }
 
-    setLoading(false);
-    onSuccess();
+      const { error: err } = await createAppointments(appointments);
+      if (err) {
+        console.error("Erro ao confirmar agendamento", {
+          message: err.message,
+          details: err.details,
+          hint: err.hint,
+          code: err.code,
+          appointments,
+        });
+        setError(getAppointmentErrorMessage(err));
+        return;
+      }
+
+      onSuccess();
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

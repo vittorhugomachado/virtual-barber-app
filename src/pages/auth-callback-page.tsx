@@ -16,49 +16,28 @@ export function AuthCallbackPage() {
       if (handled) return;
       handled = true;
 
-      let { data: customerData } = await supabase
-        .from("customers")
-        .select("*")
-        .eq("auth_user_id", user.id)
-        .maybeSingle();
-
-      if (!customerData) {
-        const { data: inserted, error: insertError } = await supabase
-          .from("customers")
-          .insert({
+      const { data: customerData } = await supabase
+        .from("customers_auth")
+        .upsert(
+          {
             auth_user_id: user.id,
-            email: user.email,
             name:
               user.user_metadata?.full_name ??
               user.user_metadata?.name ??
-              user.email?.split("@")[0] ??
-              "Usuário",
-            phone: null,
-          })
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error("[auth-callback] erro ao inserir customer:", insertError);
-          const { data: existing } = await supabase
-            .from("customers")
-            .select("*")
-            .eq("auth_user_id", user.id)
-            .maybeSingle();
-          customerData = existing;
-        } else {
-          customerData = inserted;
-        }
-      }
+              "",
+          },
+          { onConflict: "auth_user_id", ignoreDuplicates: true },
+        )
+        .select("id, name, phone, auth_user_id")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
 
       if (customerData) {
         const c: Customer = {
           id: customerData.id,
           name: customerData.name,
           phone: customerData.phone,
-          email: customerData.email,
           auth_user_id: customerData.auth_user_id,
-          barbershop_id: customerData.barbershop_id,
         };
         setCustomer(c);
         setLocalCustomer(c);
@@ -92,7 +71,6 @@ export function AuthCallbackPage() {
       {customer ? (
         <div className="text-center">
           <p className="text-lg font-semibold">{customer.name}</p>
-          <p className="text-sm text-neutral-500">{customer.email}</p>
           {customer.phone && (
             <p className="text-sm text-neutral-500">{customer.phone}</p>
           )}

@@ -57,8 +57,8 @@ export function useAvailableSlots({
 
       const appointments = await getAppointmentsForBarberOnDate(
         barbershopId,
-        barberId!,
-        date!,
+        barberId,
+        date,
       );
 
       const now = new Date();

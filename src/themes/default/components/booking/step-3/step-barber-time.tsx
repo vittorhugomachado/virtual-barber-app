@@ -34,7 +34,6 @@ export function StepBarberTime({
   const allSelected = services.length > 0 && services.every(s => !!selections[s.id]);
   const totalDuration = services.reduce((acc, s) => acc + (s.duration_min ?? 0), 0);
   const total = services.reduce((acc, s) => acc + (s.price ?? 0), 0);
-
   return (
     <div className="flex flex-col gap-4">
       {services.map((service, index) => (

@@ -136,7 +136,6 @@ export async function getBarbershopBySlug(
           ),
         };
       });
-
     return {
       id: barbershop.id,
       name: barbershop.name,

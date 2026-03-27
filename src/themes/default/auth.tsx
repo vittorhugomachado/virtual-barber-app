@@ -23,13 +23,25 @@ export default function DefaultAuthPage() {
   const from = searchParams.get("from");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        setCustomer(session.user)
+        const u = session.user;
+        const { data: customerAuth } = await supabase
+          .from("customers_auth")
+          .select("id, name, phone")
+          .eq("auth_user_id", u.id)
+          .maybeSingle();
+        setCustomer({
+          id: customerAuth?.id ?? u.id,
+          name: customerAuth?.name || (u.user_metadata?.full_name ?? u.user_metadata?.name ?? ""),
+          phone: customerAuth?.phone ?? u.phone?.replace(/^55/, "") ?? "",
+          auth_user_id: u.id,
+          barbershop_id: null,
+        });
         navigate(`/${slug}`, { replace: true });
       }
     });
-  }, [slug, navigate]);
+  }, [slug, navigate, setCustomer]);
 
   function toE164(formatted: string) {
     const digits = formatted.replace(/\D/g, "");
@@ -37,34 +49,33 @@ export default function DefaultAuthPage() {
   }
 
   async function handleSendOtp() {
-  setError("");
-  const digits = phone.replace(/\D/g, "");
-  
-  if (digits.length !== 11) {
-    setError("Digite um número de celular válido com DDD.");
-    return;
-  }
+    setError("");
+    const digits = phone.replace(/\D/g, "");
 
-  setLoading(true);
-  try {
-    const e164Phone = toE164(phone);
-
-    const { error } = await supabase.auth.signInWithOtp({
-      phone: e164Phone,
-      options: { channel: OTP_CHANNEL },
-    });
-
-    if (error) {
-
-      setError(error.message);
+    if (digits.length !== 11) {
+      setError("Digite um número de celular válido com DDD.");
       return;
     }
 
-    setStep("otp");
-  } finally {
-    setLoading(false);
+    setLoading(true);
+    try {
+      const e164Phone = toE164(phone);
+
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: e164Phone,
+        options: { channel: OTP_CHANNEL },
+      });
+
+      if (error) {
+        setError(error.message);
+        return;
+      }
+
+      setStep("otp");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   async function handleVerifyOtp() {
     setError("");
@@ -93,30 +104,35 @@ export default function DefaultAuthPage() {
 
       const user = session.user;
 
-      await supabase.from("profiles").upsert(
-        { id: user.id, role: "customer" },
-        { onConflict: "id", ignoreDuplicates: true }
+      await supabase
+        .from("profiles")
+        .upsert(
+          { id: user.id, role: "customer" },
+          { onConflict: "id", ignoreDuplicates: true },
+        );
+
+      await supabase.from("customers_auth").upsert(
+        {
+          auth_user_id: user.id,
+          phone: user.phone?.replace(/^55/, "") ?? null,
+          name: "",
+        },
+        { onConflict: "auth_user_id", ignoreDuplicates: true },
       );
 
-      if (data?.id) {
-        const { data: existing } = await supabase
-          .from("customers")
-          .select("id")
-          .eq("auth_user_id", user.id)
-          .eq("barbershop_id", data.id)
-          .maybeSingle();
+      const { data: customerAuth } = await supabase
+        .from("customers_auth")
+        .select("id, name, phone")
+        .eq("auth_user_id", user.id)
+        .single();
 
-        if (!existing) {
-          await supabase.from("customers").insert({
-            barbershop_id: data.id,
-            auth_user_id: user.id,
-            phone: user.phone,
-            name: null,
-          });
-        }
-      }
-
-      setCustomer(user);
+      setCustomer({
+        id: customerAuth?.id ?? user.id,
+        name: customerAuth?.name || (user.user_metadata?.full_name ?? user.user_metadata?.name ?? ""),
+        phone: customerAuth?.phone ?? user.phone?.replace(/^55/, "") ?? "",
+        auth_user_id: user.id,
+        barbershop_id: data?.id ?? null,
+      });
       navigate(`/${slug}`, { replace: true });
     } finally {
       setLoading(false);
@@ -170,7 +186,9 @@ export default function DefaultAuthPage() {
               disabled={isLoading || phone.replace(/\D/g, "").length < 10}
             >
               <FaWhatsapp size={16} />
-              {OTP_CHANNEL === "sms" ? "Enviar código por SMS" : "Enviar código pelo WhatsApp"}
+              {OTP_CHANNEL === "sms"
+                ? "Enviar código por SMS"
+                : "Enviar código pelo WhatsApp"}
             </Button>
           </div>
         ) : (

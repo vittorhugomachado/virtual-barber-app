@@ -179,7 +179,6 @@ export interface Customer {
   id: string;
   name: string;
   phone: string;
-  email?: string | null;
   auth_user_id?: string | null;
   barbershop_id?: string | null;
 }

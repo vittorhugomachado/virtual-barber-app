@@ -1,5 +1,16 @@
 import { supabase } from "./supabase";
 
+function getUtcRangeForLocalDate(date: string) {
+  const start = new Date(`${date}T00:00:00`);
+  const end = new Date(`${date}T00:00:00`);
+  end.setDate(end.getDate() + 1);
+
+  return {
+    start: start.toISOString(),
+    end: end.toISOString(),
+  };
+}
+
 export async function getCurrentCustomer() {
   const {
     data: { user },
@@ -8,8 +19,8 @@ export async function getCurrentCustomer() {
   if (!user) return { data: null, error: null };
 
   const { data, error } = await supabase
-    .from("customers")
-    .select("id, name, phone, email, created_at")
+    .from("customers_auth")
+    .select("id, name, phone, created_at")
     .eq("auth_user_id", user.id)
     .maybeSingle();
 
@@ -50,13 +61,30 @@ export async function getAppointmentsForBarberOnDate(
   barberId: string,
   date: string,
 ) {
-  const { data } = await supabase
+  const { start, end } = getUtcRangeForLocalDate(date);
+
+  const { data, error } = await supabase
     .from("appointments")
     .select("starts_at, ends_at, status")
     .eq("barbershop_id", barbershopId)
     .eq("barber_id", barberId)
-    .gte("starts_at", `${date}T00:00:00`)
-    .lte("starts_at", `${date}T23:59:59`);
+    .gte("starts_at", start)
+    .lt("starts_at", end);
+
+  if (error) {
+    console.error("Erro ao buscar appointments do barbeiro", {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+      barbershopId,
+      barberId,
+      date,
+      start,
+      end,
+    });
+    return [];
+  }
 
   return (data ?? []).filter(
     a =>
@@ -81,4 +109,20 @@ export async function createAppointments(
     .insert(appointments.map(a => ({ ...a, status: "scheduled" })));
 
   return { error };
+}
+
+export function getAppointmentErrorMessage(error: {
+  code?: string | null;
+  message?: string | null;
+  details?: string | null;
+}) {
+  if (error.code === "23P01") {
+    return "Esse horário acabou de ser ocupado. Escolha outro horário e tente novamente.";
+  }
+
+  if (error.code === "23514") {
+    return "O horário informado é inválido para esse agendamento.";
+  }
+
+  return error.message || "Erro ao confirmar agendamento. Tente novamente.";
 }
