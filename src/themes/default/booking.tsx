@@ -163,6 +163,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
             services={items}
             barbers={props.barbers}
             barbershopId={props.id}
+            customerId={customer?.id}
             date={date}
             openingHours={props.openingHours}
             selections={serviceSelections}

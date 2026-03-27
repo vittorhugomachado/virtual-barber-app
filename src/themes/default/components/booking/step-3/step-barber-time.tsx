@@ -10,6 +10,7 @@ interface StepBarberTimeProps {
   services: Service[];
   barbers: Barber[];
   barbershopId: string;
+  customerId: string;
   date: string;
   openingHours: OpeningHour[];
   selections: Record<string, ServiceSelection>;
@@ -23,6 +24,7 @@ export function StepBarberTime({
   services,
   barbers,
   barbershopId,
+  customerId,
   date,
   openingHours,
   selections,
@@ -42,6 +44,7 @@ export function StepBarberTime({
           service={service}
           barbers={barbers}
           barbershopId={barbershopId}
+          customerId={customerId}
           date={date}
           openingHours={openingHours}
           selection={selections[service.id]}

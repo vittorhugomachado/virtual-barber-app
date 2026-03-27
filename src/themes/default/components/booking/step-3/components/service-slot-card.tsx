@@ -17,6 +17,7 @@ export function ServiceSlotCard({
   service,
   barbers,
   barbershopId,
+  customerId,
   date,
   openingHours,
   selection,
@@ -35,12 +36,13 @@ export function ServiceSlotCard({
   const { slots, loading } = useAvailableSlots({
     barbershopId,
     barberId: viewBarber?.id ?? null,
+    customerId,
     date,
     totalDuration: duration,
     openingHours,
     barberAvailability: viewBarber?.availability,
   });
-
+console.log(slots)
   const availableSlots = slots.filter(slot => {
     const start = timeToMinutes(slot);
     const end = start + duration;
@@ -61,7 +63,7 @@ export function ServiceSlotCard({
     if (!open) setViewBarber(selection?.barber ?? null);
     setOpen(o => !o);
   }
-
+console.log(availableSlots)
   function handleTimeClick(time: string) {
     if (!viewBarber) return;
     onSelect({ barber: viewBarber, time });

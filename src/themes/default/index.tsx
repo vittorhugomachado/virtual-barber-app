@@ -11,8 +11,9 @@ import { SectionNav } from "./components/section-nav";
 import { CartPanel } from "./components/cart-panel";
 
 export default function DefaultTheme(props: BarbershopPageProps) {
-  const hasMultipleBarbers = props.barbers && props.barbers.length > 1;
-
+  const activeBarber = props.barbers?.filter(barber => barber.is_active === true) || [];
+  const hasMultipleBarbers = activeBarber.length > 1
+console.log(props.barbers)
   // Define as seções baseado na quantidade de barbeiros
   const getSections = () => {
     const sections = [
@@ -58,7 +59,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
             isPreview={props.isPreview}
           />
         </section>
-        <Team barbers={props.barbers} />
+        {hasMultipleBarbers && <Team barbers={props.barbers} />}
         <BarberShopHours openingHours={props.openingHours} />
         <Location address={props.address} phone={props.phone} />
       </main>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import {
@@ -40,11 +40,13 @@ export function Navbar({
 }: navBarProps) {
   const { isAuthenticated, signOut } = useAuth();
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
   const { items } = useCart();
   const navigate = useNavigate();
   const cartCount = items.length;
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const shouldHideScheduleButton = location.pathname.includes("agendar");
 
   function handleAgendar() {
     if (isPreview) return;
@@ -83,20 +85,12 @@ export function Navbar({
           </button>
         </>
       ) : (
-        <>
-          <button
-            onClick={() => setShowLogoutDialog(true)}
-            className="text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-          >
-            Sair
-          </button>
-          <button
-            onClick={() => !isPreview && navigate(`/${slug}/entrar`)}
-            className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-          >
-            Entrar
-          </button>
-        </>
+        <button
+          onClick={() => !isPreview && navigate(`/${slug}/entrar`)}
+          className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+        >
+          Entrar
+        </button>
       )}
     </>
   );
@@ -115,21 +109,23 @@ export function Navbar({
             {/* desktop nav */}
             <nav className="hidden items-center gap-6 md:flex">
               {navLinks}
-              <Button
-                onClick={handleAgendar}
-                className="relative rounded-full px-5 text-sm"
-                style={{
-                  backgroundColor: primaryColor,
-                  color: textButtonColor,
-                }}
-              >
-                Agendar
-                {cartCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
+              {!shouldHideScheduleButton && (
+                <Button
+                  onClick={handleAgendar}
+                  className="relative rounded-full px-5 text-sm"
+                  style={{
+                    backgroundColor: primaryColor,
+                    color: textButtonColor,
+                  }}
+                >
+                  Agendar
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
+                      {cartCount}
+                    </span>
+                  )}
+                </Button>
+              )}
             </nav>
 
             {/* logo + status + menu — mobile */}
@@ -157,21 +153,23 @@ export function Navbar({
                     <StatusBadge openingHours={openingHours} />
                   </div>
                   <nav className="mx-auto flex max-w-40 flex-col gap-4">
-                    <Button
-                      onClick={handleAgendar}
-                      className="relative rounded-full px-5 text-sm"
-                      style={{
-                        backgroundColor: primaryColor,
-                        color: textButtonColor,
-                      }}
-                    >
-                      Agendar
-                      {cartCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
-                          {cartCount}
-                        </span>
-                      )}
-                    </Button>
+                    {!shouldHideScheduleButton && (
+                      <Button
+                        onClick={handleAgendar}
+                        className="relative rounded-full px-5 text-sm"
+                        style={{
+                          backgroundColor: primaryColor,
+                          color: textButtonColor,
+                        }}
+                      >
+                        Agendar
+                        {cartCount > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
+                            {cartCount}
+                          </span>
+                        )}
+                      </Button>
+                    )}
                     {navLinks}
                   </nav>
                 </SheetContent>

@@ -199,6 +199,7 @@ export interface ServiceSlotCardProps {
   service: Service;
   barbers: Barber[];
   barbershopId: string;
+  customerId?: string | null;
   date: string;
   openingHours: OpeningHour[];
   selection?: ServiceSelection;
@@ -213,6 +214,7 @@ export interface StepBarberTimeProps {
   services: Service[];
   barbers: Barber[];
   barbershopId: string;
+  customerId?: string | null;
   date: string;
   openingHours: OpeningHour[];
   selections: Record<string, ServiceSelection>;

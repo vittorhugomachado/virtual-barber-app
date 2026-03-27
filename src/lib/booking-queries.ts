@@ -11,6 +11,50 @@ function getUtcRangeForLocalDate(date: string) {
   };
 }
 
+function isActiveAppointmentStatus(status: string) {
+  return !["cancelled_by_customer", "cancelled_by_barbershop", "no_show"].includes(
+    status,
+  );
+}
+
+async function getAppointmentsOnDateByField(
+  field: "barber_id" | "customer_id",
+  entityId: string,
+  barbershopId: string,
+  date: string,
+) {
+  const { start, end } = getUtcRangeForLocalDate(date);
+
+  const { data, error } = await supabase
+    .from("appointments")
+    .select("starts_at, ends_at, status")
+    .eq("barbershop_id", barbershopId)
+    .eq(field, entityId)
+    .gte("starts_at", start)
+    .lt("starts_at", end);
+
+  if (error) {
+    console.error(`Erro ao buscar appointments por ${field}`, {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+      barbershopId,
+      entityId,
+      date,
+      start,
+      end,
+    });
+    return [];
+  }
+
+  return (data ?? []).filter(a => isActiveAppointmentStatus(a.status)) as {
+    starts_at: string;
+    ends_at: string;
+    status: string;
+  }[];
+}
+
 export async function getCurrentCustomer() {
   const {
     data: { user },
@@ -61,37 +105,20 @@ export async function getAppointmentsForBarberOnDate(
   barberId: string,
   date: string,
 ) {
-  const { start, end } = getUtcRangeForLocalDate(date);
+  return getAppointmentsOnDateByField("barber_id", barberId, barbershopId, date);
+}
 
-  const { data, error } = await supabase
-    .from("appointments")
-    .select("starts_at, ends_at, status")
-    .eq("barbershop_id", barbershopId)
-    .eq("barber_id", barberId)
-    .gte("starts_at", start)
-    .lt("starts_at", end);
-
-  if (error) {
-    console.error("Erro ao buscar appointments do barbeiro", {
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-      code: error.code,
-      barbershopId,
-      barberId,
-      date,
-      start,
-      end,
-    });
-    return [];
-  }
-
-  return (data ?? []).filter(
-    a =>
-      !["cancelled_by_customer", "cancelled_by_barbershop", "no_show"].includes(
-        a.status,
-      ),
-  ) as { starts_at: string; ends_at: string; status: string }[];
+export async function getAppointmentsForCustomerOnDate(
+  barbershopId: string,
+  customerId: string,
+  date: string,
+) {
+  return getAppointmentsOnDateByField(
+    "customer_id",
+    customerId,
+    barbershopId,
+    date,
+  );
 }
 
 export async function createAppointments(
