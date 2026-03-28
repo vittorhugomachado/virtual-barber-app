@@ -19,7 +19,7 @@ export function ServiceSlotCard({
   serviceId,
   customerId,
   date,
-  selection,
+  selection, //OBJETO DE BARBEIRO (BARBER) E HORÁRIO (TIME) SELECIONADOS
   otherSelections,
   onSelect,
   autoOpen,
@@ -28,10 +28,9 @@ export function ServiceSlotCard({
   const { id: barbershopId, openingHours, services } = useBarbershopData();
   const [open, setOpen] = useState(autoOpen ?? false);
   const [viewBarber, setViewBarber] = useState<Barber | null>(null);
-
   const service = services.find(currentService => currentService.id === serviceId);
   const duration = service?.duration_min ?? 30;
-
+console.log(selection)
   const { slots, loading } = useAvailableSlots({
     barbershopId,
     barberId: viewBarber?.id ?? null,
@@ -41,6 +40,7 @@ export function ServiceSlotCard({
     openingHours,
     barberAvailability: viewBarber?.availability,
   });
+
   const availableSlots = slots.filter(slot => {
     const start = timeToMinutes(slot);
     const end = start + duration;
@@ -50,7 +50,7 @@ export function ServiceSlotCard({
       return start < otherEnd && end > otherStart;
     });
   });
-
+console.log(viewBarber)
   const availableSet = new Set(availableSlots);
   const allSlotsForDay = viewBarber
     ? getAllSlotsForDay(openingHours, date, duration)
