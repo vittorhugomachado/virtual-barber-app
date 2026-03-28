@@ -11,12 +11,11 @@ import {
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 
 export function Gallery() {
-  const data = useBarbershopData();
   const { gallery, name } = useBarbershopData();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-console.log(data)
+
   // sincroniza o índice atual do lightbox
   useEffect(() => {
     if (!api) return;

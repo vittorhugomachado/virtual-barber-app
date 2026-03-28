@@ -12,7 +12,11 @@ import type { Service } from "../../../../types";
 import type { ServiceSelection } from "../../../../types";
 import { formatPrice } from "../../../../../utils/format-price";
 import { formatDuration } from "../../../../../utils/format-duration";
-import { addMinutes, formatDate } from "../../../../../utils/format-time";
+import {
+  addMinutes,
+  formatDate,
+  timeToMinutes,
+} from "../../../../../utils/format-time";
 
 interface StepConfirmProps {
   barbershopId: string;
@@ -22,6 +26,50 @@ interface StepConfirmProps {
   serviceSelections: Record<string, ServiceSelection>;
   onSuccess: () => void;
   onBack: () => void;
+}
+
+function hasSelectionConflicts(
+  services: Service[],
+  serviceSelections: Record<string, ServiceSelection>,
+) {
+  const ranges = services
+    .map(service => {
+      const selection = serviceSelections[service.id];
+
+      if (!selection) {
+        return null;
+      }
+
+      const start = timeToMinutes(selection.time);
+      const end = start + (service.duration_min ?? 30);
+
+      return {
+        serviceName: service.name,
+        start,
+        end,
+      };
+    })
+    .filter(
+      (
+        range,
+      ): range is { serviceName: string; start: number; end: number } =>
+        range !== null,
+    )
+    .sort((left, right) => left.start - right.start);
+
+  for (let index = 1; index < ranges.length; index += 1) {
+    const previous = ranges[index - 1];
+    const current = ranges[index];
+
+    if (current.start < previous.end) {
+      return {
+        hasConflict: true,
+        services: [previous.serviceName, current.serviceName],
+      };
+    }
+  }
+
+  return { hasConflict: false as const };
 }
 
 export function StepConfirm({
@@ -39,11 +87,11 @@ export function StepConfirm({
   const [error, setError] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState(customer?.name?.trim() ?? "");
 
-  const total = services.reduce((sum, s) => sum + (s.price ?? 0), 0);
+  const total = services.reduce((sum, service) => sum + (service.price ?? 0), 0);
   const normalizedStoredName = customer?.name?.trim() ?? "";
   const requiresName = normalizedStoredName.length < 2;
-  const hasNameValidationError =
-    requiresName && error === "Informe como podemos te chamar.";
+  const nameValidationMessage = "Informe um nome com pelo menos 2 letras.";
+  const hasNameValidationError = requiresName && error === nameValidationMessage;
 
   function hasValidName(value: string) {
     return value.trim().length >= 2;
@@ -52,11 +100,20 @@ export function StepConfirm({
   async function handleConfirm() {
     setLoading(true);
     setError(null);
+
     try {
       const normalizedDisplayName = displayName.trim();
 
       if (requiresName && !hasValidName(normalizedDisplayName)) {
-        setError("Informe um nome com pelo menos 2 letras.");
+        setError(nameValidationMessage);
+        return;
+      }
+
+      const conflictCheck = hasSelectionConflicts(services, serviceSelections);
+      if (conflictCheck.hasConflict) {
+        setError(
+          `Os horarios escolhidos para ${conflictCheck.services.join(" e ")} se sobrepoem. Ajuste os horarios antes de confirmar.`,
+        );
         return;
       }
 
@@ -67,7 +124,7 @@ export function StepConfirm({
           .eq("id", customerId);
 
         if (customerError) {
-          setError("Não foi possível salvar seu nome. Tente novamente.");
+          setError("Nao foi possivel salvar seu nome. Tente novamente.");
           return;
         }
 
@@ -77,34 +134,38 @@ export function StepConfirm({
       }
 
       const appointments = services.map(service => {
-        const sel = serviceSelections[service.id];
+        const selection = serviceSelections[service.id];
         const duration = service.duration_min ?? 30;
-        const starts = `${date}T${sel.time}:00`;
-        const ends = `${date}T${addMinutes(sel.time, duration)}:00`;
+        const startsAt = `${date}T${selection.time}:00`;
+        const endsAt = `${date}T${addMinutes(selection.time, duration)}:00`;
+
         return {
           barbershop_id: barbershopId,
-          barber_id: sel.barber.id,
+          barber_id: selection.barber.id,
           service_id: service.id,
           customer_id: customerId,
-          starts_at: starts,
-          ends_at: ends,
+          starts_at: startsAt,
+          ends_at: endsAt,
         };
       });
 
-      const { error: err } = await createAppointments(appointments);
-      if (err) {
+      const { error: appointmentError } = await createAppointments(appointments);
+      if (appointmentError) {
         console.error("Erro ao confirmar agendamento", {
-          message: err.message,
-          details: err.details,
-          hint: err.hint,
-          code: err.code,
+          message: appointmentError.message,
+          details: appointmentError.details,
+          hint: appointmentError.hint,
+          code: appointmentError.code,
           appointments,
         });
-        setError(getAppointmentErrorMessage(err));
+        setError(getAppointmentErrorMessage(appointmentError));
         return;
       }
 
       onSuccess();
+    } catch (caughtError) {
+      console.error("Falha inesperada ao confirmar agendamento", caughtError);
+      setError("Ocorreu um erro inesperado ao confirmar o agendamento.");
     } finally {
       setLoading(false);
     }
@@ -122,7 +183,7 @@ export function StepConfirm({
               <input
                 type="text"
                 value={displayName}
-                onChange={e => setDisplayName(e.target.value)}
+                onChange={event => setDisplayName(event.target.value)}
                 placeholder="Digite seu nome"
                 className={`h-11 w-full rounded-xl bg-transparent px-4 text-sm ring-offset-2 transition-colors outline-none placeholder:text-neutral-400 focus:ring-2 ${
                   hasNameValidationError
@@ -138,7 +199,6 @@ export function StepConfirm({
           </>
         )}
 
-        {/* Date */}
         <div className="flex items-center gap-2">
           <Calendar size={16} className="text-neutral-400" />
           <div>
@@ -149,17 +209,17 @@ export function StepConfirm({
 
         <div className="border-t border-neutral-100 dark:border-neutral-800" />
 
-        {/* Services with individual barber + time */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <Scissors size={16} className="text-neutral-400" />
-            <p className="text-xs text-neutral-400">Serviços</p>
+            <p className="text-xs text-neutral-400">Servicos</p>
           </div>
 
           {services.map((service, index) => {
-            const sel = serviceSelections[service.id];
+            const selection = serviceSelections[service.id];
             const duration = service.duration_min ?? 30;
-            const endsAt = addMinutes(sel.time, duration);
+            const endsAt = addMinutes(selection.time, duration);
+
             return (
               <div key={service.id}>
                 {index > 0 && (
@@ -174,7 +234,7 @@ export function StepConfirm({
                       )}
                       {service.price != null && (
                         <>
-                          <span>·</span>
+                          <span>|</span>
                           <span className="font-medium text-neutral-700 dark:text-neutral-300">
                             {formatPrice(service.price)}
                           </span>
@@ -184,13 +244,12 @@ export function StepConfirm({
                   </div>
                 </div>
 
-                {/* Barber + time for this service */}
                 <div className="mt-2 flex items-center gap-4 rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
                   <div className="flex items-center gap-2">
-                    {sel.barber.avatar_url ? (
+                    {selection.barber.avatar_url ? (
                       <img
-                        src={sel.barber.avatar_url}
-                        alt={sel.barber.name}
+                        src={selection.barber.avatar_url}
+                        alt={selection.barber.name}
                         className="h-6 w-6 rounded-full object-cover"
                       />
                     ) : (
@@ -199,13 +258,13 @@ export function StepConfirm({
                       </div>
                     )}
                     <span className="text-xs font-medium">
-                      {sel.barber.name}
+                      {selection.barber.name}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                     <Clock size={12} />
                     <span>
-                      {sel.time} – {endsAt}
+                      {selection.time} - {endsAt}
                     </span>
                   </div>
                 </div>
@@ -219,9 +278,7 @@ export function StepConfirm({
             <div className="border-t border-neutral-100 dark:border-neutral-800" />
             <div className="flex items-center justify-between">
               <span className="text-sm text-neutral-500">Total</span>
-              <span className="text-sm font-semibold">
-                {formatPrice(total)}
-              </span>
+              <span className="text-sm font-semibold">{formatPrice(total)}</span>
             </div>
           </>
         )}

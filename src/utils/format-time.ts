@@ -42,6 +42,10 @@ export function getEffectivePeriodsForDay(
   barberAvailability: BarberAvailability[],
 ): { opens_at: string; closes_at: string }[] {
   const dayRecords = barberAvailability.filter(a => a.day_of_week === dayOfWeek);
+  const explicitAvailability = dayRecords
+    .filter(a => a.starts_at && a.ends_at && !a.is_day_off)
+    .sort((x, y) => x.period_order - y.period_order)
+    .map(a => ({ opens_at: a.starts_at!, closes_at: a.ends_at! }));
 
   if (dayRecords.length === 0) {
     return openingHours
@@ -51,11 +55,8 @@ export function getEffectivePeriodsForDay(
 
   if (dayRecords.some(a => a.is_day_off)) return [];
 
-  if (dayRecords.some(a => a.use_custom_hours)) {
-    return dayRecords
-      .filter(a => a.use_custom_hours && a.starts_at && a.ends_at)
-      .sort((x, y) => x.period_order - y.period_order)
-      .map(a => ({ opens_at: a.starts_at!, closes_at: a.ends_at! }));
+  if (explicitAvailability.length > 0) {
+    return explicitAvailability;
   }
 
   return openingHours

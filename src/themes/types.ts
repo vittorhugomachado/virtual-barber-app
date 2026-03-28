@@ -201,6 +201,8 @@ export interface ServiceSlotCardProps {
   date: string;
   selection?: ServiceSelection;
   otherSelections: OtherSelection[];
+  preloadedSlotsByBarber?: Record<string, string[]>;
+  preloadedLoading?: boolean;
   onSelect: (sel: ServiceSelection) => void;
   autoOpen?: boolean;
 }

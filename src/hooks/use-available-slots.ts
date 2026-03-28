@@ -1,10 +1,15 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { BarberAvailability, OpeningHour } from "../themes/types";
 import {
   getAppointmentsForBarberOnDate,
   getAppointmentsForCustomerOnDate,
 } from "../lib/booking-queries";
 import { getEffectivePeriodsForDay } from "../utils/format-time";
+
+export interface SlotAppointment {
+  starts_at: string;
+  ends_at: string;
+}
 
 function timeToMinutes(time: string) {
   const [h, m] = time.slice(0, 5).split(":").map(Number);
@@ -17,6 +22,83 @@ function minutesToTime(minutes: number) {
     .padStart(2, "0");
   const m = (minutes % 60).toString().padStart(2, "0");
   return `${h}:${m}`;
+}
+
+function getLocalDateString(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export function calculateAvailableSlots({
+  date,
+  totalDuration,
+  openingHours,
+  barberAvailability,
+  barberAppointments,
+  customerAppointments,
+}: {
+  date: string | null;
+  totalDuration: number;
+  openingHours: OpeningHour[];
+  barberAvailability?: BarberAvailability[];
+  barberAppointments: SlotAppointment[];
+  customerAppointments: SlotAppointment[];
+}) {
+  if (!date || totalDuration === 0) {
+    return [];
+  }
+
+  const dayOfWeek = new Date(date + "T12:00:00").getDay();
+  const periods =
+    barberAvailability && barberAvailability.length > 0
+      ? getEffectivePeriodsForDay(dayOfWeek, openingHours, barberAvailability)
+      : openingHours
+          .filter(hour => hour.day_of_week === dayOfWeek && hour.is_open)
+          .map(hour => ({ opens_at: hour.opens_at, closes_at: hour.closes_at }));
+
+  if (periods.length === 0) {
+    return [];
+  }
+
+  const now = new Date();
+  const isToday = date === getLocalDateString(now);
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const available: string[] = [];
+
+  for (const period of periods) {
+    const openMin = timeToMinutes(period.opens_at.slice(0, 5));
+    const closeMin = timeToMinutes(period.closes_at.slice(0, 5));
+    let current = openMin;
+
+    while (current + totalDuration <= closeMin) {
+      const slotEnd = current + totalDuration;
+
+      if (isToday && current <= currentMinutes) {
+        current += 30;
+        continue;
+      }
+
+      const overlapsAppointment = (appointment: SlotAppointment) => {
+        const appointmentStart = timeToMinutes(appointment.starts_at.slice(11, 16));
+        const appointmentEnd = timeToMinutes(appointment.ends_at.slice(11, 16));
+        return current < appointmentEnd && slotEnd > appointmentStart;
+      };
+
+      const isBlocked =
+        barberAppointments.some(overlapsAppointment) ||
+        customerAppointments.some(overlapsAppointment);
+
+      if (!isBlocked) {
+        available.push(minutesToTime(current));
+      }
+
+      current += 30;
+    }
+  }
+
+  return available;
 }
 
 export function useAvailableSlots({
@@ -43,28 +125,11 @@ export function useAvailableSlots({
     async function load() {
       if (!barberId || !date || totalDuration === 0) {
         setSlots([]);
+        setLoading(false);
         return;
       }
 
       setLoading(true);
-
-      const dayOfWeek = new Date(date + "T12:00:00").getDay();
-      const periods =
-        barberAvailability && barberAvailability.length > 0
-          ? getEffectivePeriodsForDay(
-              dayOfWeek,
-              openingHours,
-              barberAvailability,
-            )
-          : openingHours
-              .filter(h => h.day_of_week === dayOfWeek && h.is_open)
-              .map(h => ({ opens_at: h.opens_at, closes_at: h.closes_at }));
-
-      if (periods.length === 0) {
-        setSlots([]);
-        setLoading(false);
-        return;
-      }
 
       const [barberAppointments, customerAppointments] = await Promise.all([
         getAppointmentsForBarberOnDate(barbershopId, barberId, date),
@@ -73,44 +138,16 @@ export function useAvailableSlots({
           : Promise.resolve([]),
       ]);
 
-      const now = new Date();
-      const isToday = date === now.toISOString().slice(0, 10);
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      const available: string[] = [];
-
-      for (const period of periods) {
-        const openMin = timeToMinutes(period.opens_at.slice(0, 5));
-        const closeMin = timeToMinutes(period.closes_at.slice(0, 5));
-        let current = openMin;
-
-        while (current + totalDuration <= closeMin) {
-          const slotEnd = current + totalDuration;
-
-          if (isToday && current <= currentMinutes) {
-            current += 30;
-            continue;
-          }
-
-          const overlapsAppointment = (appt: {
-            starts_at: string;
-            ends_at: string;
-          }) => {
-            const apptStart = timeToMinutes(appt.starts_at.slice(11, 16));
-            const apptEnd = timeToMinutes(appt.ends_at.slice(11, 16));
-            return current < apptEnd && slotEnd > apptStart;
-          };
-
-          const isBlocked =
-            barberAppointments.some(overlapsAppointment) ||
-            customerAppointments.some(overlapsAppointment);
-
-          if (!isBlocked) available.push(minutesToTime(current));
-          current += 30;
-        }
-      }
-
-      setSlots(available);
+      setSlots(
+        calculateAvailableSlots({
+          date,
+          totalDuration,
+          openingHours,
+          barberAvailability,
+          barberAppointments,
+          customerAppointments,
+        }),
+      );
       setLoading(false);
     }
 

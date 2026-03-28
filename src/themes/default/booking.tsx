@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
 import { useCart } from "../../hooks/use-cart";
 import { useStyle } from "../../contexts/style-context/style-context";
@@ -14,7 +14,7 @@ import type { BarbershopPageProps } from "../types";
 import { Button } from "../../components/ui/button";
 import { StepBarberTime } from "./components/booking/step-3/step-barber-time";
 
-const STEPS = ["Serviços", "Data", "Profissional", "Confirmação"];
+const STEPS = ["Servicos", "Data", "Profissional", "Confirmacao"];
 
 export default function DefaultBookingPage(props: BarbershopPageProps) {
   const navigate = useNavigate();
@@ -30,13 +30,16 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) navigate(`/${props.slug}/entrar?from=agendar`);
-  }, [isAuthenticated, props.slug, navigate]);
+    if (!isAuthenticated) {
+      navigate(`/${props.slug}/entrar?from=agendar`);
+    }
+  }, [isAuthenticated, navigate, props.slug]);
 
   function handleDateSelect(newDate: string) {
     if (newDate !== date) {
       setServiceSelections({});
     }
+
     setDate(newDate);
   }
 
@@ -46,12 +49,15 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   }
 
   function handleBack() {
-    if (step === 0) return;
+    if (step === 0) {
+      return;
+    }
+
     setStep(current => current - 1);
   }
 
   const allSelected =
-    items.length > 0 && items.every(s => !!serviceSelections[s.id]);
+    items.length > 0 && items.every(service => !!serviceSelections[service.id]);
 
   if (done) {
     return (
@@ -62,7 +68,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           <div className="text-center">
             <h1 className="text-2xl font-semibold">Agendamento confirmado!</h1>
             <p className="mt-2 text-sm text-neutral-500">
-              Seu horário foi reservado com sucesso.
+              Seu horario foi reservado com sucesso.
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
@@ -78,7 +84,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
               style={{ backgroundColor: primaryColor, color: textButtonColor }}
               onClick={() => navigate(`/${props.slug}`)}
             >
-              Voltar à loja
+              Voltar a loja
             </Button>
           </div>
         </main>
@@ -94,22 +100,18 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
       <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
         <h2 className="mb-8 text-center text-3xl font-bold">Agendar</h2>
 
-        {/* Progress */}
         <div className="relative mx-auto mb-8 max-w-86 md:max-w-126">
           <div className="mb-3 flex items-center justify-between">
-            {STEPS.map((label, i) => (
-              <div
-                key={label}
-                className="flex w-20 flex-col items-center gap-1"
-              >
+            {STEPS.map((label, index) => (
+              <div key={label} className="flex w-20 flex-col items-center gap-1">
                 <div
                   className={`sm:text-md flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors sm:h-9 sm:w-9 ${
-                    i <= step
+                    index <= step
                       ? ""
                       : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
                   }`}
                   style={
-                    i <= step
+                    index <= step
                       ? {
                           backgroundColor: primaryColor,
                           color: textButtonColor,
@@ -117,11 +119,11 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
                       : undefined
                   }
                 >
-                  {i < step ? "✓" : i + 1}
+                  {index < step ? <Check className="w-5" /> : index + 1}
                 </div>
                 <span
                   className={`hidden text-[13px] sm:block ${
-                    i === step ? "font-medium" : "text-neutral-400"
+                    index === step ? "font-medium" : "text-neutral-400"
                   }`}
                 >
                   {label}
@@ -144,12 +146,8 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           </div>
         )}
 
-        {/* Step title */}
-        <h1 className="mb-6 text-center text-2xl font-semibold">
-          {STEPS[step]}
-        </h1>
+        <h1 className="mb-6 text-center text-2xl font-semibold">{STEPS[step]}</h1>
 
-        {/* Steps */}
         {step === 0 && <StepServices onContinue={() => setStep(1)} />}
 
         {step === 1 && (
