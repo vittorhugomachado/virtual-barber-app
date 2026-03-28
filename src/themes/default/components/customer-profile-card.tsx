@@ -1,0 +1,164 @@
+import { useMemo, useState } from "react";
+import { Pencil, Phone, User } from "lucide-react";
+import { supabase } from "../../../lib/supabase";
+import { useAuthStore } from "../../../store/auth-store";
+import { useStyle } from "../../../contexts/style-context/style-context";
+import { Button } from "../../../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../../components/ui/dialog";
+
+function hasValidName(value: string) {
+  return value.trim().length >= 2;
+}
+
+export function CustomerProfileCard() {
+  const { customer, setCustomer } = useAuthStore();
+  const { primaryColor, textButtonColor } = useStyle();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [name, setName] = useState(customer?.name?.trim() ?? "");
+
+  const initials = useMemo(() => {
+    const value = (customer?.name ?? "").trim();
+    if (!value) return null;
+    return value
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase())
+      .join("");
+  }, [customer?.name]);
+
+  if (!customer) return null;
+  const currentCustomer = customer;
+
+  async function handleSave() {
+    const normalizedName = name.trim();
+
+    if (!hasValidName(normalizedName)) {
+      setError("Informe um nome com pelo menos 2 letras.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    try {
+      const { error: updateError } = await supabase
+        .from("customers_auth")
+        .update({ name: normalizedName })
+        .eq("id", currentCustomer.id);
+
+      if (updateError) {
+        setError("Não foi possível atualizar seu nome. Tente novamente.");
+        return;
+      }
+
+      setCustomer({ ...currentCustomer, name: normalizedName });
+      setOpen(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <>
+      <div className="mb-6 flex flex-col gap-4 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div
+              className="flex h-14 w-14 items-center justify-center rounded-full text-sm font-semibold"
+              style={{
+                backgroundColor: `${primaryColor}20`,
+                color: primaryColor,
+              }}
+            >
+              {initials || <User size={22} />}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <p className="text-xs tracking-wide text-neutral-400 uppercase">
+                Seu perfil
+              </p>
+              <h2 className="text-xl font-semibold">
+                {currentCustomer.name?.trim() || "Cliente"}
+              </h2>
+              <div className="flex items-center gap-1.5 text-sm text-neutral-500">
+                <Phone size={14} />
+                <span>{currentCustomer.phone}</span>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            className="gap-2 rounded-full"
+            onClick={() => {
+              setName(currentCustomer.name?.trim() ?? "");
+              setError("");
+              setOpen(true);
+            }}
+          >
+            <Pencil size={14} />
+            Editar nome
+          </Button>
+        </div>
+      </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Editar nome</DialogTitle>
+            <DialogDescription>
+              Atualize como deseja ser identificado nos seus agendamentos.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Como podemos te chamar?
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={event => {
+                setName(event.target.value);
+                if (error) setError("");
+              }}
+              placeholder="Digite seu nome"
+              className={`h-11 w-full rounded-xl bg-transparent px-4 text-sm ring-offset-2 transition-colors outline-none placeholder:text-neutral-400 focus:ring-2 ${
+                error
+                  ? "border border-red-500 focus:ring-red-500 dark:border-red-500"
+                  : "border border-neutral-200 focus:ring-neutral-900 dark:border-neutral-700 dark:focus:ring-neutral-100"
+              }`}
+            />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => setOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="rounded-xl"
+              style={{ backgroundColor: primaryColor, color: textButtonColor }}
+              onClick={handleSave}
+              disabled={loading}
+            >
+              {loading ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

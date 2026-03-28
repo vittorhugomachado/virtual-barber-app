@@ -13,6 +13,7 @@ import { getCustomerAppointments } from "../../lib/booking-queries";
 import { Navbar } from "./components/nav-bar";
 import { Footer } from "../../components/footer";
 import { Button } from "../../components/ui/button";
+import { CustomerProfileCard } from "./components/customer-profile-card";
 import { formatDate } from "../../utils/format-time";
 import { formatPrice } from "../../utils/format-price";
 import { formatDuration } from "../../utils/format-duration";
@@ -194,6 +195,8 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
       <Navbar />
 
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
+        <CustomerProfileCard />
+
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-nowrap">Meus agendamentos</h1>

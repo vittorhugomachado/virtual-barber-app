@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, User, X } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import {
   Sheet,
@@ -35,6 +35,7 @@ export function Navbar() {
   const cartCount = items.length;
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const shouldHideScheduleButton = location.pathname.includes("agendar");
 
   function handleAgendar() {
@@ -54,7 +55,7 @@ export function Navbar() {
     await signOut();
   }
 
-  const navLinks = (
+  const mobileNavLinks = (
     <>
       {isAuthenticated ? (
         <>
@@ -91,8 +92,7 @@ export function Navbar() {
             <BarbershopLogo name={name} className="hidden text-3xl md:block" />
 
             {/* desktop nav */}
-            <nav className="hidden items-center gap-6 md:flex">
-              {navLinks}
+            <nav className="hidden items-center gap-6 md:flex mr-3">
               {!shouldHideScheduleButton && (
                 <Button
                   onClick={handleAgendar}
@@ -109,6 +109,57 @@ export function Navbar() {
                     </span>
                   )}
                 </Button>
+              )}
+              {isAuthenticated ? (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setUserMenuOpen(open => !open)}
+                    className="flex items-center gap-2 rounded-full border border-neutral-200 px-2 py-1.5 transition-colors hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-600"
+                  >
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                      <User size={16} />
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={`text-neutral-500 transition-transform ${
+                        userMenuOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute right-0 top-full z-50 mt-2 flex min-w-44 flex-col rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-950">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          handlePerfil();
+                        }}
+                        className="rounded-xl px-3 py-2 text-left text-sm text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
+                      >
+                        Meus agendamentos
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          setShowLogoutDialog(true);
+                        }}
+                        className="rounded-xl px-3 py-2 text-left text-sm text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
+                      >
+                        Sair
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => navigate(`/${slug}/entrar`)}
+                  className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+                >
+                  Entrar
+                </button>
               )}
             </nav>
 
@@ -151,7 +202,7 @@ export function Navbar() {
                         )}
                       </Button>
                     )}
-                    {navLinks}
+                    {mobileNavLinks}
                   </nav>
                 </SheetContent>
               </Sheet>

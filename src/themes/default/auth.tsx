@@ -188,7 +188,7 @@ export default function DefaultAuthPage() {
               <FaWhatsapp size={16} />
               {OTP_CHANNEL === "sms"
                 ? "Enviar código por SMS"
-                : "Enviar código pelo WhatsApp"}
+                : "Enviar código"}
             </Button>
           </div>
         ) : (
@@ -211,7 +211,7 @@ export default function DefaultAuthPage() {
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
             <Button
-              className="h-11 w-full rounded-xl"
+              className="h-11 w-full gap-2 rounded-xl bg-green-600 hover:bg-green-700"
               onClick={handleVerifyOtp}
               disabled={isLoading || otp.length < 6}
             >
