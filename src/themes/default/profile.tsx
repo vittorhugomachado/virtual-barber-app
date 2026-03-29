@@ -149,7 +149,8 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const navigate = useNavigate();
   const { isAuthenticated, customer } = useAuthStore();
   const [appointments, setAppointments] = useState<NormalizedAppointment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => Boolean(customer));
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterTab>("all");
   const [ascending, setAscending] = useState(false);
 
@@ -162,10 +163,27 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
 
   useEffect(() => {
     if (!customer) return;
-    getCustomerAppointments(customer.id, props.id).then(({ data }) => {
-      if (data) setAppointments((data as AppointmentRow[]).map(normalize));
+
+    const customerId = customer.id;
+
+    async function loadAppointments() {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await getCustomerAppointments(customerId, props.id);
+
+      if (error) {
+        setError("Nao foi possivel carregar seus agendamentos.");
+        setAppointments([]);
+        setLoading(false);
+        return;
+      }
+
+      setAppointments((data as AppointmentRow[]).map(normalize));
       setLoading(false);
-    });
+    }
+
+    void loadAppointments();
   }, [customer, props.id]);
 
   const filtered = useMemo(() => {
@@ -245,6 +263,10 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-800" />
+          </div>
+        ) : error ? (
+          <div className="py-20 text-center">
+            <p className="text-sm text-red-500">{error}</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-20 text-center">

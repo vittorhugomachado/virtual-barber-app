@@ -7,6 +7,10 @@ import { Button } from "../../components/ui/button";
 import { FaWhatsapp } from "react-icons/fa";
 import { BarbershopLogo } from "./components/logo-text";
 import { formatPhone } from "../../utils/format-phone";
+import {
+  getCustomerFromAuthUser,
+  getPostAuthRedirectPath,
+} from "../../lib/auth";
 
 const OTP_CHANNEL: "sms" | "whatsapp" = "whatsapp";
 
@@ -25,23 +29,22 @@ export default function DefaultAuthPage() {
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        const u = session.user;
-        const { data: customerAuth } = await supabase
-          .from("customers_auth")
-          .select("id, name, phone")
-          .eq("auth_user_id", u.id)
-          .maybeSingle();
+        const { data: existingCustomer, error: customerError } =
+          await getCustomerFromAuthUser(session.user);
+
+        if (customerError || !existingCustomer) {
+          setError("Nao foi possivel carregar sua sessao. Tente novamente.");
+          return;
+        }
+
         setCustomer({
-          id: customerAuth?.id ?? u.id,
-          name: customerAuth?.name || (u.user_metadata?.full_name ?? u.user_metadata?.name ?? ""),
-          phone: customerAuth?.phone ?? u.phone?.replace(/^55/, "") ?? "",
-          auth_user_id: u.id,
-          barbershop_id: null,
+          ...existingCustomer,
+          barbershop_id: data?.id ?? null,
         });
-        navigate(`/${slug}`, { replace: true });
+        navigate(getPostAuthRedirectPath(slug, from), { replace: true });
       }
     });
-  }, [slug, navigate, setCustomer]);
+  }, [slug, navigate, setCustomer, from, data?.id]);
 
   function toE164(formatted: string) {
     const digits = formatted.replace(/\D/g, "");
@@ -104,14 +107,21 @@ export default function DefaultAuthPage() {
 
       const user = session.user;
 
-      await supabase
+      const { error: profileError } = await supabase
         .from("profiles")
         .upsert(
           { id: user.id, role: "customer" },
           { onConflict: "id", ignoreDuplicates: true },
         );
 
-      await supabase.from("customers_auth").upsert(
+      if (profileError) {
+        setError("Nao foi possivel finalizar seu cadastro. Tente novamente.");
+        return;
+      }
+
+      const { error: customerUpsertError } = await supabase
+        .from("customers_auth")
+        .upsert(
         {
           auth_user_id: user.id,
           phone: user.phone?.replace(/^55/, "") ?? null,
@@ -120,20 +130,32 @@ export default function DefaultAuthPage() {
         { onConflict: "auth_user_id", ignoreDuplicates: true },
       );
 
-      const { data: customerAuth } = await supabase
+      if (customerUpsertError) {
+        setError("Nao foi possivel salvar seus dados. Tente novamente.");
+        return;
+      }
+
+      const { data: customerAuth, error: customerFetchError } = await supabase
         .from("customers_auth")
         .select("id, name, phone")
         .eq("auth_user_id", user.id)
         .single();
 
+      if (customerFetchError || !customerAuth) {
+        setError("Nao foi possivel carregar seu perfil. Tente novamente.");
+        return;
+      }
+
       setCustomer({
-        id: customerAuth?.id ?? user.id,
-        name: customerAuth?.name || (user.user_metadata?.full_name ?? user.user_metadata?.name ?? ""),
-        phone: customerAuth?.phone ?? user.phone?.replace(/^55/, "") ?? "",
+        id: customerAuth.id ?? user.id,
+        name:
+          customerAuth.name ||
+          (user.user_metadata?.full_name ?? user.user_metadata?.name ?? ""),
+        phone: customerAuth.phone ?? user.phone?.replace(/^55/, "") ?? "",
         auth_user_id: user.id,
         barbershop_id: data?.id ?? null,
       });
-      navigate(`/${slug}`, { replace: true });
+      navigate(getPostAuthRedirectPath(slug, from), { replace: true });
     } finally {
       setLoading(false);
     }
