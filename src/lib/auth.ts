@@ -2,6 +2,10 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import type { Customer } from "../themes/types";
 
+function normalizePhone(phone?: string | null) {
+  return phone?.replace(/^\+?55/, "") ?? "";
+}
+
 export async function getCustomerFromAuthUser(
   user: User,
 ): Promise<{ data: Customer | null; error: Error | null }> {
@@ -23,7 +27,7 @@ export async function getCustomerFromAuthUser(
         user.user_metadata?.full_name ||
         user.user_metadata?.name ||
         "",
-      phone: customerAuth?.phone ?? user.phone?.replace(/^55/, "") ?? "",
+      phone: customerAuth?.phone ?? normalizePhone(user.phone),
       auth_user_id: user.id,
       barbershop_id: null,
     },
