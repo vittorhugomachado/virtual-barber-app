@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../components/ui/dialog";
+import { formatPhone } from "@/utils/format-phone";
 
 function hasValidName(value: string) {
   return value.trim().length >= 2;
@@ -90,7 +91,7 @@ export function CustomerProfileCard() {
               </h2>
               <div className="flex items-center gap-1.5 text-sm text-neutral-500">
                 <Phone size={14} />
-                <span>{currentCustomer.phone}</span>
+                <span>{formatPhone(currentCustomer.phone)}</span>
               </div>
             </div>
           </div>

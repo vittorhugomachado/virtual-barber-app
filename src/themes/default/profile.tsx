@@ -157,7 +157,7 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
           <span>{appt.starts_at.slice(11, 16)}</span>
           {durationMin != null && (
             <span className="text-neutral-400">
-              . {formatDuration(durationMin)}
+              | {formatDuration(durationMin)}
             </span>
           )}
         </div>
