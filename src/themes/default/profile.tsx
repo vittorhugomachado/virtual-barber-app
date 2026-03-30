@@ -6,7 +6,8 @@ import {
   Scissors,
   User,
   ChevronRight,
-  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
 import { getCustomerAppointments } from "../../lib/booking-queries";
@@ -22,9 +23,9 @@ import type { AppointmentStatus, BarbershopPageProps } from "../types";
 type AppointmentRow = {
   id: string;
   service_name: string | null;
-  service_price: string | number | null; // banco retorna string
-  service_duration: number | null; // nome real no banco
-  service_duration_min: number | null; // mantém compatibilidade
+  service_price: string | number | null;
+  service_duration: number | null;
+  service_duration_min: number | null;
   customer_name: string | null;
   barber_name: string | null;
   status: AppointmentStatus;
@@ -55,7 +56,7 @@ type AppointmentRow = {
 type NormalizedAppointment = {
   id: string;
   service_name: string | null;
-  service_price: number | null; // sempre number após normalizar
+  service_price: number | null;
   service_duration_min: number | null;
   barber_name: string | null;
   customer_name: string | null;
@@ -88,38 +89,54 @@ function normalize(raw: AppointmentRow): NormalizedAppointment {
 
 const STATUS_LABEL: Record<AppointmentStatus, string> = {
   scheduled: "Agendado",
-  completed: "Concluí­do",
+  completed: "Concluído",
   cancelled_by_customer: "Cancelado",
   cancelled_by_barbershop: "Cancelado",
-  no_show: "NÃ£o compareceu",
+  no_show: "Não compareceu",
 };
 
 const STATUS_CLASS: Record<AppointmentStatus, string> = {
-  scheduled: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400",
-  completed: "bg-[#299E69] text-[#09090B]",
+  scheduled: "border border-blue-500/20 bg-blue-500/10 text-blue-600",
+  completed:
+    "border border-emerald-500/20 bg-emerald-500/10 text-emerald-600",
   cancelled_by_customer:
-    "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
+    "border border-rose-500/20 bg-rose-500/10 text-rose-600",
   cancelled_by_barbershop:
-    "bg-red-50 text-red-500 dark:bg-red-950 dark:text-red-400",
+    "border border-rose-500/20 bg-rose-500/10 text-rose-600",
   no_show:
-    "bg-orange-50 text-orange-500 dark:bg-orange-950 dark:text-orange-400",
+    "border border-border bg-muted text-muted-foreground",
 };
 
-type FilterTab = "all" | "upcoming" | "past";
+type FilterTab =
+  | "all"
+  | "scheduled"
+  | "cancelled"
+  | "no_show"
+  | "completed";
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: "all", label: "Todos" },
-  { key: "upcoming", label: "Próximos" },
+  { key: "scheduled", label: "Agendados" },
+  { key: "cancelled", label: "Cancelados" },
+  { key: "no_show", label: "Nao compareceu" },
+  { key: "completed", label: "Concluidos" },
 ];
 
+const FILTER_CLASS: Record<FilterTab, string> = {
+  all: "border border-neutral-300 bg-neutral-100 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
+  scheduled: "border border-blue-500/20 bg-blue-500/10 text-blue-600",
+  cancelled: "border border-rose-500/20 bg-rose-500/10 text-rose-600",
+  no_show: "border border-border bg-muted text-muted-foreground",
+  completed: "border border-emerald-500/20 bg-emerald-500/10 text-emerald-600",
+};
+
 function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
-  // snapshots têm prioridade, join como fallback
-  const serviceName = appt.service_name ?? appt.service?.name ?? "Serviço";
+  const serviceName = appt.service_name ?? appt.service?.name ?? "Servico";
   const durationMin =
     appt.service_duration_min ?? appt.service?.duration_min ?? null;
   const barberName = appt.barber_name ?? appt.barber?.name ?? null;
   const price = appt.service_price ?? appt.service?.price ?? null;
-  console.log({ appt, serviceName, durationMin, barberName, price });
+
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
       <div className="flex items-start justify-between gap-2">
@@ -140,7 +157,7 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
           <span>{appt.starts_at.slice(11, 16)}</span>
           {durationMin != null && (
             <span className="text-neutral-400">
-              · {formatDuration(durationMin)}
+              . {formatDuration(durationMin)}
             </span>
           )}
         </div>
@@ -155,7 +172,7 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
       <div className="flex items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
         <span className="text-xs text-neutral-400">Valor</span>
         <span className="text-sm font-semibold">
-          {price != null ? formatPrice(price) : "—"}
+          {price != null ? formatPrice(price) : "A combinar"}
         </span>
       </div>
     </div>
@@ -183,7 +200,9 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const visibleError = customerId ? error : null;
 
   useEffect(() => {
-    if (!isAuthenticated) navigate(`/${props.slug}/entrar`);
+    if (!isAuthenticated) {
+      navigate(`/${props.slug}/entrar`);
+    }
   }, [isAuthenticated, props.slug, navigate]);
 
   useEffect(() => {
@@ -223,17 +242,47 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
 
   const filtered = useMemo(() => {
     let list = visibleAppointments;
-    if (filter === "upcoming") {
+
+    if (filter === "scheduled") {
       list = list.filter(a => a.status === "scheduled");
     }
-    if (filter === "past") {
-      list = list.filter(a => a.status !== "scheduled");
+
+    if (filter === "cancelled") {
+      list = list.filter(
+        a =>
+          a.status === "cancelled_by_customer" ||
+          a.status === "cancelled_by_barbershop",
+      );
     }
+
+    if (filter === "no_show") {
+      list = list.filter(a => a.status === "no_show");
+    }
+
+    if (filter === "completed") {
+      list = list.filter(a => a.status === "completed");
+    }
+
     return [...list].sort((a, b) => {
       const cmp = a.starts_at.localeCompare(b.starts_at);
       return ascending ? cmp : -cmp;
     });
   }, [visibleAppointments, filter, ascending]);
+
+  const filterCounts = useMemo(
+    () => ({
+      all: visibleAppointments.length,
+      scheduled: visibleAppointments.filter(a => a.status === "scheduled").length,
+      cancelled: visibleAppointments.filter(
+        a =>
+          a.status === "cancelled_by_customer" ||
+          a.status === "cancelled_by_barbershop",
+      ).length,
+      no_show: visibleAppointments.filter(a => a.status === "no_show").length,
+      completed: visibleAppointments.filter(a => a.status === "completed").length,
+    }),
+    [visibleAppointments],
+  );
 
   const groups = useMemo(() => {
     const map = new Map<string, NormalizedAppointment[]>();
@@ -265,23 +314,18 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
         </div>
 
         <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {FILTER_TABS.map(tab => (
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
                   filter === tab.key
-                    ? "text-white"
-                    : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                    ? `${FILTER_CLASS[tab.key]} shadow-sm`
+                    : `${FILTER_CLASS[tab.key]} opacity-70 hover:opacity-100`
                 }`}
-                style={
-                  filter === tab.key
-                    ? { backgroundColor: primary, color: textButtonColor }
-                    : undefined
-                }
               >
-                {tab.label}
+                {tab.label} ({filterCounts[tab.key]})
               </button>
             ))}
           </div>
@@ -289,7 +333,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
             onClick={() => setAscending(v => !v)}
             className="flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:hover:bg-neutral-800"
           >
-            <ArrowUpDown size={12} />
+            {ascending ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
             {ascending ? "Mais antigos" : "Mais recentes"}
           </button>
         </div>
@@ -312,7 +356,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                 <div>
                   <p className="font-medium">Nenhum agendamento ainda</p>
                   <p className="mt-1 text-sm text-neutral-400">
-                    Que tal agendar seu próximo corte?
+                    Que tal agendar seu proximo corte?
                   </p>
                 </div>
                 <Button

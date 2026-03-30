@@ -82,7 +82,7 @@ export function StepServices({ onContinue }: StepServicesProps) {
       <div className="flex items-center justify-center gap-1.5 rounded-xl border border-neutral-800 bg-neutral-900 px-3.5 py-2.5 text-sm">
         <Scissors className="hidden h-3.5 w-3.5 text-neutral-400 sm:block" />
         <span className="font-medium text-neutral-200">
-          {items.length} servico{items.length > 1 ? "s" : ""}
+          {items.length} serviço{items.length > 1 ? "s" : ""}
         </span>
         <span className="mx-1 text-neutral-600">|</span>
         <Clock className="hidden h-3.5 w-3.5 text-neutral-400 sm:block" />

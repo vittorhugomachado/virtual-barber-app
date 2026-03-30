@@ -212,7 +212,7 @@ export function StepConfirm({
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <Scissors size={16} className="text-neutral-400" />
-            <p className="text-xs text-neutral-400">Servicos</p>
+            <p className="text-xs text-neutral-400">Serviços</p>
           </div>
 
           {services.map((service, index) => {

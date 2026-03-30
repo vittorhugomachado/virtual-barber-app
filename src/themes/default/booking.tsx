@@ -14,7 +14,7 @@ import type { BarbershopPageProps } from "../types";
 import { Button } from "../../components/ui/button";
 import { StepBarberTime } from "./components/booking/step-3/step-barber-time";
 
-const STEPS = ["Servicos", "Data", "Profissional", "Confirmacao"];
+const STEPS = ["Serviços", "Data", "Profissional", "Confirmação"];
 
 export default function DefaultBookingPage(props: BarbershopPageProps) {
   const navigate = useNavigate();
