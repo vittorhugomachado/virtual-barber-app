@@ -150,6 +150,49 @@ export async function createAppointments(
   return { error };
 }
 
+export async function updateCustomerAppointmentStatus(
+  appointmentId: string,
+  customerId: string,
+  barbershopId: string,
+  status: "scheduled" | "completed" | "cancelled_by_customer" | "no_show",
+) {
+  const { data, error } = await supabase
+    .from("appointments")
+    .update({ status })
+    .eq("id", appointmentId)
+    .eq("customer_id", customerId)
+    .eq("barbershop_id", barbershopId)
+    .select("id, status")
+    .limit(1);
+
+  if (error) {
+    console.error("Erro ao atualizar status do agendamento do cliente", {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+      appointmentId,
+      customerId,
+      barbershopId,
+      status,
+    });
+    return { data: null, error };
+  }
+
+  const updatedAppointment = data?.[0] ?? null;
+
+  if (!updatedAppointment) {
+    return {
+      data: null,
+      error: new Error(
+        "Nenhum agendamento foi atualizado. Verifique se o registro pertence ao cliente autenticado e se a politica do banco permite esse update.",
+      ),
+    };
+  }
+
+  return { data: updatedAppointment, error: null };
+}
+
 export function getAppointmentErrorMessage(error: {
   code?: string | null;
   message?: string | null;

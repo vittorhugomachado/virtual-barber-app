@@ -10,10 +10,21 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { useAuthStore } from "../../store/auth-store";
-import { getCustomerAppointments } from "../../lib/booking-queries";
+import {
+  getCustomerAppointments,
+  updateCustomerAppointmentStatus,
+} from "../../lib/booking-queries";
 import { Navbar } from "./components/nav-bar";
 import { Footer } from "../../components/footer";
 import { Button } from "../../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../components/ui/dialog";
 import { CustomerProfileCard } from "./components/customer-profile-card";
 import { formatDate } from "../../utils/format-time";
 import { formatPrice } from "../../utils/format-price";
@@ -118,7 +129,7 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: "all", label: "Todos" },
   { key: "scheduled", label: "Agendados" },
   { key: "cancelled", label: "Cancelados" },
-  { key: "no_show", label: "Nao compareceu" },
+  { key: "no_show", label: "Não compareceu" },
   { key: "completed", label: "Concluidos" },
 ];
 
@@ -130,12 +141,61 @@ const FILTER_CLASS: Record<FilterTab, string> = {
   completed: "border border-emerald-500/20 bg-emerald-500/10 text-emerald-600",
 };
 
-function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
+function AppointmentStatusBadge({
+  appt,
+}: {
+  appt: NormalizedAppointment;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASS[appt.status]}`}
+    >
+      {STATUS_LABEL[appt.status]}
+    </span>
+  );
+}
+
+function AppointmentCard({
+  appt,
+  customerId,
+  barbershopId,
+  onStatusChange,
+}: {
+  appt: NormalizedAppointment;
+  customerId: string;
+  barbershopId: string;
+  onStatusChange: (id: string, status: AppointmentStatus) => void;
+}) {
   const serviceName = appt.service_name ?? appt.service?.name ?? "Servico";
   const durationMin =
     appt.service_duration_min ?? appt.service?.duration_min ?? null;
   const barberName = appt.barber_name ?? appt.barber?.name ?? null;
   const price = appt.service_price ?? appt.service?.price ?? null;
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+
+  async function handleCancelAppointment() {
+    setCancelLoading(true);
+    setCancelError(null);
+
+    const { error } = await updateCustomerAppointmentStatus(
+      appt.id,
+      customerId,
+      barbershopId,
+      "cancelled_by_customer",
+    );
+
+    if (error) {
+      setCancelError("Nao foi possivel cancelar o agendamento.");
+      setCancelLoading(false);
+      return;
+    }
+
+    onStatusChange(appt.id, "cancelled_by_customer");
+    setCancelLoading(false);
+    setCancelDialogOpen(false);
+  }
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
@@ -144,11 +204,7 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
           <Scissors size={14} className="mt-0.5 shrink-0 text-neutral-400" />
           <span className="text-sm font-medium">{serviceName}</span>
         </div>
-        <span
-          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASS[appt.status]}`}
-        >
-          {STATUS_LABEL[appt.status]}
-        </span>
+        <AppointmentStatusBadge appt={appt} />
       </div>
 
       <div className="flex flex-wrap gap-3 text-xs text-neutral-500">
@@ -175,6 +231,51 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
           {price != null ? formatPrice(price) : "A combinar"}
         </span>
       </div>
+
+      {appt.status === "scheduled" && (
+        <div className="mx-auto">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full max-w-56 rounded-full border-rose-500/20 bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 hover:text-rose-700"
+            onClick={() => {
+              setCancelError(null);
+              setCancelDialogOpen(true);
+            }}
+          >
+            Cancelar agendamento
+          </Button>
+        </div>
+      )}
+
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Cancelar agendamento</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja cancelar este agendamento?
+            </DialogDescription>
+          </DialogHeader>
+          {cancelError && <p className="text-sm text-red-500">{cancelError}</p>}
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => setCancelDialogOpen(false)}
+              disabled={cancelLoading}
+            >
+              Voltar
+            </Button>
+            <Button
+              className="rounded-xl bg-rose-600 text-white hover:bg-rose-700"
+              onClick={() => void handleCancelAppointment()}
+              disabled={cancelLoading}
+            >
+              {cancelLoading ? "Cancelando..." : "Confirmar cancelamento"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -294,6 +395,17 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
     return Array.from(map.entries());
   }, [filtered]);
 
+  function handleAppointmentStatusChange(
+    appointmentId: string,
+    status: AppointmentStatus,
+  ) {
+    setAppointments(current =>
+      current.map(appt =>
+        appt.id === appointmentId ? { ...appt, status } : appt,
+      ),
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -394,7 +506,13 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                     {formatDate(day)}
                   </p>
                   {appts.map(appt => (
-                    <AppointmentCard key={appt.id} appt={appt} />
+                    <AppointmentCard
+                      key={appt.id}
+                      appt={appt}
+                      customerId={customerId!}
+                      barbershopId={props.id}
+                      onStatusChange={handleAppointmentStatusChange}
+                    />
                   ))}
                 </div>
               </div>
