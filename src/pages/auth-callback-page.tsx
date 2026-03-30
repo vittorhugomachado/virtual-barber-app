@@ -22,7 +22,7 @@ export function AuthCallbackPage() {
       if (handled) return;
       handled = true;
 
-      const { data: customerData, error: customerUpsertError } = await supabase
+      const { error: upsertError } = await supabase
         .from("customers_auth")
         .upsert(
           {
@@ -33,12 +33,20 @@ export function AuthCallbackPage() {
               "",
           },
           { onConflict: "auth_user_id", ignoreDuplicates: true },
-        )
+        );
+
+      if (upsertError) {
+        setError("Nao foi possivel concluir a autenticacao. Tente novamente.");
+        return;
+      }
+
+      const { data: customerData, error: selectError } = await supabase
+        .from("customers_auth")
         .select("id, name, phone, auth_user_id")
         .eq("auth_user_id", user.id)
         .maybeSingle();
 
-      if (customerUpsertError || !customerData) {
+      if (selectError || !customerData) {
         setError("Nao foi possivel concluir a autenticacao. Tente novamente.");
         return;
       }

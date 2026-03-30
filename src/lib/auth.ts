@@ -19,15 +19,19 @@ export async function getCustomerFromAuthUser(
     return { data: null, error: new Error(error.message) };
   }
 
+  if (!customerAuth) {
+    return { data: null, error: null };
+  }
+
   return {
     data: {
-      id: customerAuth?.id ?? user.id,
+      id: customerAuth.id,
       name:
-        customerAuth?.name ||
+        customerAuth.name ||
         user.user_metadata?.full_name ||
         user.user_metadata?.name ||
         "",
-      phone: customerAuth?.phone ?? normalizePhone(user.phone),
+      phone: customerAuth.phone ?? normalizePhone(user.phone),
       auth_user_id: user.id,
       barbershop_id: null,
     },

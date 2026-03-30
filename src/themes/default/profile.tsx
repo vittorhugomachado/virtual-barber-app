@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Calendar,
@@ -17,10 +17,16 @@ import { CustomerProfileCard } from "./components/customer-profile-card";
 import { formatDate } from "../../utils/format-time";
 import { formatPrice } from "../../utils/format-price";
 import { formatDuration } from "../../utils/format-duration";
-import type { BarbershopPageProps, AppointmentStatus } from "../types";
+import type { AppointmentStatus, BarbershopPageProps } from "../types";
 
 type AppointmentRow = {
   id: string;
+  service_name: string | null;
+  service_price: string | number | null; // banco retorna string
+  service_duration: number | null; // nome real no banco
+  service_duration_min: number | null; // mantém compatibilidade
+  customer_name: string | null;
+  barber_name: string | null;
   status: AppointmentStatus;
   starts_at: string;
   ends_at: string;
@@ -48,6 +54,11 @@ type AppointmentRow = {
 
 type NormalizedAppointment = {
   id: string;
+  service_name: string | null;
+  service_price: number | null; // sempre number após normalizar
+  service_duration_min: number | null;
+  barber_name: string | null;
+  customer_name: string | null;
   status: AppointmentStatus;
   starts_at: string;
   ends_at: string;
@@ -65,6 +76,9 @@ type NormalizedAppointment = {
 function normalize(raw: AppointmentRow): NormalizedAppointment {
   return {
     ...raw,
+    service_price: raw.service_price != null ? Number(raw.service_price) : null,
+    service_duration_min:
+      raw.service_duration ?? raw.service_duration_min ?? null,
     barber: Array.isArray(raw.barbers) ? (raw.barbers[0] ?? null) : raw.barbers,
     service: Array.isArray(raw.services)
       ? (raw.services[0] ?? null)
@@ -74,10 +88,10 @@ function normalize(raw: AppointmentRow): NormalizedAppointment {
 
 const STATUS_LABEL: Record<AppointmentStatus, string> = {
   scheduled: "Agendado",
-  completed: "Concluído",
+  completed: "Concluí­do",
   cancelled_by_customer: "Cancelado",
   cancelled_by_barbershop: "Cancelado",
-  no_show: "Não compareceu",
+  no_show: "NÃ£o compareceu",
 };
 
 const STATUS_CLASS: Record<AppointmentStatus, string> = {
@@ -99,14 +113,19 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
 ];
 
 function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
+  // snapshots têm prioridade, join como fallback
+  const serviceName = appt.service_name ?? appt.service?.name ?? "Serviço";
+  const durationMin =
+    appt.service_duration_min ?? appt.service?.duration_min ?? null;
+  const barberName = appt.barber_name ?? appt.barber?.name ?? null;
+  const price = appt.service_price ?? appt.service?.price ?? null;
+  console.log({ appt, serviceName, durationMin, barberName, price });
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <Scissors size={14} className="mt-0.5 shrink-0 text-neutral-400" />
-          <span className="text-sm font-medium">
-            {appt.service?.name ?? "Serviço"}
-          </span>
+          <span className="text-sm font-medium">{serviceName}</span>
         </div>
         <span
           className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASS[appt.status]}`}
@@ -119,28 +138,26 @@ function AppointmentCard({ appt }: { appt: NormalizedAppointment }) {
         <div className="flex items-center gap-1.5">
           <Clock size={12} />
           <span>{appt.starts_at.slice(11, 16)}</span>
-          {appt.service?.duration_min != null && (
+          {durationMin != null && (
             <span className="text-neutral-400">
-              · {formatDuration(appt.service.duration_min)}
+              · {formatDuration(durationMin)}
             </span>
           )}
         </div>
-        {appt.barber && (
+        {barberName && (
           <div className="flex items-center gap-1.5">
             <User size={12} />
-            <span>{appt.barber.name}</span>
+            <span>{barberName}</span>
           </div>
         )}
       </div>
 
-      {appt.service?.price != null && (
-        <div className="flex items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
-          <span className="text-xs text-neutral-400">Valor</span>
-          <span className="text-sm font-semibold">
-            {formatPrice(appt.service.price)}
-          </span>
-        </div>
-      )}
+      <div className="flex items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
+        <span className="text-xs text-neutral-400">Valor</span>
+        <span className="text-sm font-semibold">
+          {price != null ? formatPrice(price) : "—"}
+        </span>
+      </div>
     </div>
   );
 }
@@ -153,24 +170,41 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterTab>("all");
   const [ascending, setAscending] = useState(false);
+  const lastLoadedKeyRef = useRef<string | null>(null);
 
   const primary = props.style.primary_color;
   const textButtonColor = props.style.text_button_color;
+  const customerId = customer?.id ?? null;
+  const visibleAppointments = useMemo(
+    () => (customerId ? appointments : []),
+    [customerId, appointments],
+  );
+  const isLoadingAppointments = customerId ? loading : false;
+  const visibleError = customerId ? error : null;
 
   useEffect(() => {
     if (!isAuthenticated) navigate(`/${props.slug}/entrar`);
   }, [isAuthenticated, props.slug, navigate]);
 
   useEffect(() => {
-    if (!customer) return;
+    if (!customerId) {
+      lastLoadedKeyRef.current = null;
+      return;
+    }
 
-    const customerId = customer.id;
+    const resolvedCustomerId = customerId;
+    const requestKey = `${props.id}:${resolvedCustomerId}`;
+
+    if (lastLoadedKeyRef.current === requestKey) return;
 
     async function loadAppointments() {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await getCustomerAppointments(customerId, props.id);
+      const { data, error } = await getCustomerAppointments(
+        resolvedCustomerId,
+        props.id,
+      );
 
       if (error) {
         setError("Nao foi possivel carregar seus agendamentos.");
@@ -180,24 +214,27 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
       }
 
       setAppointments((data as AppointmentRow[]).map(normalize));
+      lastLoadedKeyRef.current = requestKey;
       setLoading(false);
     }
 
     void loadAppointments();
-  }, [customer, props.id]);
+  }, [customerId, props.id]);
 
   const filtered = useMemo(() => {
-    let list = appointments;
-    if (filter === "upcoming")
+    let list = visibleAppointments;
+    if (filter === "upcoming") {
       list = list.filter(a => a.status === "scheduled");
-    if (filter === "past") list = list.filter(a => a.status !== "scheduled");
+    }
+    if (filter === "past") {
+      list = list.filter(a => a.status !== "scheduled");
+    }
     return [...list].sort((a, b) => {
       const cmp = a.starts_at.localeCompare(b.starts_at);
       return ascending ? cmp : -cmp;
     });
-  }, [appointments, filter, ascending]);
+  }, [visibleAppointments, filter, ascending]);
 
-  // Group by date string "YYYY-MM-DD"
   const groups = useMemo(() => {
     const map = new Map<string, NormalizedAppointment[]>();
     for (const appt of filtered) {
@@ -215,7 +252,6 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
         <CustomerProfileCard />
 
-        {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-nowrap">Meus agendamentos</h1>
           <Button
@@ -228,7 +264,6 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
           </Button>
         </div>
 
-        {/* Filters */}
         <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
           <div className="flex gap-1.5">
             {FILTER_TABS.map(tab => (
@@ -259,21 +294,20 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
           </button>
         </div>
 
-        {/* Content */}
-        {loading ? (
+        {isLoadingAppointments ? (
           <div className="flex justify-center py-20">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-800" />
           </div>
-        ) : error ? (
+        ) : visibleError ? (
           <div className="py-20 text-center">
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-500">{visibleError}</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-20 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
               <Calendar size={24} className="text-neutral-400" />
             </div>
-            {appointments.length === 0 ? (
+            {visibleAppointments.length === 0 ? (
               <>
                 <div>
                   <p className="font-medium">Nenhum agendamento ainda</p>
@@ -299,11 +333,10 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
           <div className="flex flex-col">
             {groups.map(([day, appts], groupIdx) => (
               <div key={day} className="flex gap-2">
-                {/* Timeline */}
                 <div className="flex flex-col items-center">
                   <div
                     className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-                    style={{ backgroundColor: primary + "20", color: primary }}
+                    style={{ backgroundColor: `${primary}20`, color: primary }}
                   >
                     <Calendar size={14} />
                   </div>
@@ -312,7 +345,6 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="flex flex-1 flex-col gap-2 pt-1.5 pb-4.5">
                   <p className="mt-1 text-sm font-semibold">
                     {formatDate(day)}

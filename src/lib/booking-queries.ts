@@ -12,9 +12,11 @@ function getUtcRangeForLocalDate(date: string) {
 }
 
 function isActiveAppointmentStatus(status: string) {
-  return !["cancelled_by_customer", "cancelled_by_barbershop", "no_show"].includes(
-    status,
-  );
+  return ![
+    "cancelled_by_customer",
+    "cancelled_by_barbershop",
+    "no_show",
+  ].includes(status);
 }
 
 async function getAppointmentsOnDateByField(
@@ -87,6 +89,11 @@ export async function getCustomerAppointments(
       ends_at,
       notes,
       created_at,
+      service_name,
+      service_price,
+      service_duration,
+      customer_name,
+      barber_name,
       barbers ( id, name, avatar_url ),
       services ( id, name, price, duration_min )
     `,
@@ -105,7 +112,12 @@ export async function getAppointmentsForBarberOnDate(
   barberId: string,
   date: string,
 ) {
-  return getAppointmentsOnDateByField("barber_id", barberId, barbershopId, date);
+  return getAppointmentsOnDateByField(
+    "barber_id",
+    barberId,
+    barbershopId,
+    date,
+  );
 }
 
 export async function getAppointmentsForCustomerOnDate(
