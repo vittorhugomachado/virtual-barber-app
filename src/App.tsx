@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotFoundPage } from "./app/pages/not-found-page";
 import { AuthCallbackPage } from "./app/pages/auth-callback-page";
 import { ThemeResolver } from "./app/themes/resolver";
 import { supabase } from "./app/lib/supabase";
 import { syncAuthStoreWithSession } from "./app/lib/auth";
 import { useAuthStore } from "./app/store/auth-store";
+import { PortalApp } from "./portal";
 
 export function App() {
   const { setCustomer, clearCustomer, setLoading } = useAuthStore();
@@ -44,7 +45,7 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/404" replace />} />
+        <Route path="/" element={<PortalApp />} />
         <Route path="/:slug" element={<ThemeResolver page="home" />} />
         <Route
           path="/:slug/agendar"
