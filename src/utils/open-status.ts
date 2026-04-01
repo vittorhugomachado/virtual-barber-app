@@ -1,4 +1,4 @@
-import type { OpeningHour } from "../themes/types";
+import type { OpeningHour } from "@/app/themes/types";
 
 export function getOpenStatus(openingHours: OpeningHour[]) {
   const now = new Date();

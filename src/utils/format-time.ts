@@ -1,4 +1,4 @@
-import { DAYS_FULL, MONTHS_SHORT, type BarberAvailability, type OpeningHour } from "../themes/types";
+import { DAYS_FULL, MONTHS_SHORT, type BarberAvailability, type OpeningHour } from "@/app/themes/types";
 
 export function formatTime(time: string) {
   return time.slice(0, 5);

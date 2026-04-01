@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { NotFoundPage } from "./pages/not-found-page";
-import { AuthCallbackPage } from "./pages/auth-callback-page";
-import { ThemeResolver } from "./themes/resolver";
-import { supabase } from "./lib/supabase";
-import { syncAuthStoreWithSession } from "./lib/auth";
-import { useAuthStore } from "./store/auth-store";
+import { NotFoundPage } from "./app/pages/not-found-page";
+import { AuthCallbackPage } from "./app/pages/auth-callback-page";
+import { ThemeResolver } from "./app/themes/resolver";
+import { supabase } from "./app/lib/supabase";
+import { syncAuthStoreWithSession } from "./app/lib/auth";
+import { useAuthStore } from "./app/store/auth-store";
 
 export function App() {
   const { setCustomer, clearCustomer, setLoading } = useAuthStore();
