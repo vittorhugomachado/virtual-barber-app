@@ -8,7 +8,7 @@ import { ThemeResolver } from "./app/themes/resolver";
 import { supabase } from "./app/lib/supabase";
 import { syncAuthStoreWithSession } from "./app/lib/auth";
 import { useAuthStore } from "./app/store/auth-store";
-import { PortalApp } from "./portal";
+import { HomePage } from "./portal/pages/home";
 
 export function App() {
   const { setCustomer, clearCustomer, setLoading } = useAuthStore();
@@ -48,7 +48,7 @@ export function App() {
     <BrowserRouter>
       <Routes>
         {/* ROTAS DO PORTAL */}
-        <Route path="/" element={<PortalApp />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/artigo/:tag/:idPost" element={<PostPage />} />
         <Route path="/artigo/:tag" element={<PostsByTagPage />} />
 
