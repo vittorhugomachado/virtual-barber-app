@@ -58,11 +58,22 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
   const { data, isLoading, error } = useBarbershop(slug ?? "");
 
   useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.title = data ? `${data.name}` : "Barbershop";
     document.documentElement.classList.toggle(
       "dark",
       Boolean(data?.style.theme_is_dark),
     );
-  }, [data?.style.theme_is_dark]);
+  }, [data]);
 
   if (isLoading) return <ThemeLoadingFallback />;
   if (error || !data) return <NotFoundPage />;

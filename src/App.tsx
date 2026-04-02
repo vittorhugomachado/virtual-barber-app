@@ -45,7 +45,10 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ROTAS DO PORTAL */}
         <Route path="/" element={<PortalApp />} />
+
+        {/* ROTAS DO APP */}
         <Route path="/:slug" element={<ThemeResolver page="home" />} />
         <Route
           path="/:slug/agendar"
