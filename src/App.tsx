@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotFoundPage } from "./app/pages/not-found-page";
 import { AuthCallbackPage } from "./app/pages/auth-callback-page";
+import { PostPage } from "./portal/pages/post";
+import { PostsByTagPage } from "./portal/pages/posts-by-tag";
 import { ThemeResolver } from "./app/themes/resolver";
 import { supabase } from "./app/lib/supabase";
 import { syncAuthStoreWithSession } from "./app/lib/auth";
@@ -47,6 +49,8 @@ export function App() {
       <Routes>
         {/* ROTAS DO PORTAL */}
         <Route path="/" element={<PortalApp />} />
+        <Route path="/artigo/:tag/:idPost" element={<PostPage />} />
+        <Route path="/artigo/:tag" element={<PostsByTagPage />} />
 
         {/* ROTAS DO APP */}
         <Route path="/:slug" element={<ThemeResolver page="home" />} />
