@@ -1,22 +1,30 @@
 import { ArrowRight, BookOpenText } from "lucide-react";
+import {
+  PORTAL_CATEGORIES,
+  type PortalCategoryKey,
+} from "@/portal/types/portal-types";
 
 type FeaturedCardProps = {
-  // title: string;
-  // tag: string;
-  // date: string;
-  // imageUrl: string;
-  // description: string;
+  title: string;
+  category: PortalCategoryKey;
+  date: string;
+  imageUrl: string;
+  description: string;
+  readTime: string;
   isSmall: boolean;
 };
 
 export function FeaturedCard({
-  //   title,
-  //   tag,
-  //   date,
-  //   imageUrl,
-  //   description,
+  title,
+  category,
+  date,
+  imageUrl,
+  description,
+  readTime,
   isSmall,
 }: FeaturedCardProps) {
+  const categoryMeta = PORTAL_CATEGORIES[category];
+
   return (
     <div
       style={{ maxWidth: isSmall ? "400px" : "704px" }}
@@ -24,20 +32,24 @@ export function FeaturedCard({
     >
       {!isSmall && (
         <img
-          src="/image.png"
-          alt=""
+          src={imageUrl}
+          alt="imagem artigo"
           className="h-80 w-full rounded-md object-cover"
         />
       )}
 
       <div className="px-3 pt-3 pb-3">
         <div className="flex w-full justify-between">
-          <span className="rounded-sm bg-[#bee0fd] px-1.5 py-1 text-[13px] text-[#213130]">
-            Social
+          <span
+            style={{
+              backgroundColor: categoryMeta.colors.background,
+              color: categoryMeta.colors.text,
+            }}
+            className="rounded-sm px-1.5 py-1 text-[13px]"
+          >
+            {categoryMeta.label}
           </span>
-          <span className="text-[13px] text-neutral-500">
-            30 de abril, 2026
-          </span>
+          <span className="text-[13px] text-neutral-500">{date}</span>
         </div>
         <h3
           style={{
@@ -46,13 +58,11 @@ export function FeaturedCard({
           }}
           className="mt-4 text-2xl font-semibold text-[#212039]"
         >
-          Social Media Engagement: 11 Ways to Boost Yours + Why it Matters
+          {title}
         </h3>
         {!isSmall && (
           <p className="text-md font-semilight mb-6 text-neutral-500">
-            Without engagement, social media is just media. In this article,
-            you’ll learn nine actionable and authentic ways to boost your
-            content’s engagement.
+            {description}
           </p>
         )}
         <div className="flex justify-between">
@@ -61,7 +71,7 @@ export function FeaturedCard({
             className="flex items-center gap-1 text-[13px] text-neutral-500"
           >
             {" "}
-            <BookOpenText size={17} className="translate-y-px" /> 25 minutos de
+            <BookOpenText size={17} className="translate-y-px" /> {readTime} de
             leitura
           </span>
           <ArrowRight

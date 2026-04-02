@@ -1,60 +1,60 @@
 import { ArrowRight, BookOpenText } from "lucide-react";
+import {
+  PORTAL_CATEGORIES,
+  type PortalCategoryKey,
+} from "@/portal/types/portal-types";
 
-type FeaturedCardProps = {
-//   // title: string;
-//   // tag: string;
-//   // date: string;
-//   // imageUrl: string;
-//   // description: string;
-isSmall: boolean;
+type PostCardProps = {
+  title: string;
+  category: PortalCategoryKey;
+  date: string;
+  imageUrl: string;
+  description: string;
+  readTime: string;
+  isSmall: boolean;
 };
 
 export function PostCard({
-//   {
-//   //   title,
-//   //   tag,
-//   //   date,
-//   //   imageUrl,
-//   //   description,
-   isSmall,
-}: FeaturedCardProps) 
-{
+  title,
+  category,
+  date,
+  imageUrl,
+  description,
+  readTime,
+  isSmall,
+}: PostCardProps) {
+  const categoryMeta = PORTAL_CATEGORIES[category];
+
   return (
-    <div
-      className="group h-fit w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-2 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-800"
-    >
+    <div className="group h-fit w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-2 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-800">
       {!isSmall && (
         <img
-        src="/image.png"
-        alt=""
-        className="h-50 w-full rounded-md object-cover"
+          src={imageUrl}
+          alt="imagem artigo"
+          className="h-50 w-full rounded-md object-cover"
         />
       )}
       <div className="px-3 pt-3 pb-3">
         <div className="flex w-full justify-between">
-          <span className="rounded-sm bg-[#bee0fd] px-1.5 py-1 text-[13px] text-[#213130]">
-            Social
-          </span>
-          <span className="text-[13px] text-neutral-500">
-            30 de abril, 2026
-          </span>
-        </div>
-        <h3
-          className="mt-4 text-xl font-semibold text-[#212039]"
-        >
-          Social Media Engagement: 11 Ways to Boost Yours + Why it Matters
-        </h3>
-          <p className="text-sm font-semilight mb-6 text-neutral-500">
-            Without engagement, social media is just media. In this article,
-            you’ll learn nine actionable and authentic ways to boost your
-            content’s engagement.
-          </p>
-        <div className="flex justify-between">
           <span
-            className="flex items-center gap-1 text-[12px] text-neutral-500"
+            style={{
+              backgroundColor: categoryMeta.colors.background,
+              color: categoryMeta.colors.text,
+            }}
+            className="rounded-sm px-1.5 py-1 text-[13px]"
           >
+            {categoryMeta.label}
+          </span>
+          <span className="text-[13px] text-neutral-500">{date}</span>
+        </div>
+        <h3 className="mt-4 text-xl font-semibold text-[#212039]">{title}</h3>
+        <p className="font-semilight mb-6 text-sm text-neutral-500">
+          {description}
+        </p>
+        <div className="flex justify-between">
+          <span className="flex items-center gap-1 text-[12px] text-neutral-500">
             {" "}
-            <BookOpenText size={15} className="translate-y-px" /> 25 minutos de
+            <BookOpenText size={15} className="translate-y-px" /> {readTime} de
             leitura
           </span>
           <ArrowRight
