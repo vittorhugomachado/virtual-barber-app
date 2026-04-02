@@ -71,3 +71,23 @@ export type FeaturedPortalPost = PortalPost & {
   isPrimary?: boolean;
   order: number;
 };
+
+export type Post = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  cover_url: string;
+  category: PortalCategoryKey;
+  tags: string[];
+  meta_title: string;
+  meta_description: string;
+  status: "published" | "draft";
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+  featured: boolean;
+  is_primary: boolean;
+  display_order: number;
+};
