@@ -4,7 +4,7 @@ import { Footer } from "./components/footer";
 
 export function PortalApp() {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-[#050419]">
       <Header />
       <Main />
       <Footer />

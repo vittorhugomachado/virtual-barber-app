@@ -1,5 +1,6 @@
-import { Menu, X } from "lucide-react";
+import { House, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -10,51 +11,23 @@ import {
 import { Logo } from "./logo";
 
 const navItems = [
+  { label: "Produtos", href: "/produtos" },
   { label: "Tendências", href: "/tendencias" },
-  { label: "Gestão", href: "/gestao" },
-  { label: "Conheça", href: "/conheca" },
+  { label: "Dicas", href: "/dicas" },
+  { label: "Estilo", href: "/estilo" },
+  { label: "Saúde", href: "/saude" },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
+  const isActivePath = (href: string) => location.pathname === href;
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 items-center justify-between gap-6 px-4 md:px-4 lg:px-10">
+    <header className="sticky top-0 z-50">
+      <div className="mx-auto flex h-16 w-full items-center justify-between gap-3 border-b border-neutral-200 bg-neutral-100 px-4 md:justify-center md:px-4 lg:px-10">
         <Logo isDarkLogo={false} />
-        <div className="w-full flex gap-2 justify-end">
-          <nav
-            aria-label="Navegacao principal"
-            className="hidden mx-auto items-center gap-4 md:flex lg:gap-7"
-          >
-            {navItems.map(item => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="text-md font-semilight text-neutral-900 transition-colors hover:text-neutral-950 lg:text-lg"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="hidden items-center gap-0 md:flex">
-            <a
-              href="/entrar"
-              className="text-md text-md font-semilight rounded-full pl-4 pr-3 py-2.5 text-neutral-900 transition-colors hover:text-neutral-950 lg:text-lg"
-            >
-              Entrar
-            </a>
-            <a
-              href="/comecar-gratis"
-              className="text-md rounded-full bg-[#0458EE] px-3 py-3 font-semibold text-white transition-all duration-300 hover:bg-[#004cd1] lg:text-lg"
-            >
-              Começar grátis
-            </a>
-          </div>
-        </div>
-
-        <div className="md:hidden">
+        <div className="shrink-0 md:hidden bg-neutral-100">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <button
@@ -65,7 +38,6 @@ export function Header() {
                 {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </SheetTrigger>
-
             <SheetContent
               side="left"
               style={{ maxWidth: "100vw" }}
@@ -95,38 +67,55 @@ export function Header() {
                   className="flex flex-1 flex-col justify-between py-8"
                 >
                   <div className="space-y-2">
+                    <a
+                      href="/"
+                      className="block rounded-[1.5rem] px-5 py-2 font-light text-neutral-900 transition-colors hover:bg-neutral-50"
+                    >
+                      <House size={23} style={{ fontWeight: "100" }} />
+                    </a>
                     {navItems.map(item => (
                       <a
                         key={item.label}
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="text-md font-semilight block rounded-[1.5rem] border border-neutral-200 px-5 py-4 text-neutral-900 transition-colors hover:bg-neutral-50"
+                        className="text-md font-semilight block rounded-[1.5rem] px-5 py-2 text-neutral-900 transition-colors hover:bg-neutral-50"
                       >
                         {item.label}
                       </a>
                     ))}
                   </div>
-
-                  <div className="mt-8 flex flex-col gap-3 pt-6">
-                    <a
-                      href="/entrar"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-md font-semilight rounded-full border border-neutral-200 px-5 py-3 text-center text-neutral-900 transition-colors hover:bg-neutral-100"
-                    >
-                      Entrar
-                    </a>
-                    <a
-                      href="/comecar-gratis"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="rounded-full bg-[#0458EE] px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-neutral-800"
-                    >
-                      Começar grátis
-                    </a>
-                  </div>
                 </nav>
               </div>
             </SheetContent>
           </Sheet>
+        </div>
+      </div>
+      <div className="hidden md:flex mx-auto h-12 items-center gap-6 bg-[#050419] border-b border-[#171532] px-4 md:px-4 lg:px-10">
+        <div className="flex w-full justify-center gap-2">
+          <nav
+            aria-label="Navegacao principal"
+            className="hidden items-center gap-7 md:flex lg:gap-7"
+          >
+            <a
+              href="/"
+              className={`flex h-12 items-center border-b-2 transition-colors ${
+                isActivePath("/")
+                  ? "border-b-[#0458EE] text-neutral-100"
+                  : "border-b-transparent text-neutral-100 hover:text-neutral-300"
+              }`}
+            >
+              <House size={23} />
+            </a>
+            {navItems.map(item => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-md font-semilight text-neutral-100 transition-colors hover:text-neutral-300 lg:text-lg"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
         </div>
       </div>
     </header>
