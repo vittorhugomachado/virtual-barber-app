@@ -61,10 +61,10 @@ export type PortalPost = {
   id: number;
   title: string;
   category: PortalCategoryKey;
-  date: string;
-  imageUrl: string;
-  description: string;
-  readTime: string;
+  published_at: string;
+  cover_url: string;
+  excerpt: string;
+  read_time: string;
 };
 
 export type FeaturedPortalPost = PortalPost & {
@@ -84,7 +84,7 @@ export type Post = {
   meta_title: string;
   meta_description: string;
   status: "published" | "draft";
-  published_at: string | null;
+  published_at: string;
   created_at: string;
   updated_at: string;
   featured: boolean;

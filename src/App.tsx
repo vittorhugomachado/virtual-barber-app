@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotFoundPage } from "./app/pages/not-found-page";
 import { AuthCallbackPage } from "./app/pages/auth-callback-page";
 import { PostPage } from "./portal/pages/post";
-import { PostsByTagPage } from "./portal/pages/posts-by-tag";
+import { CategoryPage } from "./portal/pages/posts-by-tag";
 import { ThemeResolver } from "./app/themes/resolver";
 import { supabase } from "./app/lib/supabase";
 import { syncAuthStoreWithSession } from "./app/lib/auth";
@@ -50,7 +50,7 @@ export function App() {
         {/* ROTAS DO PORTAL */}
         <Route path="/" element={<HomePage />} />
         <Route path="/portal/:tag/:post" element={<PostPage />} />
-        <Route path="/portal/:tag" element={<PostsByTagPage />} />
+        <Route path="/portal/:tag" element={<CategoryPage />} />
 
         {/* ROTAS DO APP */}
         <Route path="/:slug" element={<ThemeResolver page="home" />} />
