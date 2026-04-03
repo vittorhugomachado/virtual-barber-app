@@ -1,13 +1,13 @@
 import { ArrowRight } from "lucide-react";
 import { PostCard } from "../cards/post-card";
-import { SectionSkeleton } from "../skeleton/section-skeleton";
+import { PostsSkeleton } from "../skeleton/posts-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
 import { toPortalCardPost } from "@/portal/lib/post-presenter";
 
 export function SectionTendencies() {
   const { posts, isLoading } = useFeaturedPosts();
 
-  if (isLoading) return <SectionSkeleton />;
+  if (isLoading) return <PostsSkeleton bgDark={true} />;
 
   const categoryPosts = posts
     .filter(post => post.category === "tendencias")
@@ -28,13 +28,12 @@ export function SectionTendencies() {
             {primaryPost.map(post => (
               <PostCard
                 key={post.id}
-                isSmall={false}
+                isSmall={true}
                 title={post.title}
                 category={post.category}
-                date={post.date}
-                imageUrl={post.imageUrl}
-                description={post.description}
-                readTime={post.readTime}
+                published_at={post.published_at}
+                cover_url={post.cover_url}
+                excerpt={post.excerpt}
               />
             ))}
           </div>
@@ -45,10 +44,9 @@ export function SectionTendencies() {
                 isSmall={true}
                 title={post.title}
                 category={post.category}
-                date={post.date}
-                imageUrl={post.imageUrl}
-                description={post.description}
-                readTime={post.readTime}
+                published_at={post.published_at}
+                cover_url={post.cover_url}
+                excerpt={post.excerpt}
               />
             ))}
           </div>

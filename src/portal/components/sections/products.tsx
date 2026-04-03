@@ -1,13 +1,13 @@
 import { ArrowRight } from "lucide-react";
 import { PostCard } from "../cards/post-card";
-import { SectionSkeleton } from "../skeleton/section-skeleton";
+import { PostsSkeleton } from "../skeleton/posts-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
 import { toPortalCardPost } from "@/portal/lib/post-presenter";
 
 export function SectionProducts() {
   const { posts, isLoading } = useFeaturedPosts();
 
-  if (isLoading) return <SectionSkeleton />;
+  if (isLoading) return <PostsSkeleton bgDark={false} />;
 
   const categoryPosts = posts
     .filter(post => post.category === "produtos")
@@ -16,7 +16,6 @@ export function SectionProducts() {
   const secondaryPosts = categoryPosts.slice(3, 6);
 
   if (categoryPosts.length === 0) return null;
-
   return (
     <section className="relative mt-26 flex min-h-screen w-full flex-col items-center rounded-xl bg-[#e7e7e7] py-16">
       <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -28,13 +27,12 @@ export function SectionProducts() {
             {primaryPost.map(post => (
               <PostCard
                 key={post.id}
-                isSmall={false}
                 title={post.title}
                 category={post.category}
-                date={post.date}
-                imageUrl={post.imageUrl}
-                description={post.description}
-                readTime={post.readTime}
+                published_at={post.published_at}
+                cover_url={post.cover_url}
+                excerpt={post.excerpt}
+                isSmall={false}
               />
             ))}
           </div>
@@ -45,10 +43,9 @@ export function SectionProducts() {
                 isSmall={true}
                 title={post.title}
                 category={post.category}
-                date={post.date}
-                imageUrl={post.imageUrl}
-                description={post.description}
-                readTime={post.readTime}
+                published_at={post.published_at}
+                cover_url={post.cover_url}
+                excerpt={post.excerpt}
               />
             ))}
           </div>

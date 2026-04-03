@@ -1,5 +1,5 @@
 import { FeaturedCard } from "../cards/featured-card";
-import { SectionSkeleton } from "../skeleton/section-skeleton";
+import { PostsSkeleton } from "../skeleton/posts-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
 import { toPortalCardPost } from "@/portal/lib/post-presenter";
 import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
@@ -7,7 +7,7 @@ import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
 export function SectionHero() {
   const { posts, isLoading } = useFeaturedPosts();
 
-  if (isLoading) return <SectionSkeleton />;
+  if (isLoading) return <PostsSkeleton bgDark={true} />;
 
   const primaryPost = posts.find(post => post.is_primary);
 
@@ -36,10 +36,10 @@ export function SectionHero() {
           isSmall={false}
           title={heroPost.title}
           category={heroPost.category}
-          date={heroPost.date}
-          imageUrl={heroPost.imageUrl}
-          description={heroPost.description}
-          readTime={heroPost.readTime}
+          published_at={heroPost.published_at}
+          cover_url={heroPost.cover_url}
+          excerpt={heroPost.excerpt}
+          read_time={heroPost.read_time}
         />
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-1">
           {secondaryPosts.map(post => (
@@ -48,10 +48,10 @@ export function SectionHero() {
               isSmall={true}
               title={post.title}
               category={post.category}
-              date={post.date}
-              imageUrl={post.imageUrl}
-              description={post.description}
-              readTime={post.readTime}
+              published_at={post.published_at}
+              cover_url={post.cover_url}
+              excerpt={post.excerpt}
+              read_time={post.read_time}
             />
           ))}
         </div>

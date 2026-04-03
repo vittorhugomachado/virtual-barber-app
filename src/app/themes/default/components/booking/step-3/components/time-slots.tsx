@@ -49,7 +49,7 @@ export function TimeSlots({
       slots: allSlotsWithStatus.filter(s => getTimePeriod(s.time) === "noite"),
     },
   ].filter(p => p.slots.length > 0);
-console.log(allSlotsForDay)
+
   return (
     <>
       <div className="mb-4 flex items-center gap-2">

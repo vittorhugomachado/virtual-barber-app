@@ -2,9 +2,17 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import type { Post } from "../types/portal-types";
 import { getPostsByTag } from "../lib/queries";
+import { PostsSkeleton } from "../components/skeleton/posts-skeleton";
+import { Header } from "../components/header";
+import { CategoryMain } from "../components/main/category";
+import {
+  PORTAL_CATEGORIES,
+  type PortalCategoryKey,
+} from "../types/portal-types";
 
-export function PostsByTagPage() {
+export function CategoryPage() {
   const [postsList, setpostsList] = useState<Post[] | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { tag } = useParams<{ tag: string }>();
@@ -26,6 +34,9 @@ export function PostsByTagPage() {
 
       if (!active) return;
 
+      const categoryMeta = PORTAL_CATEGORIES[tag as PortalCategoryKey];
+
+      setCategory(categoryMeta?.label ?? tag);
       setpostsList(result);
       setIsLoading(false);
 
@@ -41,18 +52,16 @@ export function PostsByTagPage() {
     };
   }, [tag]);
 
-  if (isLoading) {
-    return <div>Carregando...</div>;
-  }
-
   if (error) {
     return <div>{error}</div>;
   }
-  console.log(postsList);
   return (
-    <div>
-      <h1>{tag}</h1>
-      <p>{postsList?.length ?? 0}</p>
-    </div>
+    <>
+      <Header />
+      {isLoading && <PostsSkeleton bgDark={false} />}
+      {!isLoading && !error && postsList && category && (
+        <CategoryMain category={category} posts={postsList} />
+      )}
+    </>
   );
 }

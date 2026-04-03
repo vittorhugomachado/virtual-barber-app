@@ -48,7 +48,7 @@ export function PostPage() {
   if (error) {
     return <div>{error}</div>;
   }
-console.log(postData)
+
   return (
     <div>
       <h1>{postData?.title ?? "post"}</h1>

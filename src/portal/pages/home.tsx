@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Header } from "../components/header";
-import { Main } from "../components/main";
+import { HeroMain } from "../components/main/home";
 import { Footer } from "../components/footer";
 import { FeaturedPostsProvider } from "../contexts/featured-posts/featured-posts-provider";
 import { getFeaturedPosts } from "../lib/queries";
 import type { Post } from "../types/portal-types";
-import { SectionSkeleton } from "../components/skeleton/section-skeleton";
+import { PostsSkeleton } from "../components/skeleton/posts-skeleton";
 
 export function HomePage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -47,7 +47,7 @@ export function HomePage() {
     <FeaturedPostsProvider value={featuredPostsValue}>
       <div className="relative min-h-screen bg-[#050419]">
         <Header />
-        {isLoading ? <SectionSkeleton /> : <Main />}
+        {isLoading ? <PostsSkeleton bgDark={true} /> : <HeroMain />}
         <Footer />
       </div>
     </FeaturedPostsProvider>

@@ -27,9 +27,9 @@ export function toPortalCardPost(post: Post) {
     id: post.id,
     title: post.title,
     category: post.category,
-    date: toReadableDate(post.published_at ?? post.created_at),
-    imageUrl: post.cover_url,
-    description: post.excerpt,
-    readTime: toReadTime(post.content, post.excerpt),
+    published_at: toReadableDate(post.published_at ?? post.created_at),
+    cover_url: post.cover_url,
+    excerpt: post.excerpt,
+    read_time: toReadTime(post.content, post.excerpt),
   };
 }
