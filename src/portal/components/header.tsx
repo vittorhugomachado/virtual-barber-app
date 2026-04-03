@@ -11,11 +11,11 @@ import {
 import { Logo } from "./logo";
 
 const navItems = [
-  { label: "Produtos", href: "/produtos" },
-  { label: "Tendências", href: "/tendencias" },
-  { label: "Dicas", href: "/dicas" },
-  { label: "Estilo", href: "/estilo" },
-  { label: "Saúde", href: "/saude" },
+  { label: "Produtos", href: "/portal/produtos" },
+  { label: "Tendências", href: "/portal/tendencias" },
+  { label: "Dicas", href: "/portal/dicas" },
+  { label: "Estilo", href: "/portal/estilo" },
+  { label: "Saúde", href: "/portal/saude" },
 ];
 
 export function Header() {
