@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotFoundPage } from "./app/pages/not-found-page";
 import { AuthCallbackPage } from "./app/pages/auth-callback-page";
 import { PostPage } from "./portal/pages/post";
-import { CategoryPage } from "./portal/pages/posts-by-tag";
+import { CategoryPage } from "./portal/pages/category";
 import { ThemeResolver } from "./app/themes/resolver";
 import { supabase } from "./app/lib/supabase";
 import { syncAuthStoreWithSession } from "./app/lib/auth";
