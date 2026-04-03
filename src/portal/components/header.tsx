@@ -21,13 +21,13 @@ const navItems = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-
   const isActivePath = (href: string) => location.pathname === href;
+
   return (
     <header className="sticky top-0 z-50">
       <div className="mx-auto flex h-16 w-full items-center justify-between gap-3 border-b border-neutral-200 bg-neutral-100 px-4 md:justify-center md:px-4 lg:px-10">
         <Logo isDarkLogo={false} />
-        <div className="shrink-0 md:hidden bg-neutral-100">
+        <div className="shrink-0 bg-neutral-100 md:hidden">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <button
@@ -90,7 +90,7 @@ export function Header() {
           </Sheet>
         </div>
       </div>
-      <div className="hidden md:flex mx-auto h-12 items-center gap-6 bg-[#050419] border-b border-[#171532] px-4 md:px-4 lg:px-10">
+      <div className="mx-auto hidden h-12 items-center gap-6 border-b border-[#171532] bg-[#050419] px-4 md:flex md:px-4 lg:px-10">
         <div className="flex w-full justify-center gap-2">
           <nav
             aria-label="Navegacao principal"
@@ -110,7 +110,11 @@ export function Header() {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-md font-semilight text-neutral-100 transition-colors hover:text-neutral-300 lg:text-lg"
+                className={`text-md font-semilight h-[90%] flex items-center text-neutral-100 transition-colors hover:text-neutral-300 border-b-3 lg:text-lg ${
+                  isActivePath(item.href)
+                    ? "border-b-[#0458EE] text-neutral-100"
+                    : "border-b-transparent text-neutral-100 hover:text-neutral-300"
+                }`}
               >
                 {item.label}
               </a>
