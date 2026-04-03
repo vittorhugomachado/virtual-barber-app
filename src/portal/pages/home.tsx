@@ -26,7 +26,7 @@ export function HomePage() {
 
       setPosts(result);
       setIsLoading(false);
-
+console.log(result)
       if (result.length === 0) {
         setError("Nenhum post em destaque encontrado.");
       }

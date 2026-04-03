@@ -1,7 +1,6 @@
-import { BookOpenText, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import type { Post } from "@/portal/types/portal-types";
 import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
-import { getReadTime } from "@/portal/utils/get-read-time";
 import { formatDate } from "@/portal/utils/format-date";
 
 type PostMainProps = {
@@ -10,7 +9,7 @@ type PostMainProps = {
 
 export function PostMain({ post }: PostMainProps) {
   const categoryMeta = PORTAL_CATEGORIES[post.category];
-
+console.log(post.published_at)
   return (
     <main>
       {/* Hero — fundo escuro */}
@@ -41,10 +40,10 @@ export function PostMain({ post }: PostMainProps) {
                 <Calendar size={15} className="translate-y-px" />
                 {formatDate(post.published_at)}
               </span>
-              <span className="flex items-center gap-1.5">
+              {/* <span className="flex items-center gap-1.5">
                 <BookOpenText size={15} className="translate-y-px" />
                 {getReadTime(post.content)} de leitura
-              </span>
+              </span> */}
             </div>
           </div>
 

@@ -1,19 +1,5 @@
 import type { PortalPost, Post } from "@/portal/types/portal-types";
 
-function toReadableDate(value: string | null) {
-  if (!value) return "";
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) return "";
-
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
 function toReadTime(content: string, excerpt: string) {
   const source = content || excerpt;
   const words = source.trim().split(/\s+/).filter(Boolean).length;
@@ -28,7 +14,7 @@ export function toPortalCardPost(post: Post): PortalPost {
     title: post.title,
     slug: post.slug,
     category: post.category,
-    published_at: toReadableDate(post.published_at ?? post.created_at),
+    published_at: post.published_at,
     cover_url: post.cover_url,
     excerpt: post.excerpt,
     read_time: toReadTime(post.content, post.excerpt),

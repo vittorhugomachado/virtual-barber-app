@@ -1,10 +1,9 @@
-import { ArrowRight, BookOpenText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   PORTAL_CATEGORIES,
   type PortalCategoryKey,
 } from "@/portal/types/portal-types";
-import { getReadTime } from "@/portal/utils/get-read-time";
 import { formatDate } from "@/portal/utils/format-date";
 
 type PostCardProps = {
@@ -59,12 +58,12 @@ export function PostCard({
         <p className="font-semilight mb-6 line-clamp-3 min-h-15 text-sm text-neutral-700">
           {excerpt}
         </p>
-        <div className="mt-auto flex justify-between">
-          <span className="flex items-center gap-1 text-[12px] text-neutral-700">
+        <div className="mt-auto flex justify-end">
+          {/* <span className="flex items-center gap-1 text-[12px] text-neutral-700">
             {" "}
             <BookOpenText size={15} className="translate-y-px" /> {getReadTime(excerpt)} de
             leitura
-          </span>
+          </span> */}
           <ArrowRight
             size={30}
             className="text-4xl transition-all duration-300 group-hover:-rotate-45"

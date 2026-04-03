@@ -1,10 +1,9 @@
-import { ArrowRight, BookOpenText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   PORTAL_CATEGORIES,
   type PortalCategoryKey,
 } from "@/portal/types/portal-types";
-import { getReadTime } from "@/portal/utils/get-read-time";
 import { formatDate } from "@/portal/utils/format-date";
 
 type FeaturedCardProps = {
@@ -69,15 +68,15 @@ export function FeaturedCard({
             {excerpt}
           </p>
         )}
-        <div className="flex justify-between">
-          <span
+        <div className="flex justify-end">
+          {/* <span
             style={{ opacity: isSmall ? "0" : "100%" }}
             className="flex items-center gap-1 text-[13px] text-neutral-500"
           >
             {" "}
             <BookOpenText size={17} className="translate-y-px" /> {getReadTime(excerpt)} de
             leitura
-          </span>
+          </span> */}
           <ArrowRight
             size={30}
             className="text-4xl transition-all duration-300 group-hover:-rotate-45"
