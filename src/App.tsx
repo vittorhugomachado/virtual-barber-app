@@ -49,8 +49,8 @@ export function App() {
       <Routes>
         {/* ROTAS DO PORTAL */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/artigo/:tag/:idPost" element={<PostPage />} />
-        <Route path="/artigo/:tag" element={<PostsByTagPage />} />
+        <Route path="/portal/:tag/:post" element={<PostPage />} />
+        <Route path="/portal/:tag" element={<PostsByTagPage />} />
 
         {/* ROTAS DO APP */}
         <Route path="/:slug" element={<ThemeResolver page="home" />} />
