@@ -4,8 +4,9 @@ import { HeroMain } from "../components/main/home";
 import { Footer } from "../components/footer";
 import { FeaturedPostsProvider } from "../contexts/featured-posts/featured-posts-provider";
 import { getFeaturedPosts } from "../lib/queries";
-import type { Post } from "../types/portal-types";
+import type { PortalPost, Post } from "../types/portal-types";
 import { PostsSkeleton } from "../components/skeleton/posts-skeleton";
+import { toPortalCardPost } from "../lib/post-presenter";
 
 export function HomePage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -39,7 +40,11 @@ export function HomePage() {
   }, []);
 
   const featuredPostsValue = useMemo(
-    () => ({ posts, isLoading, error }),
+    () => ({
+      posts: posts.map(toPortalCardPost) as PortalPost[],
+      isLoading,
+      error,
+    }),
     [posts, isLoading, error],
   );
 

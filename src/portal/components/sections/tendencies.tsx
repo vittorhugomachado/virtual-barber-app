@@ -2,16 +2,13 @@ import { ArrowRight } from "lucide-react";
 import { PostCard } from "../cards/post-card";
 import { PostsSkeleton } from "../skeleton/posts-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
-import { toPortalCardPost } from "@/portal/lib/post-presenter";
 
 export function SectionTendencies() {
   const { posts, isLoading } = useFeaturedPosts();
 
   if (isLoading) return <PostsSkeleton bgDark={true} />;
 
-  const categoryPosts = posts
-    .filter(post => post.category === "tendencias")
-    .map(toPortalCardPost);
+  const categoryPosts = posts.filter(post => post.category === "tendencias");
   const primaryPost = categoryPosts.slice(0, 3);
   const secondaryPosts = categoryPosts.slice(3, 6);
 

@@ -1,7 +1,6 @@
 import { FeaturedCard } from "../cards/featured-card";
 import { PostsSkeleton } from "../skeleton/posts-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
-import { toPortalCardPost } from "@/portal/lib/post-presenter";
 import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
 
 export function SectionHero() {
@@ -13,7 +12,6 @@ export function SectionHero() {
 
   if (!primaryPost) return null;
 
-  const heroPost = toPortalCardPost(primaryPost);
   const secondaryPosts = Object.keys(PORTAL_CATEGORIES)
     .map(category =>
       posts.find(
@@ -23,8 +21,7 @@ export function SectionHero() {
           post.id !== primaryPost.id,
       ),
     )
-    .filter(post => post !== undefined)
-    .map(toPortalCardPost);
+    .filter((post): post is NonNullable<typeof post> => post !== undefined);
 
   return (
     <section className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -34,12 +31,12 @@ export function SectionHero() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.76fr)_minmax(0,1fr)]">
         <FeaturedCard
           isSmall={false}
-          title={heroPost.title}
-          category={heroPost.category}
-          published_at={heroPost.published_at}
-          cover_url={heroPost.cover_url}
-          excerpt={heroPost.excerpt}
-          read_time={heroPost.read_time}
+          title={primaryPost.title}
+          category={primaryPost.category}
+          published_at={primaryPost.published_at}
+          cover_url={primaryPost.cover_url}
+          excerpt={primaryPost.excerpt}
+          read_time={primaryPost.read_time}
         />
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-1">
           {secondaryPosts.map(post => (

@@ -1,8 +1,8 @@
 import { createContext, useContext } from "react";
-import type { Post } from "@/portal/types/portal-types";
+import type { PortalPost } from "@/portal/types/portal-types";
 
 export type FeaturedPostsContextValue = {
-  posts: Post[];
+  posts: PortalPost[];
   isLoading: boolean;
   error: string | null;
 };

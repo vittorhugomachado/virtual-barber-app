@@ -58,13 +58,16 @@ export type PortalCategoryLabel = PortalCategory["label"];
 export type Tag = PortalCategory;
 
 export type PortalPost = {
-  id: number;
+  id: string;
   title: string;
+  slug: string;
   category: PortalCategoryKey;
   published_at: string;
   cover_url: string;
   excerpt: string;
   read_time: string;
+  is_primary: boolean;
+  display_order: number;
 };
 
 export type FeaturedPortalPost = PortalPost & {

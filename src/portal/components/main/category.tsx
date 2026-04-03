@@ -1,11 +1,11 @@
-import type { Post } from "@/portal/types/portal-types";
+import type { PortalPost } from "@/portal/types/portal-types";
 import { PostCard } from "../cards/post-card";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 type CategoryMainProps = {
   category: string;
-  posts: Post[];
+  posts: PortalPost[];
 };
 
 export function CategoryMain({ category, posts }: CategoryMainProps) {
