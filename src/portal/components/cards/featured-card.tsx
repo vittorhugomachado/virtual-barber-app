@@ -31,7 +31,7 @@ export function FeaturedCard({
     <Link
       to={link}
       style={{ maxWidth: isSmall ? "400px" : "704px" }}
-      className="group h-fit w-full max-w-full rounded-lg bg-white p-2 transition-all duration-300 hover:-translate-y-1"
+      className="group mx-auto h-fit w-full max-w-full rounded-lg bg-white p-2 transition-all duration-300 hover:-translate-y-1"
     >
       {!isSmall && (
         <img

@@ -45,6 +45,19 @@ export function PostPage() {
     };
   }, [post, tag]);
 
+  useEffect(() => {
+    if (!postData) return;
+
+    const canonical = document.querySelector('link[rel="canonical"]');
+    const url = `https://virtualbarber.com.br/portal/${postData.category}/${postData.slug}`;
+
+    canonical?.setAttribute("href", url);
+
+    return () => {
+      canonical?.setAttribute("href", "https://virtualbarber.com.br/");
+    };
+  }, [postData]);
+
   return (
     <>
       <Header />

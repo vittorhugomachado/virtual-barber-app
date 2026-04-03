@@ -25,7 +25,7 @@ export function SectionTendencies() {
             {primaryPost.map(post => (
               <PostCard
                 key={post.id}
-                isSmall={true}
+                isSmall={false}
                 title={post.title}
                 category={post.category}
                 published_at={post.published_at}
