@@ -55,7 +55,7 @@ export function PostCard({
         <h3 className="mt-4 line-clamp-2 min-h-14 text-xl font-semibold text-[#212039]">
           {title}
         </h3>
-        <p className="font-semilight mb-6 line-clamp-3 min-h-15 text-sm text-neutral-700">
+        <p className="font-semilight line-clamp-3 min-h-15 text-sm text-neutral-700">
           {excerpt}
         </p>
         <div className="mt-auto flex justify-end">

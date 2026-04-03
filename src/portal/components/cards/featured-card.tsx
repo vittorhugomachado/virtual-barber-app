@@ -57,7 +57,7 @@ export function FeaturedCard({
         <h3
           style={{
             fontSize: isSmall ? "16px" : "24px",
-            marginBottom: isSmall ? "0" : "20px",
+            marginBottom: isSmall ? "10px" : "20px",
           }}
           className="mt-4 text-2xl font-semibold text-[#212039]"
         >
