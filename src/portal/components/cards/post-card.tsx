@@ -34,7 +34,7 @@ export function PostCard({
           className="h-50 w-full rounded-md object-cover"
         />
       )}
-      <div className="flex flex-1 flex-col px-3 pb-3 pt-3">
+      <div className="flex flex-1 flex-col px-3 pt-3 pb-3">
         <div className="flex w-full justify-between">
           <span
             style={{
@@ -47,10 +47,10 @@ export function PostCard({
           </span>
           <span className="text-[13px] text-neutral-500">{date}</span>
         </div>
-        <h3 className="mt-4 line-clamp-2 min-h-[56px] text-xl font-semibold text-[#212039]">
+        <h3 className="mt-4 line-clamp-2 min-h-14 text-xl font-semibold text-[#212039]">
           {title}
         </h3>
-        <p className="font-semilight mb-6 line-clamp-3 min-h-[60px] text-sm text-neutral-500">
+        <p className="font-semilight mb-6 line-clamp-3 min-h-15 text-sm text-neutral-500">
           {description}
         </p>
         <div className="mt-auto flex justify-between">
