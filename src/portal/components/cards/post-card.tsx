@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpenText } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   PORTAL_CATEGORIES,
   type PortalCategoryKey,
@@ -12,6 +13,7 @@ type PostCardProps = {
   cover_url: string;
   excerpt: string;
   isSmall: boolean;
+  link: string;
 };
 
 export function PostCard({
@@ -21,11 +23,15 @@ export function PostCard({
   cover_url,
   excerpt,
   isSmall,
+  link,
 }: PostCardProps) {
   const categoryMeta = PORTAL_CATEGORIES[category];
 
   return (
-    <div className="group flex h-full w-full cursor-pointer flex-col rounded-lg border border-neutral-200 bg-white p-2 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-800">
+    <Link
+      to={link}
+      className="group flex h-full w-full flex-col rounded-lg border border-neutral-200 bg-white p-2 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-800"
+    >
       {!isSmall && (
         <img
           src={cover_url}
@@ -64,6 +70,6 @@ export function PostCard({
           />
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

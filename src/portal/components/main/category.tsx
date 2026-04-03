@@ -22,7 +22,7 @@ export function CategoryMain({ category, posts }: CategoryMainProps) {
   function handleLoadMore() {
     setVisibleCount(current => current + POSTS_PER_PAGE);
   }
-
+  console.log(visiblePosts);
   return (
     <main className="max-w-8xl flex min-h-screen w-full flex-col items-center px-3 pt-8 pb-18 md:px-8">
       <nav
@@ -36,10 +36,7 @@ export function CategoryMain({ category, posts }: CategoryMainProps) {
           Portal
         </a>
         <ChevronRight size={15} />
-        <span
-          aria-current="page"
-          className="text-neutral-700"
-        >
+        <span aria-current="page" className="text-neutral-700">
           {category}
         </span>
       </nav>
@@ -57,6 +54,7 @@ export function CategoryMain({ category, posts }: CategoryMainProps) {
             cover_url={post.cover_url}
             excerpt={post.excerpt}
             isSmall={false}
+            link={post.slug}
           />
         ))}
       </div>
@@ -64,7 +62,7 @@ export function CategoryMain({ category, posts }: CategoryMainProps) {
         <button
           type="button"
           onClick={handleLoadMore}
-          className="mt-10 bg-[#0457EF] rounded-full border border-neutral-300 px-6 py-3 text-sm font-medium text-neutral-100 transition-colors hover:opacity-90"
+          className="mt-10 rounded-full border border-neutral-300 bg-[#0457EF] px-6 py-3 text-sm font-medium text-neutral-100 transition-colors hover:opacity-90"
         >
           Ver mais
         </button>

@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpenText } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   PORTAL_CATEGORIES,
   type PortalCategoryKey,
@@ -12,6 +13,7 @@ type FeaturedCardProps = {
   cover_url: string;
   excerpt: string;
   isSmall: boolean;
+  link: string;
 };
 
 export function FeaturedCard({
@@ -21,13 +23,15 @@ export function FeaturedCard({
   cover_url,
   excerpt,
   isSmall,
+  link,
 }: FeaturedCardProps) {
   const categoryMeta = PORTAL_CATEGORIES[category];
 
   return (
-    <div
+    <Link
+      to={link}
       style={{ maxWidth: isSmall ? "400px" : "704px" }}
-      className="group h-fit w-full max-w-full cursor-pointer rounded-lg bg-white p-2 transition-all duration-300 hover:-translate-y-1"
+      className="group h-fit w-full max-w-full rounded-lg bg-white p-2 transition-all duration-300 hover:-translate-y-1"
     >
       {!isSmall && (
         <img
@@ -79,6 +83,6 @@ export function FeaturedCard({
           />
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

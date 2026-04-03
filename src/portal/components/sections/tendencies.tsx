@@ -31,6 +31,7 @@ export function SectionTendencies() {
                 published_at={post.published_at}
                 cover_url={post.cover_url}
                 excerpt={post.excerpt}
+                link={"portal/" + post.category + "/" + post.slug}
               />
             ))}
           </div>
@@ -44,6 +45,7 @@ export function SectionTendencies() {
                 published_at={post.published_at}
                 cover_url={post.cover_url}
                 excerpt={post.excerpt}
+                link={"portal/" + post.category + "/" + post.slug}
               />
             ))}
           </div>

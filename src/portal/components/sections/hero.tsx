@@ -36,6 +36,7 @@ export function SectionHero() {
           published_at={primaryPost.published_at}
           cover_url={primaryPost.cover_url}
           excerpt={primaryPost.excerpt}
+          link={"portal/" + primaryPost.category + "/" + primaryPost.slug}
         />
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-1">
           {secondaryPosts.map(post => (
@@ -47,6 +48,7 @@ export function SectionHero() {
               published_at={post.published_at}
               cover_url={post.cover_url}
               excerpt={post.excerpt}
+              link={"portal/" + post.category + "/" + post.slug}
             />
           ))}
         </div>
