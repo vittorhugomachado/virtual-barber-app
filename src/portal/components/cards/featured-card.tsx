@@ -7,20 +7,20 @@ import {
 type FeaturedCardProps = {
   title: string;
   category: PortalCategoryKey;
-  date: string;
-  imageUrl: string;
-  description: string;
-  readTime: string;
+  published_at: string;
+  cover_url: string;
+  excerpt: string;
+  read_time: string;
   isSmall: boolean;
 };
 
 export function FeaturedCard({
   title,
   category,
-  date,
-  imageUrl,
-  description,
-  readTime,
+  published_at,
+  cover_url,
+  excerpt,
+  read_time,
   isSmall,
 }: FeaturedCardProps) {
   const categoryMeta = PORTAL_CATEGORIES[category];
@@ -32,7 +32,7 @@ export function FeaturedCard({
     >
       {!isSmall && (
         <img
-          src={imageUrl}
+          src={cover_url}
           alt="imagem artigo"
           className="h-80 w-full rounded-md object-cover"
         />
@@ -49,7 +49,7 @@ export function FeaturedCard({
           >
             {categoryMeta.label}
           </span>
-          <span className="text-[13px] text-neutral-500">{date}</span>
+          <span className="text-[13px] text-neutral-500">{published_at}</span>
         </div>
         <h3
           style={{
@@ -62,7 +62,7 @@ export function FeaturedCard({
         </h3>
         {!isSmall && (
           <p className="text-md font-semilight mb-6 text-neutral-500">
-            {description}
+            {excerpt}
           </p>
         )}
         <div className="flex justify-between">
@@ -71,7 +71,7 @@ export function FeaturedCard({
             className="flex items-center gap-1 text-[13px] text-neutral-500"
           >
             {" "}
-            <BookOpenText size={17} className="translate-y-px" /> {readTime} de
+            <BookOpenText size={17} className="translate-y-px" /> {read_time} de
             leitura
           </span>
           <ArrowRight

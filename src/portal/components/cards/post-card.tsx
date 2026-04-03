@@ -7,20 +7,25 @@ import {
 type PostCardProps = {
   title: string;
   category: PortalCategoryKey;
-  date: string;
-  imageUrl: string;
-  description: string;
-  readTime: string;
+  published_at: string;
+  cover_url: string;
+  excerpt: string;
   isSmall: boolean;
 };
+
+function getReadTime(excerpt: string) {
+  const wordsPerMinute = 200; // Média de palavras lidas por minuto
+  const words = excerpt.split(" ").length; // Contagem de palavras no texto
+  const minutes = Math.ceil(words / wordsPerMinute); // Cálculo do tempo de leitura em minutos
+  return `${minutes} min`;
+}
 
 export function PostCard({
   title,
   category,
-  date,
-  imageUrl,
-  description,
-  readTime,
+  published_at,
+  cover_url,
+  excerpt,
   isSmall,
 }: PostCardProps) {
   const categoryMeta = PORTAL_CATEGORIES[category];
@@ -29,7 +34,7 @@ export function PostCard({
     <div className="group flex h-full w-full cursor-pointer flex-col rounded-lg border border-neutral-200 bg-white p-2 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-800">
       {!isSmall && (
         <img
-          src={imageUrl}
+          src={cover_url}
           alt="imagem artigo"
           className="h-50 w-full rounded-md object-cover"
         />
@@ -45,18 +50,18 @@ export function PostCard({
           >
             {categoryMeta.label}
           </span>
-          <span className="text-[13px] text-neutral-500">{date}</span>
+          <span className="text-[13px] text-neutral-500">{published_at}</span>
         </div>
         <h3 className="mt-4 line-clamp-2 min-h-14 text-xl font-semibold text-[#212039]">
           {title}
         </h3>
         <p className="font-semilight mb-6 line-clamp-3 min-h-15 text-sm text-neutral-500">
-          {description}
+          {excerpt}
         </p>
         <div className="mt-auto flex justify-between">
           <span className="flex items-center gap-1 text-[12px] text-neutral-500">
             {" "}
-            <BookOpenText size={15} className="translate-y-px" /> {readTime} de
+            <BookOpenText size={15} className="translate-y-px" /> {getReadTime(excerpt)} de
             leitura
           </span>
           <ArrowRight
