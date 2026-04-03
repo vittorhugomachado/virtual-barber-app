@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import type { Post } from "../types/portal-types";
 import { getPostBySlug } from "../lib/queries";
 import { Header } from "../components/header";
-import { PostsSkeleton } from "../components/skeleton/posts-skeleton";
 import { PostMain } from "../components/main/post";
 import { Footer } from "../components/footer";
+import { PostMainSkeleton } from "../components/skeleton/post-skeleton";
 
 export function PostPage() {
   const [postData, setPostData] = useState<Post | null>(null);
@@ -48,7 +48,7 @@ export function PostPage() {
   return (
     <>
       <Header />
-      {isLoading && <PostsSkeleton bgDark={false} />}
+      {isLoading && <PostMainSkeleton />}
       {!isLoading && !error && postData && (
         <PostMain post={postData} />
       )}

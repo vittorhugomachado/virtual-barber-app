@@ -5,8 +5,8 @@ import { Footer } from "../components/footer";
 import { FeaturedPostsProvider } from "../contexts/featured-posts/featured-posts-provider";
 import { getFeaturedPosts } from "../lib/queries";
 import type { PortalPost, Post } from "../types/portal-types";
-import { PostsSkeleton } from "../components/skeleton/posts-skeleton";
 import { toPortalCardPost } from "../lib/post-presenter";
+import { SectionHeroSkeleton } from "../components/skeleton/section-hero-skeleton";
 
 export function HomePage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -26,7 +26,7 @@ export function HomePage() {
 
       setPosts(result);
       setIsLoading(false);
-console.log(result)
+
       if (result.length === 0) {
         setError("Nenhum post em destaque encontrado.");
       }
@@ -52,7 +52,7 @@ console.log(result)
     <FeaturedPostsProvider value={featuredPostsValue}>
       <div className="relative min-h-screen bg-[#050419]">
         <Header />
-        {isLoading ? <PostsSkeleton bgDark={true} /> : <HeroMain />}
+        {isLoading ? <SectionHeroSkeleton /> : <HeroMain />}
         <Footer />
       </div>
     </FeaturedPostsProvider>

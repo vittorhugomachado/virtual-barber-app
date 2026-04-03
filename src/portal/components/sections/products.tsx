@@ -1,12 +1,12 @@
 import { ArrowRight } from "lucide-react";
 import { PostCard } from "../cards/post-card";
-import { PostsSkeleton } from "../skeleton/posts-skeleton";
+import { PostListSkeleton } from "../skeleton/post-list-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
 
 export function SectionProducts() {
   const { posts, isLoading } = useFeaturedPosts();
 
-  if (isLoading) return <PostsSkeleton bgDark={false} />;
+  if (isLoading) return <PostListSkeleton bgDark={false} />;
 
   const categoryPosts = posts.filter(post => post.category === "produtos");
   const primaryPost = categoryPosts.slice(0, 3);
@@ -52,7 +52,7 @@ export function SectionProducts() {
       </div>
       <a
         href="/portal/produtos"
-        className="flex items-center gap-1 mt-10 bg-[#0457EF] rounded-full px-6 py-3 text-sm font-medium text-neutral-100 transition-colors hover:opacity-90"
+        className="mt-10 flex items-center gap-1 rounded-full bg-[#0457EF] px-6 py-3 text-sm font-medium text-neutral-100 transition-colors hover:opacity-90"
       >
         Ver mais{" "}
         <ArrowRight

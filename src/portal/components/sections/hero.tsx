@@ -1,12 +1,12 @@
 import { FeaturedCard } from "../cards/featured-card";
-import { PostsSkeleton } from "../skeleton/posts-skeleton";
+import { PostListSkeleton } from "../skeleton/post-list-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
 import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
 
 export function SectionHero() {
   const { posts, isLoading } = useFeaturedPosts();
 
-  if (isLoading) return <PostsSkeleton bgDark={true} />;
+  if (isLoading) return <PostListSkeleton bgDark={true} />;
 
   const primaryPost = posts.find(post => post.is_primary);
 

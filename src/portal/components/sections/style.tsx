@@ -1,12 +1,12 @@
 import { ArrowRight } from "lucide-react";
 import { PostCard } from "../cards/post-card";
-import { PostsSkeleton } from "../skeleton/posts-skeleton";
+import { PostListSkeleton } from "../skeleton/post-list-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
 
 export function SectionStyle() {
   const { posts, isLoading } = useFeaturedPosts();
 
-  if (isLoading) return <PostsSkeleton bgDark={true} />;
+  if (isLoading) return <PostListSkeleton bgDark={true} />;
 
   const categoryPosts = posts.filter(post => post.category === "estilo");
   const primaryPost = categoryPosts.slice(0, 3);
@@ -53,7 +53,7 @@ export function SectionStyle() {
       </div>
       <a
         href="/portal/estilo"
-        className="flex items-center gap-1 mt-10 bg-[#0457EF] rounded-full px-6 py-3 text-sm font-medium text-neutral-100 transition-colors hover:opacity-90"
+        className="mt-10 flex items-center gap-1 rounded-full bg-[#0457EF] px-6 py-3 text-sm font-medium text-neutral-100 transition-colors hover:opacity-90"
       >
         Ver mais{" "}
         <ArrowRight

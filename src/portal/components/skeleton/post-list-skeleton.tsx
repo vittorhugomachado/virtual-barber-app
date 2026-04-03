@@ -28,14 +28,16 @@ function PostCardSkeleton() {
   );
 }
 
-export function PostsSkeleton({ bgDark }: { bgDark: boolean }) {
+export function PostListSkeleton({ bgDark }: { bgDark: boolean }) {
   return (
     <section
       style={{ backgroundColor: bgDark ? "#050419" : "#FFFFFF" }}
       className="relative mt-6 flex min-h-screen w-full flex-col items-center rounded-xl bg-[#050419] pb-16"
     >
       <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SkeletonBlock className={`${!bgDark && "mx-auto"} mb-4 mt-7 h-10 w-44`} />
+        <SkeletonBlock
+          className={`${!bgDark && "mx-auto"} mt-7 mb-4 h-10 w-44`}
+        />
         <div className="flex flex-col gap-12">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             <PostCardSkeleton />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getPostsByTag } from "../lib/queries";
-import { PostsSkeleton } from "../components/skeleton/posts-skeleton";
+import { PostListSkeleton } from "../components/skeleton/post-list-skeleton";
 import { Header } from "../components/header";
 import { CategoryMain } from "../components/main/category";
 import { toPortalCardPost } from "../lib/post-presenter";
@@ -96,17 +96,37 @@ export function CategoryPage() {
 
     document.title = title;
     setCanonical(categoryUrl);
-    setMetaAttribute('meta[name="description"]', "name", "description", description);
+    setMetaAttribute(
+      'meta[name="description"]',
+      "name",
+      "description",
+      description,
+    );
     setMetaAttribute('meta[name="robots"]', "name", "robots", "index, follow");
-    setMetaAttribute('meta[property="og:title"]', "property", "og:title", title);
+    setMetaAttribute(
+      'meta[property="og:title"]',
+      "property",
+      "og:title",
+      title,
+    );
     setMetaAttribute(
       'meta[property="og:description"]',
       "property",
       "og:description",
       description,
     );
-    setMetaAttribute('meta[property="og:url"]', "property", "og:url", categoryUrl);
-    setMetaAttribute('meta[name="twitter:title"]', "name", "twitter:title", title);
+    setMetaAttribute(
+      'meta[property="og:url"]',
+      "property",
+      "og:url",
+      categoryUrl,
+    );
+    setMetaAttribute(
+      'meta[name="twitter:title"]',
+      "name",
+      "twitter:title",
+      title,
+    );
     setMetaAttribute(
       'meta[name="twitter:description"]',
       "name",
@@ -121,7 +141,7 @@ export function CategoryPage() {
   return (
     <>
       <Header />
-      {isLoading && <PostsSkeleton bgDark={false} />}
+      {isLoading && <PostListSkeleton bgDark={false} />}
       {!isLoading && !error && postsList && category && (
         <CategoryMain key={tag} category={category} posts={postsList} />
       )}

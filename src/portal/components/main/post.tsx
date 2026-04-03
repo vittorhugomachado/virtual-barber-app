@@ -1,4 +1,4 @@
-import { Calendar } from "lucide-react";
+import { Calendar, ChevronRight } from "lucide-react";
 import type { Post } from "@/portal/types/portal-types";
 import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
 import { formatDate } from "@/portal/utils/format-date";
@@ -9,12 +9,30 @@ type PostMainProps = {
 
 export function PostMain({ post }: PostMainProps) {
   const categoryMeta = PORTAL_CATEGORIES[post.category];
-console.log(post.published_at)
+
   return (
     <main>
+      <nav
+        aria-label="Breadcrumb"
+        className="flex w-full items-center bg-[#050419] px-3 pt-8 text-sm text-neutral-300 md:px-8"
+      >
+        <a
+          href="/"
+          className="hover:text-neutral-100 hover:shadow-[0_-1px_0_0_#F5F5F5_inset]"
+        >
+          Portal
+        </a>
+        <ChevronRight size={15} />
+        <a
+          href={`/portal/${post.category}`}
+          className="hover:text-neutral-100 hover:shadow-[0_-1px_0_0_#F5F5F5_inset]"
+        >
+          {categoryMeta.label}
+        </a>
+      </nav>
       {/* Hero — fundo escuro */}
       <section className="w-full bg-[#050419]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:px-8 lg:py-20">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 pt-6 pb-12 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:px-8 lg:py-20">
           {/* Texto */}
           <div className="flex flex-1 flex-col gap-6">
             <span
@@ -27,7 +45,7 @@ console.log(post.published_at)
               {categoryMeta.label}
             </span>
 
-            <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+            <h1 className="text-3xl leading-tight font-bold text-white sm:text-4xl lg:text-5xl">
               {post.title}
             </h1>
 

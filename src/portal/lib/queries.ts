@@ -27,7 +27,6 @@ export async function getAllPosts(): Promise<Post[]> {
     )
     .eq("status", "published")
     .order("display_order", { ascending: true });
-  console.log("dados do getAllPosts: ", data);
 
   if (error || !data) return [];
 
@@ -61,7 +60,7 @@ export async function getFeaturedPosts(): Promise<Post[]> {
     .eq("status", "published")
     .eq("featured", true)
     .order("display_order", { ascending: true });
-  console.log("dados do getFeaturedPosts: ", data);
+
   if (error || !data) return [];
 
   return data as Post[];
@@ -96,7 +95,7 @@ export async function getPostsByTag(tag: string): Promise<Post[]> {
     .order("display_order", { ascending: true });
 
   if (error || !data) return [];
-  console.log("dados do getPostsByTag: ", data);
+
   return data as Post[];
 }
 
@@ -129,6 +128,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     .single();
 
   if (error || !data) return null;
-  console.log("dados do getPostBySlug: ", data);
+
   return data as Post;
 }
