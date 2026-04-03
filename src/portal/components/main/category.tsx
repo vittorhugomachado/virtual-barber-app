@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import type { PortalPost } from "@/portal/types/portal-types";
 import { PostCard } from "../cards/post-card";
 import { ChevronRight } from "lucide-react";
-import { useLocation } from "react-router-dom";
 
 type CategoryMainProps = {
   category: string;
@@ -12,7 +11,6 @@ type CategoryMainProps = {
 const POSTS_PER_PAGE = 10;
 
 export function CategoryMain({ category, posts }: CategoryMainProps) {
-  const location = useLocation();
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
 
   const visiblePosts = useMemo(
@@ -27,7 +25,10 @@ export function CategoryMain({ category, posts }: CategoryMainProps) {
 
   return (
     <main className="max-w-8xl flex min-h-screen w-full flex-col items-center px-3 pt-8 pb-18 md:px-8">
-      <div className="flex w-full items-center text-sm text-neutral-500">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex w-full items-center text-sm text-neutral-700"
+      >
         <a
           href="/"
           className="hover:text-neutral-700 hover:shadow-[0_-1px_0_0_#3f3f46_inset]"
@@ -35,14 +36,17 @@ export function CategoryMain({ category, posts }: CategoryMainProps) {
           Portal
         </a>
         <ChevronRight size={15} />
-        <a
-          href={location.pathname}
-          className="hover:text-neutral-700 hover:shadow-[0_-1px_0_0_#3f3f46_inset]"
+        <span
+          aria-current="page"
+          className="text-neutral-700"
         >
           {category}
-        </a>
-      </div>
-      <h1 className="my-7 mx-auto text-center w-full text-4xl font-bold text-[#050419]">{category}</h1>
+        </span>
+      </nav>
+      <h1 className="mx-auto my-7 w-full text-center text-4xl font-bold text-[#050419]">
+        {category}
+      </h1>
+      <h2 className="sr-only">Lista de posts da categoria {category}</h2>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
         {visiblePosts.map(post => (
           <PostCard

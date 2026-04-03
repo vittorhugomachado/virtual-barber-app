@@ -44,16 +44,16 @@ export function PostCard({
           >
             {categoryMeta.label}
           </span>
-          <span className="text-[13px] text-neutral-500">{published_at}</span>
+          <span className="text-[13px] text-neutral-700">{published_at}</span>
         </div>
         <h3 className="mt-4 line-clamp-2 min-h-14 text-xl font-semibold text-[#212039]">
           {title}
         </h3>
-        <p className="font-semilight mb-6 line-clamp-3 min-h-15 text-sm text-neutral-500">
+        <p className="font-semilight mb-6 line-clamp-3 min-h-15 text-sm text-neutral-700">
           {excerpt}
         </p>
         <div className="mt-auto flex justify-between">
-          <span className="flex items-center gap-1 text-[12px] text-neutral-500">
+          <span className="flex items-center gap-1 text-[12px] text-neutral-700">
             {" "}
             <BookOpenText size={15} className="translate-y-px" /> {getReadTime(excerpt)} de
             leitura

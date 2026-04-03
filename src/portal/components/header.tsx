@@ -69,6 +69,7 @@ export function Header() {
                   <div className="space-y-2">
                     <a
                       href="/"
+                      aria-label="Ir para a home do portal"
                       className="block rounded-[1.5rem] px-5 py-2 font-light text-neutral-900 transition-colors hover:bg-neutral-50"
                     >
                       <House size={23} style={{ fontWeight: "100" }} />
@@ -98,6 +99,7 @@ export function Header() {
           >
             <a
               href="/"
+              aria-label="Ir para a home do portal"
               className={`flex h-12 items-center border-b-3 transition-colors ${
                 isActivePath("/")
                   ? "border-b-[#0458EE] text-neutral-100"
