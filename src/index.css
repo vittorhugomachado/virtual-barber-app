@@ -131,5 +131,43 @@
 }
 
 button {
-  cursor: pointer
+  cursor: pointer;
+}
+
+.callout-info {
+  background-color: #fedcea;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  color: #7c2d5e;
+}
+.callout-warning {
+  background-color: #ffebc2;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  color: #7c5e00;
+}
+.callout-tip {
+  background-color: #d6edff;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  color: #0d4f8c;
+}
+.youtube-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  margin: 2rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+.youtube-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
 }

@@ -1,4 +1,9 @@
 import { Calendar, ChevronRight } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import type { Components } from "react-markdown";
 import type { Post } from "@/portal/types/portal-types";
 import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
 import { formatDate } from "@/portal/utils/format-date";
@@ -7,8 +12,106 @@ type PostMainProps = {
   post: Post;
 };
 
+// extrai o ID do YouTube de qualquer formato de URL
+function getYouTubeId(url: string): string | null {
+  const match = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+  );
+  return match ? match[1] : null;
+}
+
+// processa blocos especiais: :::info, :::warning, :::tip e ::youtube
+function processContent(content: string): string {
+  return (
+    content
+      // bloco info — fundo rosa #FEDCEA
+      .replace(/:::info\n([\s\S]*?):::/g, '<div class="callout-info">$1</div>')
+      // bloco warning — fundo amarelo #FFEBC2
+      .replace(
+        /:::warning\n([\s\S]*?):::/g,
+        '<div class="callout-warning">$1</div>',
+      )
+      // bloco tip — fundo azul #D6EDFF
+      .replace(/:::tip\n([\s\S]*?):::/g, '<div class="callout-tip">$1</div>')
+      // embed YouTube
+      .replace(/::youtube\[([^\]]+)\]/g, (_, url) => {
+        const id = getYouTubeId(url);
+        if (!id) return "";
+        return `<div class="youtube-embed"><iframe src="https://www.youtube.com/embed/${id}" title="YouTube video" allowfullscreen></iframe></div>`;
+      })
+  );
+}
+
+const sanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames ?? []), "iframe"],
+  attributes: {
+    ...defaultSchema.attributes,
+    div: ["className"],
+    iframe: ["src", "title", "allowFullScreen", "className"],
+  },
+};
+
+const markdownComponents: Components = {
+  // imagens responsivas
+  img: ({ src, alt }) => (
+    <img
+      src={src}
+      alt={alt ?? ""}
+      className="my-6 w-full rounded-xl object-cover"
+    />
+  ),
+  // tabelas com scroll em mobile
+  table: ({ children }) => (
+    <div className="my-6 overflow-x-auto rounded-xl border border-neutral-200">
+      <table className="w-full border-collapse text-sm">{children}</table>
+    </div>
+  ),
+  thead: ({ children }) => <thead className="bg-neutral-100">{children}</thead>,
+  th: ({ children }) => (
+    <th className="border-b border-neutral-200 px-4 py-3 text-left font-semibold text-neutral-700">
+      {children}
+    </th>
+  ),
+  td: ({ children }) => (
+    <td className="border-b border-neutral-100 px-4 py-3 text-neutral-600">
+      {children}
+    </td>
+  ),
+  // parágrafo — renderiza HTML para suportar divs dos blocos especiais
+  p: ({ children }) => (
+    <p className="mb-4 leading-relaxed text-neutral-700">{children}</p>
+  ),
+  h2: ({ children }) => (
+    <h2 className="mt-10 mb-4 text-2xl font-bold text-neutral-900">
+      {children}
+    </h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="mt-8 mb-3 text-xl font-semibold text-neutral-900">
+      {children}
+    </h3>
+  ),
+  ul: ({ children }) => <ul className="my-4 space-y-2 pl-4">{children}</ul>,
+  ol: ({ children }) => (
+    <ol className="my-4 list-decimal space-y-2 pl-6">{children}</ol>
+  ),
+  li: ({ children }) => (
+    <li className="leading-relaxed text-neutral-700">{children}</li>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-semibold text-neutral-900">{children}</strong>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="my-6 border-l-4 border-neutral-300 pl-4 text-neutral-500 italic">
+      {children}
+    </blockquote>
+  ),
+};
+
 export function PostMain({ post }: PostMainProps) {
   const categoryMeta = PORTAL_CATEGORIES[post.category];
+  const processedContent = processContent(post.content);
 
   return (
     <main>
@@ -30,10 +133,10 @@ export function PostMain({ post }: PostMainProps) {
           {categoryMeta.label}
         </a>
       </nav>
-      {/* Hero — fundo escuro */}
+
+      {/* Hero */}
       <section className="w-full bg-[#050419]">
         <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 pt-6 pb-12 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:px-8 lg:py-20">
-          {/* Texto */}
           <div className="flex flex-1 flex-col gap-6">
             <span
               style={{
@@ -58,14 +161,9 @@ export function PostMain({ post }: PostMainProps) {
                 <Calendar size={15} className="translate-y-px" />
                 {formatDate(post.published_at)}
               </span>
-              {/* <span className="flex items-center gap-1.5">
-                <BookOpenText size={15} className="translate-y-px" />
-                {getReadTime(post.content)} de leitura
-              </span> */}
             </div>
           </div>
 
-          {/* Imagem */}
           <div className="w-full lg:w-120 lg:shrink-0">
             <img
               src={post.cover_url}
@@ -78,10 +176,16 @@ export function PostMain({ post }: PostMainProps) {
 
       {/* Conteúdo */}
       <section className="w-full bg-neutral-100">
-        <div
-          className="prose prose-neutral mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+            components={markdownComponents}
+          >
+            {processedContent}
+          </ReactMarkdown>
+        </div>
       </section>
     </main>
   );
