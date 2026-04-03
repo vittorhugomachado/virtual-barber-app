@@ -2,6 +2,7 @@ import { FeaturedCard } from "../cards/featured-card";
 import { SectionSkeleton } from "../skeleton/section-skeleton";
 import { useFeaturedPosts } from "@/portal/contexts/featured-posts/featured-posts-context";
 import { toPortalCardPost } from "@/portal/lib/post-presenter";
+import { PORTAL_CATEGORIES } from "@/portal/types/portal-types";
 
 export function SectionHero() {
   const { posts, isLoading } = useFeaturedPosts();
@@ -9,14 +10,21 @@ export function SectionHero() {
   if (isLoading) return <SectionSkeleton />;
 
   const primaryPost = posts.find(post => post.is_primary);
-  const secondaryPosts = posts
-    .filter(post => !post.is_primary)
-    .slice(0, 4)
-    .map(toPortalCardPost);
 
   if (!primaryPost) return null;
 
   const heroPost = toPortalCardPost(primaryPost);
+  const secondaryPosts = Object.keys(PORTAL_CATEGORIES)
+    .map(category =>
+      posts.find(
+        post =>
+          post.category === category &&
+          post.is_primary &&
+          post.id !== primaryPost.id,
+      ),
+    )
+    .filter(post => post !== undefined)
+    .map(toPortalCardPost);
 
   return (
     <section className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">

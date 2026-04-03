@@ -26,7 +26,7 @@ export function PostCard({
   const categoryMeta = PORTAL_CATEGORIES[category];
 
   return (
-    <div className="group h-fit w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-2 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-800">
+    <div className="group flex h-full w-full cursor-pointer flex-col rounded-lg border border-neutral-200 bg-white p-2 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-800">
       {!isSmall && (
         <img
           src={imageUrl}
@@ -34,7 +34,7 @@ export function PostCard({
           className="h-50 w-full rounded-md object-cover"
         />
       )}
-      <div className="px-3 pt-3 pb-3">
+      <div className="flex flex-1 flex-col px-3 pb-3 pt-3">
         <div className="flex w-full justify-between">
           <span
             style={{
@@ -47,11 +47,13 @@ export function PostCard({
           </span>
           <span className="text-[13px] text-neutral-500">{date}</span>
         </div>
-        <h3 className="mt-4 text-xl font-semibold text-[#212039]">{title}</h3>
-        <p className="font-semilight mb-6 text-sm text-neutral-500">
+        <h3 className="mt-4 line-clamp-2 min-h-[56px] text-xl font-semibold text-[#212039]">
+          {title}
+        </h3>
+        <p className="font-semilight mb-6 line-clamp-3 min-h-[60px] text-sm text-neutral-500">
           {description}
         </p>
-        <div className="flex justify-between">
+        <div className="mt-auto flex justify-between">
           <span className="flex items-center gap-1 text-[12px] text-neutral-500">
             {" "}
             <BookOpenText size={15} className="translate-y-px" /> {readTime} de
