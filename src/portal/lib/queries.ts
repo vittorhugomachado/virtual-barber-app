@@ -91,7 +91,7 @@ export async function getPostsByTag(tag: string): Promise<Post[]> {
     `,
     )
     .eq("status", "published")
-    .contains("tags", [tag])
+    .eq("category", tag)
     .order("display_order", { ascending: true });
 
   if (error || !data) return [];
