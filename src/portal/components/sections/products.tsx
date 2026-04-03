@@ -14,7 +14,7 @@ export function SectionProducts() {
 
   if (categoryPosts.length === 0) return null;
   return (
-    <section className="relative mt-26 flex min-h-screen w-full flex-col items-center rounded-xl bg-[#e7e7e7] py-16">
+    <section className="relative mt-16 flex min-h-screen w-full flex-col items-center rounded-xl bg-[#e7e7e7] py-16">
       <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="mb-4 w-full text-start text-4xl font-bold text-[#050419]">
           Produtos
@@ -49,8 +49,8 @@ export function SectionProducts() {
         </div>
       </div>
       <a
-        href="/produtos"
-        className="mt-4 flex items-center transition-all duration-300 hover:scale-103"
+        href="/portal/produtos"
+        className="flex items-center gap-1 mt-10 bg-[#0457EF] rounded-full px-6 py-3 text-sm font-medium text-neutral-100 transition-colors hover:opacity-90"
       >
         Ver mais{" "}
         <ArrowRight

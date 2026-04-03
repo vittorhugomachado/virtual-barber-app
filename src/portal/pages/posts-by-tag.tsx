@@ -10,6 +10,7 @@ import {
   type PortalPost,
   type PortalCategoryKey,
 } from "../types/portal-types";
+import { Footer } from "../components/footer";
 
 export function CategoryPage() {
   const [postsList, setpostsList] = useState<PortalPost[] | null>(null);
@@ -61,8 +62,9 @@ export function CategoryPage() {
       <Header />
       {isLoading && <PostsSkeleton bgDark={false} />}
       {!isLoading && !error && postsList && category && (
-        <CategoryMain category={category} posts={postsList} />
+        <CategoryMain key={tag} category={category} posts={postsList} />
       )}
+      <Footer />
     </>
   );
 }
