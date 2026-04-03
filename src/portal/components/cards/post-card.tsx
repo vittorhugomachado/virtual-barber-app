@@ -3,6 +3,7 @@ import {
   PORTAL_CATEGORIES,
   type PortalCategoryKey,
 } from "@/portal/types/portal-types";
+import { getReadTime } from "@/portal/utils/get-read-time";
 
 type PostCardProps = {
   title: string;
@@ -12,13 +13,6 @@ type PostCardProps = {
   excerpt: string;
   isSmall: boolean;
 };
-
-function getReadTime(excerpt: string) {
-  const wordsPerMinute = 200; // Média de palavras lidas por minuto
-  const words = excerpt.split(" ").length; // Contagem de palavras no texto
-  const minutes = Math.ceil(words / wordsPerMinute); // Cálculo do tempo de leitura em minutos
-  return `${minutes} min`;
-}
 
 export function PostCard({
   title,

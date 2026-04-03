@@ -98,7 +98,7 @@ export function Header() {
           >
             <a
               href="/"
-              className={`flex h-12 items-center border-b-2 transition-colors ${
+              className={`flex h-12 items-center border-b-3 transition-colors ${
                 isActivePath("/")
                   ? "border-b-[#0458EE] text-neutral-100"
                   : "border-b-transparent text-neutral-100 hover:text-neutral-300"

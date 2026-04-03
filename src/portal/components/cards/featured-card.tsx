@@ -3,6 +3,7 @@ import {
   PORTAL_CATEGORIES,
   type PortalCategoryKey,
 } from "@/portal/types/portal-types";
+import { getReadTime } from "@/portal/utils/get-read-time";
 
 type FeaturedCardProps = {
   title: string;
@@ -10,7 +11,6 @@ type FeaturedCardProps = {
   published_at: string;
   cover_url: string;
   excerpt: string;
-  read_time: string;
   isSmall: boolean;
 };
 
@@ -20,7 +20,6 @@ export function FeaturedCard({
   published_at,
   cover_url,
   excerpt,
-  read_time,
   isSmall,
 }: FeaturedCardProps) {
   const categoryMeta = PORTAL_CATEGORIES[category];
@@ -71,7 +70,7 @@ export function FeaturedCard({
             className="flex items-center gap-1 text-[13px] text-neutral-500"
           >
             {" "}
-            <BookOpenText size={17} className="translate-y-px" /> {read_time} de
+            <BookOpenText size={17} className="translate-y-px" /> {getReadTime(excerpt)} de
             leitura
           </span>
           <ArrowRight
