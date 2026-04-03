@@ -5,6 +5,7 @@ import {
   type PortalCategoryKey,
 } from "@/portal/types/portal-types";
 import { getReadTime } from "@/portal/utils/get-read-time";
+import { formatDate } from "@/portal/utils/format-date";
 
 type FeaturedCardProps = {
   title: string;
@@ -52,7 +53,7 @@ export function FeaturedCard({
           >
             {categoryMeta.label}
           </span>
-          <span className="text-[13px] text-neutral-500">{published_at}</span>
+          <span className="text-[13px] text-neutral-500">{formatDate(published_at)}</span>
         </div>
         <h3
           style={{

@@ -22,7 +22,7 @@ export function CategoryMain({ category, posts }: CategoryMainProps) {
   function handleLoadMore() {
     setVisibleCount(current => current + POSTS_PER_PAGE);
   }
-  console.log(visiblePosts);
+
   return (
     <main className="max-w-8xl flex min-h-screen w-full flex-col items-center px-3 pt-8 pb-18 md:px-8">
       <nav

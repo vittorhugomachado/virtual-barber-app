@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import type { Post } from "../types/portal-types";
 import { getPostBySlug } from "../lib/queries";
+import { Header } from "../components/header";
+import { PostsSkeleton } from "../components/skeleton/posts-skeleton";
+import { PostMain } from "../components/main/post";
+import { Footer } from "../components/footer";
 
 export function PostPage() {
   const [postData, setPostData] = useState<Post | null>(null);
@@ -13,7 +17,7 @@ export function PostPage() {
     let active = true;
 
     async function fetchPost() {
-      if (!post) {
+      if (!post || !tag) {
         setError("Post nao encontrado.");
         setIsLoading(false);
         return;
@@ -39,21 +43,16 @@ export function PostPage() {
     return () => {
       active = false;
     };
-  }, [post]);
-
-  if (isLoading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  }, [post, tag]);
 
   return (
-    <div>
-      <h1>{postData?.title ?? "post"}</h1>
-      <p>{tag}</p>
-      <p>{post}</p>
-    </div>
+    <>
+      <Header />
+      {isLoading && <PostsSkeleton bgDark={false} />}
+      {!isLoading && !error && postData && (
+        <PostMain post={postData} />
+      )}
+      <Footer />
+    </>
   );
 }
