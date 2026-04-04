@@ -21,19 +21,27 @@ function getYouTubeId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+// converte markdown inline (negrito, itálico) para HTML dentro dos callouts
+function processInlineMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/_(.+?)_/g, "<em>$1</em>");
+}
+
 // processa blocos especiais: :::info, :::warning, :::tip e ::youtube
 function processContent(content: string): string {
   return (
     content
       // bloco info — fundo rosa #FEDCEA
-      .replace(/:::info\n([\s\S]*?):::/g, '<div class="callout-info">$1</div>')
+      .replace(/:::info\r?\n([\s\S]*?):::/g, (_, inner) => `<div class="callout-info">${processInlineMarkdown(inner)}</div>`)
       // bloco warning — fundo amarelo #FFEBC2
       .replace(
-        /:::warning\n([\s\S]*?):::/g,
-        '<div class="callout-warning">$1</div>',
+        /:::warning\r?\n([\s\S]*?):::/g,
+        (_, inner) => `<div class="callout-warning">${processInlineMarkdown(inner)}</div>`,
       )
       // bloco tip — fundo azul #D6EDFF
-      .replace(/:::tip\n([\s\S]*?):::/g, '<div class="callout-tip">$1</div>')
+      .replace(/:::tip\r?\n([\s\S]*?):::/g, (_, inner) => `<div class="callout-tip">${processInlineMarkdown(inner)}</div>`)
       // embed YouTube
       .replace(/::youtube\[([^\]]+)\]/g, (_, url) => {
         const id = getYouTubeId(url);
