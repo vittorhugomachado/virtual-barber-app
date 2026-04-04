@@ -48,13 +48,31 @@ export function PostPage() {
   useEffect(() => {
     if (!postData) return;
 
-    const canonical = document.querySelector('link[rel="canonical"]');
     const url = `https://virtualbarber.com.br/portal/${postData.category}/${postData.slug}`;
 
-    canonical?.setAttribute("href", url);
+    const setMeta = (selector: string, value: string) =>
+      document.querySelector(selector)?.setAttribute("content", value);
+
+    const prevTitle = document.title;
+    const prevDesc = document.querySelector('meta[name="description"]')?.getAttribute("content") ?? "";
+    const prevOgImage = document.querySelector('meta[property="og:image"]')?.getAttribute("content") ?? "";
+
+    document.title = `${postData.title} | Virtual Barber`;
+    setMeta('meta[name="description"]', postData.excerpt);
+    setMeta('meta[property="og:title"]', postData.title);
+    setMeta('meta[property="og:description"]', postData.excerpt);
+    setMeta('meta[property="og:url"]', url);
+    setMeta('meta[property="og:image"]', postData.cover_url);
+    setMeta('meta[name="twitter:title"]', postData.title);
+    setMeta('meta[name="twitter:description"]', postData.excerpt);
+    setMeta('meta[name="twitter:image"]', postData.cover_url);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
 
     return () => {
-      canonical?.setAttribute("href", "https://virtualbarber.com.br/");
+      document.title = prevTitle;
+      setMeta('meta[name="description"]', prevDesc);
+      setMeta('meta[property="og:image"]', prevOgImage);
+      document.querySelector('link[rel="canonical"]')?.setAttribute("href", "https://virtualbarber.com.br/");
     };
   }, [postData]);
 

@@ -1,5 +1,5 @@
 import { Calendar, ChevronRight } from "lucide-react";
-import { PostShareSidebar } from "@/portal/components/post-share-sidebar";
+import { SocialBar } from "@/portal/components/social-bar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -114,8 +114,6 @@ export function PostMain({ post }: PostMainProps) {
   const categoryMeta = PORTAL_CATEGORIES[post.category];
   const processedContent = processContent(post.content);
 
-  const postUrl = `https://virtualbarber.com.br/portal/${post.category}/${post.slug}`;
-
   return (
     <main>
       <nav
@@ -177,10 +175,9 @@ export function PostMain({ post }: PostMainProps) {
         </div>
       </section>
 
-      <PostShareSidebar url={postUrl} title={post.title} />
-
       {/* Conteúdo */}
-      <section className="w-full bg-neutral-100">
+      <section className="relative w-full bg-neutral-100">
+        <SocialBar variant="sidebar" />
         <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
 
           <ReactMarkdown
