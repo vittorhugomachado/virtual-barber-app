@@ -7,6 +7,7 @@ import { getFeaturedPosts } from "../lib/queries";
 import type { PortalPost, Post } from "../types/portal-types";
 import { toPortalCardPost } from "../lib/post-presenter";
 import { SectionHeroSkeleton } from "../components/skeleton/section-hero-skeleton";
+import { ErrorState } from "../components/error-state";
 
 export function HomePage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -52,7 +53,13 @@ export function HomePage() {
     <FeaturedPostsProvider value={featuredPostsValue}>
       <div className="relative min-h-screen bg-[#050419]">
         <Header />
-        {isLoading ? <SectionHeroSkeleton /> : <HeroMain />}
+        {isLoading ? (
+          <SectionHeroSkeleton />
+        ) : error ? (
+          <ErrorState isDark={true} message={error} />
+        ) : (
+          <HeroMain />
+        )}
         <Footer />
       </div>
     </FeaturedPostsProvider>

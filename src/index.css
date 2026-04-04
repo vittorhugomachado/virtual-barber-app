@@ -136,6 +136,7 @@ button {
 
 .callout-warning {
   background-color: #ffebc2;
+  border: 1px solid #ffc247;
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
   margin: 1.5rem 0;
@@ -143,6 +144,7 @@ button {
 }
 .callout-info {
   background-color: #fedcea;
+  border: 1px solid #f77caf;
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
   margin: 1.5rem 0;
@@ -150,6 +152,7 @@ button {
 }
 .callout-tip {
   background-color: #d6edff;
+  border: 1px solid rgb(93, 162, 215);
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
   margin: 1.5rem 0;

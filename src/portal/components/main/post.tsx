@@ -72,18 +72,18 @@ const markdownComponents: Components = {
   ),
   // tabelas com scroll em mobile
   table: ({ children }) => (
-    <div className="my-6 overflow-x-auto rounded-xl border border-neutral-200">
+    <div className="my-6 overflow-x-auto rounded-xl border border-neutral-700">
       <table className="w-full border-collapse text-sm">{children}</table>
     </div>
   ),
-  thead: ({ children }) => <thead className="bg-neutral-100">{children}</thead>,
+  thead: ({ children }) => <thead className="bg-neutral-100 border-b-neutral-700">{children}</thead>,
   th: ({ children }) => (
-    <th className="border-b border-neutral-200 px-4 py-3 text-left font-semibold text-neutral-700">
+    <th className="border-b border-neutral-700 px-4 py-3 text-left font-semibold text-neutral-700">
       {children}
     </th>
   ),
   td: ({ children }) => (
-    <td className="border-b border-neutral-100 px-4 py-3 text-neutral-600">
+    <td className="border-b border-neutral-300 px-4 py-3 text-neutral-600">
       {children}
     </td>
   ),
@@ -109,7 +109,7 @@ const markdownComponents: Components = {
     <li className="leading-relaxed text-neutral-700">{children}</li>
   ),
   strong: ({ children }) => (
-    <strong className="font-semibold text-neutral-900">{children}</strong>
+    <strong className="font-semibold text-inherit">{children}</strong>
   ),
   blockquote: ({ children }) => (
     <blockquote className="my-6 border-l-4 border-neutral-300 pl-4 text-neutral-500 italic">

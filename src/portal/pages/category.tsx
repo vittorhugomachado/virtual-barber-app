@@ -11,6 +11,7 @@ import {
   type PortalCategoryKey,
 } from "../types/portal-types";
 import { Footer } from "../components/footer";
+import { ErrorState } from "../components/error-state";
 
 const SITE_URL = "https://virtualbarber.com.br";
 
@@ -135,13 +136,11 @@ export function CategoryPage() {
     );
   }, [tag, category]);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
   return (
     <>
       <Header />
       {isLoading && <PostListSkeleton bgDark={false} />}
+      {!isLoading && error && <ErrorState isDark={false} message={error} />}
       {!isLoading && !error && postsList && category && (
         <CategoryMain key={tag} category={category} posts={postsList} />
       )}

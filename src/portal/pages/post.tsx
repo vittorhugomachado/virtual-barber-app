@@ -6,6 +6,7 @@ import { Header } from "../components/header";
 import { PostMain } from "../components/main/post";
 import { Footer } from "../components/footer";
 import { PostMainSkeleton } from "../components/skeleton/post-skeleton";
+import { ErrorState } from "../components/error-state";
 
 export function PostPage() {
   const [postData, setPostData] = useState<Post | null>(null);
@@ -80,6 +81,7 @@ export function PostPage() {
     <>
       <Header />
       {isLoading && <PostMainSkeleton />}
+      {!isLoading && error && <ErrorState isDark={false} message={error} />}
       {!isLoading && !error && postData && (
         <PostMain post={postData} />
       )}
