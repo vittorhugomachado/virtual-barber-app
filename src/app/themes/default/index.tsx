@@ -40,16 +40,19 @@ function isDarkColor(color: string) {
 }
 
 export default function DefaultTheme(props: BarbershopPageProps) {
-  const [previewStyle, setPreviewStyle] = useState<PreviewStyle>(
-    props.style,
-  );
+  const [previewStyleOverride, setPreviewStyleOverride] =
+    useState<Partial<PreviewStyle> | null>(null);
+  const previewStyle: PreviewStyle = {
+    ...props.style,
+    ...previewStyleOverride,
+  };
   const isDarkBackground = isDarkColor(previewStyle.background_color);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type !== "BARBERSHOP_PREVIEW_STYLE") return;
 
-      setPreviewStyle(current => ({ ...current, ...event.data.style }));
+      setPreviewStyleOverride(event.data.style);
     };
 
     window.addEventListener("message", handleMessage);
@@ -58,10 +61,6 @@ export default function DefaultTheme(props: BarbershopPageProps) {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
-
-  useEffect(() => {
-    setPreviewStyle(props.style);
-  }, [props.style]);
 
   useEffect(() => {
     const sendHeight = () => {
@@ -107,8 +106,8 @@ export default function DefaultTheme(props: BarbershopPageProps) {
       <div
         className={
           isDarkBackground
-            ? "dark relative min-h-screen text-[var(--store-text)]"
-            : "relative min-h-screen text-[var(--store-text)]"
+            ? "dark relative min-h-screen text-(--store-text)"
+            : "relative min-h-screen text-(--store-text)"
         }
         style={
           {
