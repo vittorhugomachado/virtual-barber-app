@@ -3,9 +3,12 @@ import { formatTime } from "@/utils/format-time";
 import { DAYS_FULL } from "../../types";
 import { groupByDay } from "@/utils/group-bay-day";
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
+import { darkenColor } from "@/utils/darken-color";
+import { useStyle } from "@/app/contexts/style-context/style-context";
 
 export function BarberShopHours() {
-    const { openingHours } = useBarbershopData();
+  const { style } = useStyle();
+  const { openingHours } = useBarbershopData();
   const byDay = groupByDay(openingHours);
   const today = new Date().getDay();
 
@@ -16,7 +19,7 @@ export function BarberShopHours() {
         <h2 className="text-2xl font-medium md:text-4xl">Horários</h2>
       </div>
 
-      <div className="w-full max-w-156 divide-y divide-zinc-300 overflow-hidden rounded-xl border border-zinc-300 dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="w-full max-w-156 divide-y divide-current/10 overflow-hidden rounded-xl border border-current/10">
         {Array.from({ length: 7 }, (_, i) => {
           const periods = byDay[i];
           const isToday = i === today;
@@ -25,20 +28,23 @@ export function BarberShopHours() {
           return (
             <div
               key={i}
-              className={`flex items-center justify-between px-4 py-3 ${isToday ? "bg-neutral-50 dark:bg-neutral-900" : ""}`}
+              className={`flex items-center justify-between px-4 py-3 ${isToday ? "" : ""}`}
+              style={{
+                backgroundColor: isToday
+                  ? darkenColor(style.background_color, 0.2)
+                  : "transparent",
+              }}
             >
               <div className="flex items-center gap-2">
                 <span
                   className={`h-2 w-2 rounded-full ${hasPeriods ? "bg-green-500" : "bg-red-500"}`}
                 />
                 <span
-                  className={`text-sm ${isToday ? "font-semibold" : "text-neutral-600 dark:text-neutral-400"}`}
+                  className={`text-sm ${isToday ? "font-semibold" : "font-light text-current"}`}
                 >
                   {DAYS_FULL[i]}
                   {isToday && (
-                    <span className="ml-2 text-xs font-normal text-neutral-400">
-                      hoje
-                    </span>
+                    <span className="ml-2 text-xs font-normal">hoje</span>
                   )}
                 </span>
               </div>
@@ -51,13 +57,13 @@ export function BarberShopHours() {
                     .map(p => (
                       <span
                         key={p.id}
-                        className="text-sm whitespace-nowrap text-neutral-600 dark:text-neutral-400"
+                        className="text-sm whitespace-nowrap text-current/60"
                       >
                         {formatTime(p.opens_at)} – {formatTime(p.closes_at)}
                       </span>
                     ))
                 ) : (
-                  <span className="text-sm text-neutral-400">Fechado</span>
+                  <span className="text-sm text-current/20">Fechado</span>
                 )}
               </div>
             </div>

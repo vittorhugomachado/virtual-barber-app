@@ -79,6 +79,8 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
   const { data, isLoading, error } = useBarbershop(slug ?? "");
   const [previewStyleOverride, setPreviewStyleOverride] =
     useState<Partial<StoreStyle> | null>(null);
+  const isPreview =
+    new URLSearchParams(window.location.search).get("preview") === "true";
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -103,6 +105,31 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isPreview) return;
+
+    const preventPreviewAction = (event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    const styleElement = document.createElement("style");
+    styleElement.textContent = `
+      *, *::before, *::after {
+        cursor: default !important;
+      }
+    `;
+
+    document.head.appendChild(styleElement);
+    document.addEventListener("click", preventPreviewAction, true);
+    document.addEventListener("submit", preventPreviewAction, true);
+
+    return () => {
+      styleElement.remove();
+      document.removeEventListener("click", preventPreviewAction, true);
+      document.removeEventListener("submit", preventPreviewAction, true);
+    };
+  }, [isPreview]);
 
   useEffect(() => {
     const sendHeight = () => {

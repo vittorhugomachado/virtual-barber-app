@@ -29,7 +29,7 @@ export function Services() {
         <h2 className="text-2xl font-medium md:text-4xl">Serviços</h2>
       </div>
 
-      <div className="flex flex-col divide-y divide-zinc-300 overflow-hidden rounded-xl border border-zinc-300 dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="flex flex-col divide-y divide-current/10 overflow-hidden rounded-xl border border-current/10">
         {services.map(service => {
           const inCart = hasService(service.id);
           return (
@@ -45,31 +45,31 @@ export function Services() {
                     className="h-14 w-14 shrink-0 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
-                    <Scissors size={20} className="text-neutral-400" />
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-current/20">
+                    <Scissors size={20} className="text-current" />
                   </div>
                 )}
 
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <span className="text-sm font-medium">{service.name}</span>
                   {service.description && (
-                    <span className="line-clamp-1 text-xs text-neutral-400">
+                    <span className="line-clamp-1 text-xs text-current/60">
                       {service.description}
                     </span>
                   )}
                   <div className="mt-0.5 flex items-center gap-2">
                     {service.duration_min != null && (
-                      <span className="text-xs whitespace-nowrap text-neutral-500">
+                      <span className="text-xs whitespace-nowrap text-current/60">
                         {formatDuration(service.duration_min)}
                       </span>
                     )}
                     {service.duration_min != null && service.price != null && (
-                      <span className="text-xs text-neutral-300 dark:text-neutral-600">
-                        Â·
+                      <span className="text-xs text-current">
+                        |
                       </span>
                     )}
                     {service.price != null && (
-                      <span className="text-xs font-medium whitespace-nowrap text-neutral-700 dark:text-neutral-300">
+                      <span className="text-xs font-medium whitespace-nowrap text-current">
                         {formatPrice(service.price)}
                       </span>
                     )}

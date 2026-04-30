@@ -26,13 +26,10 @@ export default function DefaultTheme(props: BarbershopPageProps) {
   return (
     <div className="relative min-h-screen text-(--store-text)">
       <Navbar />
-
       <SectionNav sections={sections} />
-
-      <BookingButton />
+      <BookingButton isLarger />
       <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
         <Gallery />
-
         <section
           id="servicos"
           className="mt-8 flex flex-col gap-6 lg:mt-16 lg:flex-row lg:items-start"
@@ -40,13 +37,10 @@ export default function DefaultTheme(props: BarbershopPageProps) {
           <Services />
           <CartPanel />
         </section>
-
         {hasMultipleBarbers && <Team />}
-
         <BarberShopHours />
         <Location />
       </main>
-
       <Footer />
     </div>
   );

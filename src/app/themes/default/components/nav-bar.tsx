@@ -24,6 +24,7 @@ import { BarbershopLogo } from "./logo-text";
 import { StatusBadge } from "../../../components/status-badge";
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 import { BookingButton } from "./booking-button";
+import { darkenColor } from "@/utils/darken-color";
 
 export function Navbar() {
   const { name, openingHours } = useBarbershopData();
@@ -89,7 +90,7 @@ export function Navbar() {
       <header className="sticky top-0 z-50 w-full border-b border-current/15 bg-(--store-background) px-4 text-(--store-text)">
         <div className="relative mx-auto h-full w-full max-w-6xl">
           <div className="mx-auto flex h-14 items-center justify-between">
-            {/* logo â€” desktop */}
+            {/* logo desktop */}
             <BarbershopLogo name={name} className="hidden text-3xl md:block" />
 
             {/* desktop nav */}
@@ -100,28 +101,36 @@ export function Navbar() {
                   <button
                     type="button"
                     onClick={() => setUserMenuOpen(open => !open)}
-                    className="flex items-center gap-2 rounded-full border border-current/15 px-2 py-1.5 transition-colors hover:border-current/60"
+                    className="flex items-center gap-2 rounded-full border border-current/50 px-2 py-1.5 transition-colors hover:border-current/60"
                   >
                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-300 text-neutral-600">
                       <User size={16} />
                     </span>
                     <ChevronDown
                       size={16}
-                      className={`text-neutral-500 transition-transform ${
+                      className={`text-current transition-transform ${
                         userMenuOpen ? "rotate-180" : ""
                       }`}
                     />
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute top-full right-0 z-50 mt-2 flex min-w-44 flex-col rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-950">
+                    <div
+                      className="absolute top-full right-0 z-50 mt-2 flex min-w-44 flex-col rounded-2xl border border-current/15 p-2 shadow-lg"
+                      style={{
+                        backgroundColor: darkenColor(
+                          style.background_color,
+                          0.4,
+                        ),
+                      }}
+                    >
                       <button
                         type="button"
                         onClick={() => {
                           setUserMenuOpen(false);
                           handlePerfil();
                         }}
-                        className="rounded-xl px-3 py-2 text-left text-sm text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
+                        className="rounded-xl px-3 py-2 text-left text-sm text-current transition-all hover:scale-102"
                       >
                         Meus agendamentos
                       </button>
@@ -131,7 +140,7 @@ export function Navbar() {
                           setUserMenuOpen(false);
                           setShowLogoutDialog(true);
                         }}
-                        className="rounded-xl px-3 py-2 text-left text-sm text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
+                        className="rounded-xl px-3 py-2 text-left text-sm text-current transition-all hover:scale-102"
                       >
                         Sair
                       </button>
@@ -148,7 +157,7 @@ export function Navbar() {
               )}
             </nav>
 
-            {/* logo + status + menu â€” mobile */}
+            {/* logo + status + menu mobile */}
             <div className="flex flex-1 items-center justify-between md:hidden">
               <BarbershopLogo name={name} className="text-2xl" />
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -161,7 +170,9 @@ export function Navbar() {
                   side="left"
                   className="flex w-fit flex-col gap-6 pt-3"
                 >
-                  <SheetTitle className="sr-only">Menu de navegaÃ§Ã£o</SheetTitle>
+                  <SheetTitle className="sr-only">
+                    Menu de navegaÃ§Ã£o
+                  </SheetTitle>
                   <SheetDescription className="sr-only">
                     Links de navegaÃ§Ã£o do site
                   </SheetDescription>
@@ -197,12 +208,12 @@ export function Navbar() {
       </header>
 
       <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl">
+        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl" style={{ backgroundColor: style.background_color, color: style.text_color }}>
           <DialogHeader>
             <DialogTitle>Sair da conta</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja sair? VocÃª precisarÃ¡ fazer login novamente
-              para agendar.
+              Tem certeza que deseja sair? Você precisará fazer login
+              novamente para agendar.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
