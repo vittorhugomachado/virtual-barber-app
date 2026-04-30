@@ -8,7 +8,7 @@ import { ThemeResolver } from "./app/themes/resolver";
 import { supabase } from "./app/lib/supabase";
 import { syncAuthStoreWithSession } from "./app/lib/auth";
 import { useAuthStore } from "./app/store/auth-store";
-import { HomePage } from "./portal/pages/home";
+import { LandingPage } from "./landing-page";
 import { PrivacyPolicyPage } from "./portal/pages/privacy-policy";
 
 export function App() {
@@ -49,7 +49,7 @@ export function App() {
     <BrowserRouter>
       <Routes>
         {/* ROTAS DA LANDING PAGE */}
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route
           path="/politica-de-privacidade"
           element={<PrivacyPolicyPage />}

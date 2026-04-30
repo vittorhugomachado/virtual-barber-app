@@ -41,6 +41,26 @@ const PLAN_ALLOWED_TEMPLATES: Record<string, (keyof typeof THEMES)[]> = {
   master: ["vintage", "modern", "minimalist"],
 };
 
+function isDarkColor(color?: string | null) {
+  const hex = color?.replace("#", "") ?? "";
+  const normalizedHex =
+    hex.length === 3
+      ? hex
+          .split("")
+          .map(character => character + character)
+          .join("")
+      : hex;
+
+  if (!/^[0-9a-fA-F]{6}$/.test(normalizedHex)) return true;
+
+  const red = Number.parseInt(normalizedHex.slice(0, 2), 16);
+  const green = Number.parseInt(normalizedHex.slice(2, 4), 16);
+  const blue = Number.parseInt(normalizedHex.slice(4, 6), 16);
+  const luminance = (red * 299 + green * 587 + blue * 114) / 1000;
+
+  return luminance < 128;
+}
+
 function resolveTemplate(
   template: keyof typeof THEMES,
   plan: string,
@@ -71,7 +91,7 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
     document.title = data ? `${data.name}` : "Barbershop";
     document.documentElement.classList.toggle(
       "dark",
-      Boolean(data?.style.theme_is_dark),
+      isDarkColor(data?.style.background_color),
     );
   }, [data]);
 

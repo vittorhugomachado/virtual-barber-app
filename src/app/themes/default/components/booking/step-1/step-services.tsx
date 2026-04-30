@@ -67,7 +67,7 @@ export function StepServices({ onContinue }: StepServicesProps) {
                 className="shrink-0 rounded-full"
                 style={
                   inCart
-                    ? { backgroundColor: "#299E69", color: "#09090B" }
+                    ? { backgroundColor: primaryColor, color: textButtonColor }
                     : undefined
                 }
                 onClick={() => handleToggle(service)}

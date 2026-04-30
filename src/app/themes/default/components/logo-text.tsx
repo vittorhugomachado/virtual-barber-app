@@ -10,7 +10,7 @@ export function BarbershopLogo({ name, className }: BarbershopLogoProps) {
   return (
     <a
       href={`/${slug}`}
-      className={`font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 ${className ?? ""}`}
+      className={`font-semibold tracking-tight text-[var(--store-text)] ${className ?? ""}`}
     >
       {name}
     </a>

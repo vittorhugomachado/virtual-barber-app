@@ -35,7 +35,7 @@ export async function getBarbershopBySlug(
         plan,
         store_style (
           text_color,
-          theme_is_dark,
+          background_color,
           primary_color,
           text_button_color
         ),
@@ -151,14 +151,14 @@ export async function getBarbershopBySlug(
           ? barbershop.store_style[0]
           : barbershop.store_style) ?? {
           text_color: undefined,
-          theme_is_dark: true,
+          background_color: undefined,
           primary_color: undefined,
           text_button_color: undefined,
         };
 
         return {
           text_color: styleSource.text_color ?? "#FFFFFF",
-          theme_is_dark: styleSource.theme_is_dark ?? true,
+          background_color: styleSource.background_color ?? "#000000",
           primary_color: styleSource.primary_color ?? "#0458EE",
           text_button_color: styleSource.text_button_color ?? "#000000",
         };

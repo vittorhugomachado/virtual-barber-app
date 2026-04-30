@@ -56,17 +56,19 @@ export function SectionNav({ sections }: SectionNavProps) {
   }
 
   return (
-    <nav className="bg-background fixed top-14 right-0 left-0 z-40 flex w-full items-center py-1.5">
+    <nav className="fixed top-14 right-0 left-0 z-40 flex w-full items-center bg-(--store-background) py-1.5">
       <div className="scrollbar-none mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4">
         {sections.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => scrollTo(id)}
-            style={{ borderColor: primaryColor }}
-            className={`text-md mb-2 shrink-0 px-4 py-1.5 font-medium transition-colors hover:text-white ${
+            style={
               activeSection === id
-                ? "border-b-2 border-white text-white"
-                : "text-white/80"
+                ? { borderColor: primaryColor }
+                : undefined
+            }
+            className={`text-md mb-2 shrink-0 px-4 py-1.5 font-medium transition-colors hover:text-(--store-primary) ${
+              activeSection === id && "border-b-4"
             }`}
           >
             {label}

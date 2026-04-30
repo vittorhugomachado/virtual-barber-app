@@ -5,10 +5,12 @@ import type { Service } from "../../types";
 import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
+import { useStyle } from "../../../contexts/style-context/style-context";
 
 export function Services() {
   const { services } = useBarbershopData();
   const { addService, removeService, hasService } = useCart();
+  const { primaryColor, textButtonColor } = useStyle();
 
   if (!services.length) return null;
 
@@ -81,7 +83,7 @@ export function Services() {
                 variant={inCart ? "default" : "outline"}
                 style={
                   inCart
-                    ? { backgroundColor: "#299E69", color: "#09090B" }
+                    ? { backgroundColor: primaryColor, color: textButtonColor }
                     : { border: "1px solid" }
                 }
                 onClick={() => handleToggle(service)}

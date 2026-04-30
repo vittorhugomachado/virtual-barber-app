@@ -85,8 +85,8 @@ export function Navbar() {
 
   return (
     <>
-      <header className="bg-background sticky top-0 z-50 w-full border-b border-neutral-200 px-4 dark:border-neutral-800">
-        <div className="relative h-full w-full">
+      <header className="sticky top-0 z-50 w-full border-b border-current/15 bg-(--store-background) px-4 text-(--store-text)">
+        <div className="relative h-full w-full max-w-6xl mx-auto">
           <div className="mx-auto flex h-14 items-center justify-between">
             {/* logo — desktop */}
             <BarbershopLogo name={name} className="hidden text-3xl md:block" />
@@ -115,9 +115,9 @@ export function Navbar() {
                   <button
                     type="button"
                     onClick={() => setUserMenuOpen(open => !open)}
-                    className="flex items-center gap-2 rounded-full border border-neutral-200 px-2 py-1.5 transition-colors hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-600"
+                    className="flex items-center gap-2 rounded-full border border-current/15 px-2 py-1.5 transition-colors hover:border-current/60"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-600 bg-neutral-300">
                       <User size={16} />
                     </span>
                     <ChevronDown
