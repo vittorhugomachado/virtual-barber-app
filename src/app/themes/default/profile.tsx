@@ -10,6 +10,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { useAuthStore } from "@/app/store/auth-store";
+import { useStyle } from "../../contexts/style-context/style-context";
 import {
   getCustomerAppointments,
   updateCustomerAppointmentStatus,
@@ -283,6 +284,7 @@ function AppointmentCard({
 export default function DefaultProfilePage(props: BarbershopPageProps) {
   const navigate = useNavigate();
   const { isAuthenticated, customer } = useAuthStore();
+  const { style } = useStyle();
   const [appointments, setAppointments] = useState<NormalizedAppointment[]>([]);
   const [loading, setLoading] = useState(() => Boolean(customer));
   const [error, setError] = useState<string | null>(null);
@@ -290,8 +292,6 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const [ascending, setAscending] = useState(false);
   const lastLoadedKeyRef = useRef<string | null>(null);
 
-  const primary = props.style.primary_color;
-  const textButtonColor = props.style.text_button_color;
   const customerId = customer?.id ?? null;
   const visibleAppointments = useMemo(
     () => (customerId ? appointments : []),
@@ -417,7 +417,10 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
           <h1 className="text-2xl font-bold text-nowrap">Meus agendamentos</h1>
           <Button
             className="mx-auto rounded-full px-5 text-sm sm:mr-0 sm:ml-auto"
-            style={{ backgroundColor: primary, color: textButtonColor }}
+            style={{
+              backgroundColor: style.primary_color,
+              color: style.text_button_color,
+            }}
             onClick={() => navigate(`/${props.slug}/agendar`)}
           >
             Novo agendamento
@@ -473,7 +476,10 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                 </div>
                 <Button
                   className="mt-2 rounded-full px-6"
-                  style={{ backgroundColor: primary, color: textButtonColor }}
+                  style={{
+                    backgroundColor: style.primary_color,
+                    color: style.text_button_color,
+                  }}
                   onClick={() => navigate(`/${props.slug}/agendar`)}
                 >
                   Agendar agora
@@ -492,7 +498,10 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                 <div className="flex flex-col items-center">
                   <div
                     className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-                    style={{ backgroundColor: `${primary}20`, color: primary }}
+                    style={{
+                      backgroundColor: `${style.primary_color}20`,
+                      color: style.primary_color,
+                    }}
                   >
                     <Calendar size={14} />
                   </div>

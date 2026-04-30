@@ -27,7 +27,7 @@ import { BookingButton } from "./booking-button";
 
 export function Navbar() {
   const { name, openingHours } = useBarbershopData();
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { isAuthenticated, signOut } = useAuth();
   const { slug } = useParams<{ slug: string }>();
   const location = useLocation();
@@ -89,7 +89,7 @@ export function Navbar() {
       <header className="sticky top-0 z-50 w-full border-b border-current/15 bg-(--store-background) px-4 text-(--store-text)">
         <div className="relative mx-auto h-full w-full max-w-6xl">
           <div className="mx-auto flex h-14 items-center justify-between">
-            {/* logo — desktop */}
+            {/* logo â€” desktop */}
             <BarbershopLogo name={name} className="hidden text-3xl md:block" />
 
             {/* desktop nav */}
@@ -148,7 +148,7 @@ export function Navbar() {
               )}
             </nav>
 
-            {/* logo + status + menu — mobile */}
+            {/* logo + status + menu â€” mobile */}
             <div className="flex flex-1 items-center justify-between md:hidden">
               <BarbershopLogo name={name} className="text-2xl" />
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -161,9 +161,9 @@ export function Navbar() {
                   side="left"
                   className="flex w-fit flex-col gap-6 pt-3"
                 >
-                  <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
+                  <SheetTitle className="sr-only">Menu de navegaÃ§Ã£o</SheetTitle>
                   <SheetDescription className="sr-only">
-                    Links de navegação do site
+                    Links de navegaÃ§Ã£o do site
                   </SheetDescription>
                   <div className="flex flex-col gap-1 pl-4">
                     <BarbershopLogo name={name} className="text-2xl" />
@@ -175,8 +175,8 @@ export function Navbar() {
                         onClick={handleAgendar}
                         className="relative rounded-full px-5 text-sm"
                         style={{
-                          backgroundColor: primaryColor,
-                          color: textButtonColor,
+                          backgroundColor: style.primary_color,
+                          color: style.text_button_color,
                         }}
                       >
                         Agendar
@@ -201,7 +201,7 @@ export function Navbar() {
           <DialogHeader>
             <DialogTitle>Sair da conta</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja sair? Você precisará fazer login novamente
+              Tem certeza que deseja sair? VocÃª precisarÃ¡ fazer login novamente
               para agendar.
             </DialogDescription>
           </DialogHeader>

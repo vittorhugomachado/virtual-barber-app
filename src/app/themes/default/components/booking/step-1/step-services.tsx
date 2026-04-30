@@ -1,4 +1,4 @@
-﻿import { Check, Clock, DollarSign, Plus, Scissors } from "lucide-react";
+import { Check, Clock, DollarSign, Plus, Scissors } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { useCart } from "../../../../../hooks/use-cart";
 import { useStyle } from "../../../../../contexts/style-context/style-context";
@@ -13,7 +13,7 @@ interface StepServicesProps {
 
 export function StepServices({ onContinue }: StepServicesProps) {
   const { services } = useBarbershopData();
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { items, addService, removeService, hasService, total, totalDuration } =
     useCart();
 
@@ -67,7 +67,7 @@ export function StepServices({ onContinue }: StepServicesProps) {
                 className="shrink-0 rounded-full"
                 style={
                   inCart
-                    ? { backgroundColor: primaryColor, color: textButtonColor }
+                    ? { backgroundColor: style.primary_color, color: style.text_button_color }
                     : undefined
                 }
                 onClick={() => handleToggle(service)}
@@ -96,7 +96,7 @@ export function StepServices({ onContinue }: StepServicesProps) {
 
       <Button
         className="h-11 w-full rounded-full"
-        style={{ backgroundColor: primaryColor, color: textButtonColor }}
+        style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
         disabled={items.length === 0}
         onClick={onContinue}
       >

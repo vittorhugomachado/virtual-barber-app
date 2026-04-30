@@ -29,13 +29,13 @@ export function TimeSlots({
   onBack,
   onTimeClick,
 }: TimeSlotsProps) {
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const allSlotsWithStatus: SlotWithStatus[] = allSlotsForDay.map(time => ({
     time,
     available: availableSet.has(time),
   })); // RETORNA O OBEJTO DE CADA LOTE DE 30 MINUTOS COM O STATUS DE DISPONIBILIDADE
 
-  const periods = [ //ORGANIZA OS SLOTS PELO PERÍODO (MANHÃ, TARDE E NOITE)
+  const periods = [ //ORGANIZA OS SLOTS PELO PERÃODO (MANHÃƒ, TARDE E NOITE)
     {
       key: "manha" as const,
       slots: allSlotsWithStatus.filter(s => getTimePeriod(s.time) === "manha"),
@@ -79,7 +79,7 @@ export function TimeSlots({
         </div>
       ) : allSlotsForDay.length === 0 ? (
         <p className="py-6 text-center text-sm text-neutral-400">
-          Nenhum horário disponível neste dia.
+          Nenhum horÃ¡rio disponÃ­vel neste dia.
         </p>
       ) : (
         <div className="flex flex-col gap-4">
@@ -106,10 +106,10 @@ export function TimeSlots({
                             : "cursor-not-allowed border-neutral-200 opacity-35 dark:border-neutral-800"
                       }`}
                       style={
-                        isSelected && primaryColor
+                        isSelected && style.primary_color
                           ? {
-                              backgroundColor: primaryColor,
-                              color: textButtonColor,
+                              backgroundColor: style.primary_color,
+                              color: style.text_button_color,
                             }
                           : undefined
                       }

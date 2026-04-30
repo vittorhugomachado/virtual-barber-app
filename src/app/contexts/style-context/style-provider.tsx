@@ -1,14 +1,18 @@
 import type { ReactNode } from "react";
-import type { StyleContextType } from "./style-context";
+import type { StoreStyle } from "@/app/themes/types";
 import { StyleContext } from "./style-context";
 
 export function StyleProvider({
-  primaryColor,
-  textButtonColor,
+  style,
+  isDarkBackground,
   children,
-}: StyleContextType & { children: ReactNode }) {
+}: {
+  style: StoreStyle;
+  isDarkBackground: boolean;
+  children: ReactNode;
+}) {
   return (
-    <StyleContext.Provider value={{ primaryColor, textButtonColor }}>
+    <StyleContext.Provider value={{ style, isDarkBackground }}>
       {children}
     </StyleContext.Provider>
   );

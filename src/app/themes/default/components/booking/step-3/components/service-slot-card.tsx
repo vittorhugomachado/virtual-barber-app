@@ -26,7 +26,7 @@ export function ServiceSlotCard({
   onSelect,
   autoOpen,
 }: ServiceSlotCardProps) {
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { id: barbershopId, openingHours, services } = useBarbershopData();
   const [open, setOpen] = useState(autoOpen ?? false);
   const [viewBarber, setViewBarber] = useState<Barber | null>(null);
@@ -134,7 +134,7 @@ export function ServiceSlotCard({
           {isComplete ? (
             <div
               className="flex h-5 w-5 items-center justify-center rounded-full"
-              style={{ backgroundColor: primaryColor, color: textButtonColor }}
+              style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
             >
               <Check size={10} />
             </div>

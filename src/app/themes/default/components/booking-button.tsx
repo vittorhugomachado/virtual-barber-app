@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export function BookingButton() {
   const { isAuthenticated } = useAuth();
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { items } = useCart();
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -24,8 +24,8 @@ export function BookingButton() {
       onClick={handleAgendar}
       className="relative rounded-full px-5 text-sm"
       style={{
-        backgroundColor: primaryColor,
-        color: textButtonColor,
+        backgroundColor: style.primary_color,
+        color: style.text_button_color,
       }}
     >
       Agendar

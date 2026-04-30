@@ -8,7 +8,7 @@ import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
 
 export function CartPanel() {
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { items, removeService, total, totalDuration } = useCart();
   const { isAuthenticated } = useAuthStore();
   const { slug } = useParams<{ slug: string }>();
@@ -39,7 +39,7 @@ export function CartPanel() {
 
         {items.length === 0 ? (
           <p className="py-6 text-center text-sm text-neutral-400">
-            Nenhum serviço selecionado
+            Nenhum serviÃ§o selecionado
           </p>
         ) : (
           <>
@@ -94,7 +94,10 @@ export function CartPanel() {
 
             <Button
               className="mt-4 h-11 w-full rounded-full text-sm font-medium"
-              style={{ backgroundColor: primaryColor, color: textButtonColor }}
+              style={{
+                backgroundColor: style.primary_color,
+                color: style.text_button_color,
+              }}
               onClick={handleAgendar}
             >
               Agendar selecionados

@@ -14,7 +14,7 @@ interface StepDateProps {
 
 export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
   const { openingHours } = useBarbershopData();
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -122,8 +122,8 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
                       : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 }`}
                 style={
-                  isSelected && primaryColor
-                    ? { backgroundColor: primaryColor, color: textButtonColor }
+                  isSelected && style.primary_color
+                    ? { backgroundColor: style.primary_color, color: style.text_button_color }
                     : undefined
                 }
               >
@@ -136,7 +136,7 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
 
       <Button
         className="h-11 w-full rounded-full"
-        style={{ backgroundColor: primaryColor, color: textButtonColor }}
+        style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
         disabled={!selected}
         onClick={onContinue}
       >

@@ -12,11 +12,7 @@ import type { Service } from "../../../../types";
 import type { ServiceSelection } from "../../../../types";
 import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
-import {
-  addMinutes,
-  formatDate,
-  timeToMinutes,
-} from "@/utils/format-time";
+import { addMinutes, formatDate, timeToMinutes } from "@/utils/format-time";
 
 interface StepConfirmProps {
   barbershopId: string;
@@ -50,9 +46,7 @@ function hasSelectionConflicts(
       };
     })
     .filter(
-      (
-        range,
-      ): range is { serviceName: string; start: number; end: number } =>
+      (range): range is { serviceName: string; start: number; end: number } =>
         range !== null,
     )
     .sort((left, right) => left.start - right.start);
@@ -81,17 +75,21 @@ export function StepConfirm({
   onSuccess,
   onBack,
 }: StepConfirmProps) {
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { customer, setCustomer } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState(customer?.name?.trim() ?? "");
 
-  const total = services.reduce((sum, service) => sum + (service.price ?? 0), 0);
+  const total = services.reduce(
+    (sum, service) => sum + (service.price ?? 0),
+    0,
+  );
   const normalizedStoredName = customer?.name?.trim() ?? "";
   const requiresName = normalizedStoredName.length < 2;
   const nameValidationMessage = "Informe um nome com pelo menos 2 letras.";
-  const hasNameValidationError = requiresName && error === nameValidationMessage;
+  const hasNameValidationError =
+    requiresName && error === nameValidationMessage;
 
   function hasValidName(value: string) {
     return value.trim().length >= 2;
@@ -149,7 +147,8 @@ export function StepConfirm({
         };
       });
 
-      const { error: appointmentError } = await createAppointments(appointments);
+      const { error: appointmentError } =
+        await createAppointments(appointments);
       if (appointmentError) {
         console.error("Erro ao confirmar agendamento", {
           message: appointmentError.message,
@@ -278,7 +277,9 @@ export function StepConfirm({
             <div className="border-t border-neutral-100 dark:border-neutral-800" />
             <div className="flex items-center justify-between">
               <span className="text-sm text-neutral-500">Total</span>
-              <span className="text-sm font-semibold">{formatPrice(total)}</span>
+              <span className="text-sm font-semibold">
+                {formatPrice(total)}
+              </span>
             </div>
           </>
         )}
@@ -300,7 +301,10 @@ export function StepConfirm({
         </Button>
         <Button
           className="h-11 flex-1 rounded-full"
-          style={{ backgroundColor: primaryColor, color: textButtonColor }}
+          style={{
+            backgroundColor: style.primary_color,
+            color: style.text_button_color,
+          }}
           onClick={handleConfirm}
           disabled={loading}
         >

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/app/lib/supabase";
 import { useAuthStore } from "@/app/store/auth-store";
@@ -162,8 +162,8 @@ export default function DefaultAuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-950">
-      <header className="fixed top-0 z-50 flex h-14 w-full items-center border-b border-neutral-200 bg-white/90 px-4 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/90">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-(--store-background) text-(--store-text)">
+      <header className="fixed top-0 z-50 flex h-14 w-full items-center border-b border-current/15 bg-(--store-background) px-4 backdrop-blur-sm">
         {data?.name && <BarbershopLogo name={data.name} className="text-3xl" />}
       </header>
       <div className="mx-auto w-[90vw] max-w-md rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">

@@ -11,14 +11,14 @@ interface BarberGridProps {
 }
 
 export function BarberGrid({ serviceId, selection, onSelect }: BarberGridProps) {
-  const { primaryColor } = useStyle();
+  const { style } = useStyle();
   const { barbers } = useBarbershopData();
   const eligible = barbers.filter(barber => barber.serviceIds.includes(serviceId));
 
   if (eligible.length === 0) {
     return (
       <p className="py-4 text-center text-sm text-neutral-400">
-        Nenhum profissional disponível para este serviço.
+        Nenhum profissional disponÃ­vel para este serviÃ§o.
       </p>
     );
   }
@@ -37,10 +37,10 @@ export function BarberGrid({ serviceId, selection, onSelect }: BarberGridProps) 
                 : "border-neutral-200 hover:border-neutral-400 dark:border-neutral-800"
             }`}
             style={
-              isSelected && primaryColor
+              isSelected && style.primary_color
                 ? {
-                    borderColor: primaryColor,
-                    backgroundColor: primaryColor + "15",
+                    borderColor: style.primary_color,
+                    backgroundColor: style.primary_color + "15",
                   }
                 : undefined
             }

@@ -11,7 +11,7 @@ type SectionNavProps = {
 };
 
 export function SectionNav({ sections }: SectionNavProps) {
-  const { primaryColor } = useStyle();
+  const { style } = useStyle();
   const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export function SectionNav({ sections }: SectionNavProps) {
       observer.disconnect();
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [sections]); // <-- adiciona sections como dependência
+  }, [sections]); // <-- adiciona sections como dependÃªncia
 
   function scrollTo(id: string) {
     const element = document.getElementById(id);
@@ -64,7 +64,7 @@ export function SectionNav({ sections }: SectionNavProps) {
             onClick={() => scrollTo(id)}
             style={
               activeSection === id
-                ? { borderColor: primaryColor }
+                ? { borderColor: style.primary_color }
                 : undefined
             }
             className={`text-md mb-2 shrink-0 px-4 py-1.5 font-medium transition-colors hover:text-(--store-primary) ${

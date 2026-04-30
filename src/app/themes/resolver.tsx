@@ -1,10 +1,11 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState, type CSSProperties } from "react";
 import { useParams } from "react-router-dom";
 import { useBarbershop } from "../hooks/use-barbershop";
 import { NotFoundPage } from "@/app/pages/not-found-page";
 import { CartProvider } from "../contexts/cart-context/cart-provider";
 import { StyleProvider } from "../contexts/style-context/style-provider";
 import { BarbershopDataProvider } from "../contexts/barbershop-data/barbershop-data-provider";
+import type { StoreStyle } from "./types";
 
 export type PageType = "home" | "auth" | "booking" | "profile";
 
@@ -76,6 +77,8 @@ interface ThemeResolverProps {
 export function ThemeResolver({ page }: ThemeResolverProps) {
   const { slug } = useParams<{ slug: string }>();
   const { data, isLoading, error } = useBarbershop(slug ?? "");
+  const [previewStyleOverride, setPreviewStyleOverride] =
+    useState<Partial<StoreStyle> | null>(null);
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -88,30 +91,85 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
   }, []);
 
   useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type !== "BARBERSHOP_PREVIEW_STYLE") return;
+
+      setPreviewStyleOverride(event.data.style);
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sendHeight = () => {
+      window.parent.postMessage(
+        {
+          type: "BARBERSHOP_PREVIEW_HEIGHT",
+          height: document.documentElement.scrollHeight,
+        },
+        "*",
+      );
+    };
+
+    sendHeight();
+
+    const resizeObserver = new ResizeObserver(sendHeight);
+    resizeObserver.observe(document.body);
+
+    window.addEventListener("resize", sendHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", sendHeight);
+    };
+  }, []);
+
+  useEffect(() => {
     document.title = data ? `${data.name}` : "Barbershop";
     document.documentElement.classList.toggle(
       "dark",
-      isDarkColor(data?.style.background_color),
+      isDarkColor(previewStyleOverride?.background_color ?? data?.style.background_color),
     );
-  }, [data]);
+  }, [data, previewStyleOverride?.background_color]);
 
   if (isLoading) return <ThemeLoadingFallback />;
   if (error || !data) return <NotFoundPage />;
 
   const resolvedTemplate = resolveTemplate(data.template, data.plan);
   const Page = THEMES[resolvedTemplate][page];
+  const style: StoreStyle = {
+    ...data.style,
+    ...previewStyleOverride,
+  };
+  const isDarkBackground = isDarkColor(style.background_color);
+  const themeStyle = {
+    backgroundColor: style.background_color,
+    "--store-background": style.background_color,
+    "--store-primary": style.primary_color,
+    "--store-text": style.text_color,
+    "--store-button-text": style.text_button_color,
+  } as CSSProperties;
 
   return (
     <CartProvider slug={slug ?? ""}>
       <StyleProvider
-        primaryColor={data.style.primary_color}
-        textButtonColor={data.style.text_button_color}
+        style={style}
+        isDarkBackground={isDarkBackground}
       >
-        <BarbershopDataProvider value={data}>
-          <Suspense fallback={<ThemeLoadingFallback />}>
-            <Page {...data} />
-          </Suspense>
-        </BarbershopDataProvider>
+        <div
+          className="min-h-screen bg-(--store-background) text-(--store-text)"
+          style={themeStyle}
+        >
+          <BarbershopDataProvider value={{ ...data, style }}>
+            <Suspense fallback={<ThemeLoadingFallback />}>
+              <Page {...data} style={style} />
+            </Suspense>
+          </BarbershopDataProvider>
+        </div>
       </StyleProvider>
     </CartProvider>
   );

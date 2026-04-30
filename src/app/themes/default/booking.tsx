@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, CheckCircle } from "lucide-react";
 import { useAuthStore } from "@/app/store/auth-store";
@@ -18,7 +18,7 @@ const STEPS = ["Serviços", "Data", "Profissional", "Confirmação"];
 
 export default function DefaultBookingPage(props: BarbershopPageProps) {
   const navigate = useNavigate();
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { isAuthenticated, customer } = useAuthStore();
   const { items, clearCart } = useCart();
 
@@ -64,7 +64,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
       <div className="flex min-h-screen flex-col">
         <Navbar />
         <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-20">
-          <CheckCircle size={56} style={{ color: primaryColor }} />
+          <CheckCircle size={56} style={{ color: style.primary_color }} />
           <div className="text-center">
             <h1 className="text-2xl font-semibold">Agendamento confirmado!</h1>
             <p className="mt-2 text-sm text-neutral-500">
@@ -81,7 +81,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
             </Button>
             <Button
               className="rounded-full px-5 py-1"
-              style={{ backgroundColor: primaryColor, color: textButtonColor }}
+              style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
               onClick={() => navigate(`/${props.slug}`)}
             >
               Voltar a loja
@@ -113,8 +113,8 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
                   style={
                     index <= step
                       ? {
-                          backgroundColor: primaryColor,
-                          color: textButtonColor,
+                          backgroundColor: style.primary_color,
+                          color: style.text_button_color,
                         }
                       : undefined
                   }

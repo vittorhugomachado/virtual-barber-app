@@ -1,4 +1,4 @@
-﻿import { FileText, Clock, DollarSign } from "lucide-react";
+import { FileText, Clock, DollarSign } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { useBarbershopData } from "../../../../../contexts/barbershop-data/barbershop-data-context";
 import { useCart } from "../../../../../hooks/use-cart";
@@ -24,7 +24,7 @@ export function StepBarberTime({
   onSelectionsChange,
   onContinue,
 }: StepBarberTimeProps) {
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const { items, total } = useCart();
   const { id: barbershopId, barbers, openingHours } = useBarbershopData();
 
@@ -91,7 +91,7 @@ export function StepBarberTime({
 
       <Button
         className="h-11 w-full rounded-full"
-        style={{ backgroundColor: primaryColor, color: textButtonColor }}
+        style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
         disabled={!allSelected}
         onClick={onContinue}
       >

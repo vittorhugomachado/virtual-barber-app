@@ -1,13 +1,19 @@
 import { createContext, useContext } from "react";
+import type { StoreStyle } from "@/app/themes/types";
 
 export interface StyleContextType {
-  primaryColor: string;
-  textButtonColor: string;
+  style: StoreStyle;
+  isDarkBackground: boolean;
 }
 
 export const StyleContext = createContext<StyleContextType>({
-  primaryColor: "#0458EE",
-  textButtonColor: "#000000",
+  style: {
+    text_color: "#FFFFFF",
+    background_color: "#000000",
+    primary_color: "#0458EE",
+    text_button_color: "#000000",
+  },
+  isDarkBackground: true,
 });
 
 export function useStyle() {

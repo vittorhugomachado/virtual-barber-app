@@ -20,7 +20,7 @@ function hasValidName(value: string) {
 
 export function CustomerProfileCard() {
   const { customer, setCustomer } = useAuthStore();
-  const { primaryColor, textButtonColor } = useStyle();
+  const { style } = useStyle();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -56,7 +56,7 @@ export function CustomerProfileCard() {
         .eq("id", currentCustomer.id);
 
       if (updateError) {
-        setError("Não foi possível atualizar seu nome. Tente novamente.");
+        setError("NÃ£o foi possÃ­vel atualizar seu nome. Tente novamente.");
         return;
       }
 
@@ -75,8 +75,8 @@ export function CustomerProfileCard() {
             <div
               className="flex h-14 w-14 items-center justify-center rounded-full text-sm font-semibold"
               style={{
-                backgroundColor: `${primaryColor}20`,
-                color: primaryColor,
+                backgroundColor: `${style.primary_color}20`,
+                color: style.primary_color,
               }}
             >
               {initials || <User size={22} />}
@@ -151,7 +151,7 @@ export function CustomerProfileCard() {
             </Button>
             <Button
               className="rounded-xl"
-              style={{ backgroundColor: primaryColor, color: textButtonColor }}
+              style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
               onClick={handleSave}
               disabled={loading}
             >
