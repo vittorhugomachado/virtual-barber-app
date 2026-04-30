@@ -23,6 +23,7 @@ import { useStyle } from "../../../contexts/style-context/style-context";
 import { BarbershopLogo } from "./logo-text";
 import { StatusBadge } from "../../../components/status-badge";
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
+import { BookingButton } from "./booking-button";
 
 export function Navbar() {
   const { name, openingHours } = useBarbershopData();
@@ -86,30 +87,14 @@ export function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-current/15 bg-(--store-background) px-4 text-(--store-text)">
-        <div className="relative h-full w-full max-w-6xl mx-auto">
+        <div className="relative mx-auto h-full w-full max-w-6xl">
           <div className="mx-auto flex h-14 items-center justify-between">
             {/* logo — desktop */}
             <BarbershopLogo name={name} className="hidden text-3xl md:block" />
 
             {/* desktop nav */}
-            <nav className="hidden items-center gap-6 md:flex mr-3">
-              {!shouldHideScheduleButton && (
-                <Button
-                  onClick={handleAgendar}
-                  className="relative rounded-full px-5 text-sm"
-                  style={{
-                    backgroundColor: primaryColor,
-                    color: textButtonColor,
-                  }}
-                >
-                  Agendar
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
-                      {cartCount}
-                    </span>
-                  )}
-                </Button>
-              )}
+            <nav className="mr-3 hidden items-center gap-6 md:flex">
+              {!shouldHideScheduleButton && <BookingButton />}
               {isAuthenticated ? (
                 <div className="relative">
                   <button
@@ -117,7 +102,7 @@ export function Navbar() {
                     onClick={() => setUserMenuOpen(open => !open)}
                     className="flex items-center gap-2 rounded-full border border-current/15 px-2 py-1.5 transition-colors hover:border-current/60"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-600 bg-neutral-300">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-300 text-neutral-600">
                       <User size={16} />
                     </span>
                     <ChevronDown
@@ -129,7 +114,7 @@ export function Navbar() {
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full z-50 mt-2 flex min-w-44 flex-col rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-950">
+                    <div className="absolute top-full right-0 z-50 mt-2 flex min-w-44 flex-col rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-950">
                       <button
                         type="button"
                         onClick={() => {

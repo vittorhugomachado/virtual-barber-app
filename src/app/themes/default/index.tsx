@@ -4,7 +4,7 @@ import { Navbar } from "./components/nav-bar";
 import { Gallery } from "./components/gallery";
 import { Team } from "./components/team";
 import { Services } from "./components/services";
-import { WhatsappButton } from "./components/whatsapp-button";
+import { BookingButton } from "./components/booking-button";
 import { Location } from "./components/location";
 import { BarberShopHours } from "./components/barbershop-hours";
 import { Footer } from "../../components/footer";
@@ -121,10 +121,9 @@ export default function DefaultTheme(props: BarbershopPageProps) {
       >
         <Navbar />
 
-        {props.phone && <WhatsappButton linkWhatsapp={props.phone} />}
-
         <SectionNav sections={sections} />
 
+        <BookingButton />
         <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
           <Gallery />
 
