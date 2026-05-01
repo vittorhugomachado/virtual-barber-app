@@ -39,6 +39,8 @@ export function Navbar() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const shouldHideScheduleButton = location.pathname.includes("agendar");
+  const isPreview =
+    new URLSearchParams(window.location.search).get("preview") === "true";
 
   function handleAgendar() {
     if (isAuthenticated) {
@@ -89,7 +91,7 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-current/15 bg-(--store-background) px-4 text-(--store-text)">
         <div className="relative mx-auto h-full w-full max-w-6xl">
-          <div className="mx-auto flex h-14 items-center justify-between">
+          <div className="mx-auto flex items-center justify-between">
             {/* logo desktop */}
             <BarbershopLogo name={name} className="hidden text-3xl md:block" />
 
@@ -160,60 +162,84 @@ export function Navbar() {
             {/* logo + status + menu mobile */}
             <div className="flex flex-1 items-center justify-between md:hidden">
               <BarbershopLogo name={name} className="text-2xl" />
-              <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-                <SheetTrigger asChild>
-                  <button className="p-2 text-neutral-600 dark:text-neutral-400">
-                    {menuOpen ? <X size={20} /> : <Menu size={20} />}
-                  </button>
-                </SheetTrigger>
-                <SheetContent
-                  side="left"
-                  className="flex w-fit flex-col gap-6 pt-3"
+              {!isPreview ? (
+                <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+                  <SheetTrigger asChild>
+                    <button className="p-2 text-neutral-600 dark:text-neutral-400">
+                      {menuOpen ? <X size={20} /> : <Menu size={20} />}
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="left"
+                    className="flex w-fit flex-col gap-6 pt-3"
+                  >
+                    <SheetTitle className="sr-only">
+                      Menu de navegação
+                    </SheetTitle>
+                    <SheetDescription className="sr-only">
+                      Links de navegação do site
+                    </SheetDescription>
+                    <div className="flex flex-col gap-1 pl-4">
+                      <BarbershopLogo name={name} className="text-2xl" />
+                      <StatusBadge openingHours={openingHours} />
+                    </div>
+                    <nav className="mx-auto flex max-w-40 flex-col gap-4">
+                      {!shouldHideScheduleButton && (
+                        <Button
+                          onClick={handleAgendar}
+                          className="relative rounded-full px-5 text-sm"
+                          style={{
+                            backgroundColor: style.primary_color,
+                            color: style.text_button_color,
+                          }}
+                        >
+                          Agendar
+                          {cartCount > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
+                              {cartCount}
+                            </span>
+                          )}
+                        </Button>
+                      )}
+                      {mobileNavLinks}
+                    </nav>
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <Button
+                  onClick={handleAgendar}
+                  className="relative rounded-full px-5 text-sm"
+                  style={{
+                    backgroundColor: style.primary_color,
+                    color: style.text_button_color,
+                  }}
                 >
-                  <SheetTitle className="sr-only">
-                    Menu de navegaÃ§Ã£o
-                  </SheetTitle>
-                  <SheetDescription className="sr-only">
-                    Links de navegaÃ§Ã£o do site
-                  </SheetDescription>
-                  <div className="flex flex-col gap-1 pl-4">
-                    <BarbershopLogo name={name} className="text-2xl" />
-                    <StatusBadge openingHours={openingHours} />
-                  </div>
-                  <nav className="mx-auto flex max-w-40 flex-col gap-4">
-                    {!shouldHideScheduleButton && (
-                      <Button
-                        onClick={handleAgendar}
-                        className="relative rounded-full px-5 text-sm"
-                        style={{
-                          backgroundColor: style.primary_color,
-                          color: style.text_button_color,
-                        }}
-                      >
-                        Agendar
-                        {cartCount > 0 && (
-                          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
-                            {cartCount}
-                          </span>
-                        )}
-                      </Button>
-                    )}
-                    {mobileNavLinks}
-                  </nav>
-                </SheetContent>
-              </Sheet>
+                  Agendar
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-black bg-white text-[10px] font-bold text-black">
+                      {cartCount}
+                    </span>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </header>
 
       <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl" style={{ backgroundColor: style.background_color, color: style.text_color }}>
+        <DialogContent
+          className="mx-auto w-[90vw] max-w-md rounded-2xl"
+          style={{
+            backgroundColor: style.background_color,
+            color: style.text_color,
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Sair da conta</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja sair? Você precisará fazer login
-              novamente para agendar.
+              Tem certeza que deseja sair? Você precisará fazer login novamente
+              para agendar.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">

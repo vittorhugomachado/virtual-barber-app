@@ -3,7 +3,6 @@ import { Navbar } from "./components/nav-bar";
 import { Gallery } from "./components/gallery";
 import { Team } from "./components/team";
 import { Services } from "./components/services";
-import { BookingButton } from "./components/booking-button";
 import { Location } from "./components/location";
 import { BarberShopHours } from "./components/barbershop-hours";
 import { Footer } from "../../components/footer";
@@ -27,7 +26,6 @@ export default function DefaultTheme(props: BarbershopPageProps) {
     <div className="relative min-h-screen text-(--store-text)">
       <Navbar />
       <SectionNav sections={sections} />
-      <BookingButton isLarger />
       <main className="mx-auto max-w-6xl px-4 pt-14 pb-10">
         <Gallery />
         <section

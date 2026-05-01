@@ -21,7 +21,7 @@ export function Location() {
         <h2 className="text-2xl font-medium md:text-4xl">Localização</h2>
       </div>
       <div className="flex flex-col gap-6 lg:flex-row">
-        <div className="w-full overflow-hidden rounded-xl border border-neutral-200 lg:flex-1 dark:border-neutral-800">
+        <div className="w-full overflow-hidden rounded-xl border border-current/15 lg:flex-1">
           <iframe
             src={mapSrc}
             width="100%"
@@ -36,31 +36,31 @@ export function Location() {
 
         <div className="flex flex-col gap-4 lg:w-72 lg:shrink-0">
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+            <span className="text-sm font-medium text-current">
               Endereço
             </span>
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">
+            <span className="text-sm text-current/70">
               {address.street}, {address.number}
             </span>
             {address.complement && (
-              <span className="text-sm text-neutral-600 dark:text-neutral-400">
+              <span className="text-sm text-current/70">
                 {address.complement}
               </span>
             )}
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">
+            <span className="text-sm text-current/70">
               {address.neighborhood}
             </span>
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">
+            <span className="text-sm text-current/70">
               {address.city}, {address.state} · {address.zip_code}
             </span>
           </div>
 
           {phone && (
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+              <span className="text-sm font-medium text-current">
                 Contato
               </span>
-              <p className="flex items-center gap-1.5 text-sm text-neutral-600 transition-colors dark:text-neutral-400">
+              <p className="flex items-center gap-1.5 text-sm transition-colors text-current/70">
                 <Phone size={14} className="shrink-0" />
                 {formatPhone(phone)}
               </p>

@@ -39,7 +39,7 @@ export function CartPanel() {
         </div>
 
         {items.length === 0 ? (
-          <p className="py-6 text-center text-sm text-neutral-400">
+          <p className="py-6 text-center text-sm text-current/70">
             Nenhum serviço selecionado
           </p>
         ) : (
