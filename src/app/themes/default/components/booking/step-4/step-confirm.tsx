@@ -13,6 +13,7 @@ import type { ServiceSelection } from "../../../../types";
 import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
 import { addMinutes, formatDate, timeToMinutes } from "@/utils/format-time";
+import { darkenColor } from "@/utils/darken-color";
 
 interface StepConfirmProps {
   barbershopId: string;
@@ -172,11 +173,11 @@ export function StepConfirm({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800">
+      <div className="flex flex-col gap-3 rounded-2xl border border-current/15 p-5">
         {requiresName && (
           <>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <label className="text-sm font-medium text-current">
                 Como podemos te chamar?
               </label>
               <input
@@ -184,34 +185,34 @@ export function StepConfirm({
                 value={displayName}
                 onChange={event => setDisplayName(event.target.value)}
                 placeholder="Digite seu nome"
-                className={`h-11 w-full rounded-xl bg-transparent px-4 text-sm ring-offset-2 transition-colors outline-none placeholder:text-neutral-400 focus:ring-2 ${
+                className={`h-11 w-full rounded-xl bg-transparent px-4 text-sm ring-offset-2 transition-colors outline-none placeholder:text-current focus:ring-2 ${
                   hasNameValidationError
-                    ? "border border-red-500 focus:ring-red-500 dark:border-red-500"
-                    : "border border-neutral-200 focus:ring-neutral-900 dark:border-neutral-700 dark:focus:ring-neutral-100"
+                    ? "border border-red-500 focus:ring-red-500"
+                    : "border border-current focus:ring-current"
                 }`}
               />
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-current">
                 Precisamos de um nome para confirmar o agendamento.
               </p>
             </div>
-            <div className="border-t border-neutral-100 dark:border-neutral-800" />
+            <div className="border-t border-current" />
           </>
         )}
 
         <div className="flex items-center gap-2">
-          <Calendar size={16} className="text-neutral-400" />
+          <Calendar size={16} className="text-current" />
           <div>
-            <p className="text-xs text-neutral-400">Data</p>
+            <p className="text-xs text-current">Data</p>
             <p className="text-sm font-medium">{formatDate(date)}</p>
           </div>
         </div>
 
-        <div className="border-t border-neutral-100 dark:border-neutral-800" />
+        <div className="border-t border-current/15" />
 
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <Scissors size={16} className="text-neutral-400" />
-            <p className="text-xs text-neutral-400">Serviços</p>
+            <Scissors size={16} className="text-current" />
+            <p className="text-xs text-current">Serviços</p>
           </div>
 
           {services.map((service, index) => {
@@ -222,19 +223,19 @@ export function StepConfirm({
             return (
               <div key={service.id}>
                 {index > 0 && (
-                  <div className="mb-4 border-t border-neutral-100 dark:border-neutral-800" />
+                  <div className="mb-4 border-t border-current/15" />
                 )}
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-medium">{service.name}</span>
-                    <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+                    <div className="flex items-center gap-1.5 text-xs text-current/80">
                       {service.duration_min != null && (
                         <span>{formatDuration(service.duration_min)}</span>
                       )}
                       {service.price != null && (
                         <>
                           <span>|</span>
-                          <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                          <span className="font-medium text-current">
                             {formatPrice(service.price)}
                           </span>
                         </>
@@ -243,7 +244,7 @@ export function StepConfirm({
                   </div>
                 </div>
 
-                <div className="mt-2 flex items-center gap-4 rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
+                <div className="mt-2 flex items-center gap-4 rounded-md px-3 py-2 border border-current/15" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
                   <div className="flex items-center gap-2">
                     {selection.barber.avatar_url ? (
                       <img
@@ -252,15 +253,15 @@ export function StepConfirm({
                         className="h-6 w-6 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-700">
-                        <User size={12} className="text-neutral-400" />
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-current">
+                        <User size={12} className="text-current" />
                       </div>
                     )}
                     <span className="text-xs font-medium">
                       {selection.barber.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+                  <div className="flex items-center gap-1.5 text-xs text-current">
                     <Clock size={12} />
                     <span>
                       {selection.time} - {endsAt}
@@ -274,9 +275,9 @@ export function StepConfirm({
 
         {total > 0 && (
           <>
-            <div className="border-t border-neutral-100 dark:border-neutral-800" />
+            <div className="border-t border-current/15" />
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-500">Total</span>
+              <span className="text-sm text-current">Total</span>
               <span className="text-sm font-semibold">
                 {formatPrice(total)}
               </span>
@@ -286,7 +287,7 @@ export function StepConfirm({
       </div>
 
       {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950">
+        <p className="rounded-xl bg-red-500 px-4 py-3 text-sm text-red-600">
           {error}
         </p>
       )}

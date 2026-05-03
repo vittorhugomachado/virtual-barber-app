@@ -206,8 +206,8 @@ function ThemeLoadingFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-800" />
-        <span className="text-sm text-neutral-500">Carregando...</span>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        <span className="text-sm text-current">Carregando...</span>
       </div>
     </div>
   );

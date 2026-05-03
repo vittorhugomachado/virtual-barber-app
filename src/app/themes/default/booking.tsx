@@ -64,11 +64,11 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
       <div className="flex min-h-screen flex-col">
         <Navbar />
         <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-20">
-          <CheckCircle size={56} style={{ color: style.primary_color }} />
+          <CheckCircle size={56} style={{ color: "green" }} />
           <div className="text-center">
             <h1 className="text-2xl font-semibold">Agendamento confirmado!</h1>
-            <p className="mt-2 text-sm text-neutral-500">
-              Seu horario foi reservado com sucesso.
+            <p className="mt-2 text-sm text-current">
+              Seu agendamento foi reservado com sucesso.
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
@@ -108,13 +108,13 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
                   className={`sm:text-md flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors sm:h-9 sm:w-9 ${
                     index <= step
                       ? ""
-                      : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
+                      : "bg-current/15 text-current"
                   }`}
                   style={
                     index <= step
                       ? {
-                          backgroundColor: style.primary_color,
-                          color: style.text_button_color,
+                          backgroundColor: "green",
+                          color: "white",
                         }
                       : undefined
                   }
@@ -123,7 +123,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
                 </div>
                 <span
                   className={`hidden text-[13px] sm:block ${
-                    index === step ? "font-medium" : "text-neutral-400"
+                    index === step ? "font-medium" : "text-current/50"
                   }`}
                 >
                   {label}
@@ -138,7 +138,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
             <button
               type="button"
               onClick={handleBack}
-              className="inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+              className="inline-flex items-center gap-2 text-sm text-current transition-colors hover:text-current/70"
             >
               <ArrowLeft size={16} />
               Voltar

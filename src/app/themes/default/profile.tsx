@@ -31,6 +31,7 @@ import { formatDate } from "@/utils/format-time";
 import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
 import type { AppointmentStatus, BarbershopPageProps } from "../types";
+import { darkenColor } from "@/utils/darken-color";
 
 type AppointmentRow = {
   id: string;
@@ -108,15 +109,15 @@ const STATUS_LABEL: Record<AppointmentStatus, string> = {
 };
 
 const STATUS_CLASS: Record<AppointmentStatus, string> = {
-  scheduled: "border border-blue-500/20 bg-blue-500/10 text-blue-600",
+  scheduled: "bg-blue-600 text-white",
   completed:
-    "border border-emerald-500/20 bg-emerald-500/10 text-emerald-600",
+    "bg-green-600 text-white",
   cancelled_by_customer:
-    "border border-rose-500/20 bg-rose-500/10 text-rose-600",
+    "bg-red-500 text-white",
   cancelled_by_barbershop:
-    "border border-rose-500/20 bg-rose-500/10 text-rose-600",
+    "bg-red-500 text-white",
   no_show:
-    "border border-border bg-muted text-muted-foreground",
+    "bg-gray-500 text-black",
 };
 
 type FilterTab =
@@ -135,11 +136,11 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
 ];
 
 const FILTER_CLASS: Record<FilterTab, string> = {
-  all: "border border-neutral-300 bg-neutral-100 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
-  scheduled: "border border-blue-500/20 bg-blue-500/10 text-blue-600",
-  cancelled: "border border-rose-500/20 bg-rose-500/10 text-rose-600",
-  no_show: "border border-border bg-muted text-muted-foreground",
-  completed: "border border-emerald-500/20 bg-emerald-500/10 text-emerald-600",
+  all: "border border-current/30 bg-transparent text-current",
+  scheduled: "bg-blue-600 text-white",
+  cancelled: "bg-red-500 text-white",
+  no_show: "bg-gray-500 text-black",
+  completed: "bg-green-600 text-white",
 };
 
 function AppointmentStatusBadge({
@@ -199,21 +200,21 @@ function AppointmentCard({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
+    <div className="flex flex-col gap-3 rounded-2xl border border-current/20 p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Scissors size={14} className="mt-0.5 shrink-0 text-neutral-400" />
+          <Scissors size={14} className="mt-0.5 shrink-0 text-current" />
           <span className="text-sm font-medium">{serviceName}</span>
         </div>
         <AppointmentStatusBadge appt={appt} />
       </div>
 
-      <div className="flex flex-wrap gap-3 text-xs text-neutral-500">
+      <div className="flex flex-wrap gap-3 text-xs text-current/80">
         <div className="flex items-center gap-1.5">
           <Clock size={12} />
           <span>{appt.starts_at.slice(11, 16)}</span>
           {durationMin != null && (
-            <span className="text-neutral-400">
+            <span className="text-current/80">
               | {formatDuration(durationMin)}
             </span>
           )}
@@ -226,8 +227,8 @@ function AppointmentCard({
         )}
       </div>
 
-      <div className="flex items-center justify-between border-t border-neutral-100 pt-2 dark:border-neutral-800">
-        <span className="text-xs text-neutral-400">Valor</span>
+      <div className="flex items-center justify-between border-t border-current/20 pt-2">
+        <span className="text-xs text-current">Valor</span>
         <span className="text-sm font-semibold">
           {price != null ? formatPrice(price) : "A combinar"}
         </span>
@@ -238,7 +239,8 @@ function AppointmentCard({
           <Button
             type="button"
             variant="outline"
-            className="w-full max-w-56 rounded-full border-rose-500/20 bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 hover:text-rose-700"
+            style={{backgroundColor: "red"}}
+            className="w-full max-w-56 rounded-full border border-white bg-red-600 text-white hover:text-white/80"
             onClick={() => {
               setCancelError(null);
               setCancelDialogOpen(true);
@@ -446,7 +448,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
           </div>
           <button
             onClick={() => setAscending(v => !v)}
-            className="flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:hover:bg-neutral-800"
+            className="flex items-center gap-1.5 border-l border-current px-1 py-1.5 text-xs font-medium text-current"
           >
             {ascending ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
             {ascending ? "Mais antigos" : "Mais recentes"}
@@ -455,7 +457,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
 
         {isLoadingAppointments ? (
           <div className="flex justify-center py-20">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-800" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
           </div>
         ) : visibleError ? (
           <div className="py-20 text-center">
@@ -464,7 +466,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-20 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
-              <Calendar size={24} className="text-neutral-400" />
+              <Calendar size={24} className="text-current" />
             </div>
             {visibleAppointments.length === 0 ? (
               <>
@@ -499,14 +501,14 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                   <div
                     className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                     style={{
-                      backgroundColor: `${style.primary_color}20`,
-                      color: style.primary_color,
+                      backgroundColor: darkenColor(style.background_color, 0.15),
+                      color: style.text_color,
                     }}
                   >
                     <Calendar size={14} />
                   </div>
                   {groupIdx < groups.length - 1 && (
-                    <div className="mt-1 w-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="mt-1 w-px flex-1 bg-current/20" />
                   )}
                 </div>
 

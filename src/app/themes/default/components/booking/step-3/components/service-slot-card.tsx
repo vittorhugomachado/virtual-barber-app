@@ -89,10 +89,10 @@ export function ServiceSlotCard({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800">
+    <div className="overflow-hidden rounded-2xl border border-current/15">
       <button
         onClick={handleToggle}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-current/10"
       >
         <div className="flex items-center gap-3">
           {service.image_url ? (
@@ -102,21 +102,21 @@ export function ServiceSlotCard({
               className="h-10 w-10 shrink-0 rounded-lg object-cover"
             />
           ) : (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
-              <Scissors size={14} className="text-neutral-400" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-current/15">
+              <Scissors size={14} className="text-current" />
             </div>
           )}
           <div className="flex flex-col gap-0.5">
             <span className="text-sm font-medium">{service.name}</span>
             {isComplete ? (
-              <span className="text-xs text-neutral-400">
+              <span className="text-xs text-current">
                 {selection.barber.name} | {selection.time}
                 {service.duration_min
                   ? ` - ${addMinutes(selection.time, service.duration_min)}`
                   : ""}
               </span>
             ) : (
-              <span className="text-xs text-neutral-400">
+              <span className="text-xs text-current">
                 {[
                   service.duration_min != null
                     ? formatDuration(service.duration_min)
@@ -139,18 +139,18 @@ export function ServiceSlotCard({
               <Check size={10} />
             </div>
           ) : (
-            <span className="text-xs text-neutral-400">Selecionar</span>
+            <span className="text-xs text-current">Selecionar</span>
           )}
           {open ? (
-            <ChevronUp size={16} className="text-neutral-400" />
+            <ChevronUp size={16} className="text-current" />
           ) : (
-            <ChevronDown size={16} className="text-neutral-400" />
+            <ChevronDown size={16} className="text-current" />
           )}
         </div>
       </button>
 
       {open && (
-        <div className="border-t border-neutral-100 px-4 pb-4 pt-3 dark:border-neutral-800">
+        <div className="border-t border-current/15 px-4 pb-4 pt-3">
           {!viewBarber ? (
             <BarberGrid
               serviceId={service.id}

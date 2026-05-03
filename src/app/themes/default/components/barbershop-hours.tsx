@@ -31,7 +31,7 @@ export function BarberShopHours() {
               className={`flex items-center justify-between px-4 py-3 ${isToday ? "" : ""}`}
               style={{
                 backgroundColor: isToday
-                  ? darkenColor(style.background_color, 0.2)
+                  ? darkenColor(style.background_color, 0.15)
                   : "transparent",
               }}
             >

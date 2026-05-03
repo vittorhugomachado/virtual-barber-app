@@ -122,7 +122,7 @@ export function Navbar() {
                       style={{
                         backgroundColor: darkenColor(
                           style.background_color,
-                          0.4,
+                          0.15,
                         ),
                       }}
                     >

@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { formatPhone } from "@/utils/format-phone";
+import { darkenColor } from "@/utils/darken-color";
 
 function hasValidName(value: string) {
   return value.trim().length >= 2;
@@ -69,7 +70,12 @@ export function CustomerProfileCard() {
 
   return (
     <>
-      <div className="mb-6 flex flex-col gap-4 rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <div
+        style={{
+          backgroundColor: darkenColor(style.background_color, 0.15),
+        }}
+        className="mb-6 flex flex-col gap-4 rounded-3xl border border-current/15 p-5 shadow-sm"
+      >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div
@@ -83,13 +89,13 @@ export function CustomerProfileCard() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <p className="text-xs tracking-wide text-neutral-400 uppercase">
+              <p className="text-xs tracking-wide text-current/70 uppercase">
                 Seu perfil
               </p>
               <h2 className="text-xl font-semibold">
                 {currentCustomer.name?.trim() || "Cliente"}
               </h2>
-              <div className="flex items-center gap-1.5 text-sm text-neutral-500">
+              <div className="flex items-center gap-1.5 text-sm text-current/70">
                 <Phone size={14} />
                 <span>{formatPhone(currentCustomer.phone)}</span>
               </div>
@@ -112,7 +118,7 @@ export function CustomerProfileCard() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl">
+        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl" style={{ backgroundColor: style.background_color }}>
           <DialogHeader>
             <DialogTitle>Editar nome</DialogTitle>
             <DialogDescription>
@@ -121,7 +127,7 @@ export function CustomerProfileCard() {
           </DialogHeader>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <label className="text-sm font-medium text-current">
               Como podemos te chamar?
             </label>
             <input
@@ -132,10 +138,10 @@ export function CustomerProfileCard() {
                 if (error) setError("");
               }}
               placeholder="Digite seu nome"
-              className={`h-11 w-full rounded-xl bg-transparent px-4 text-sm ring-offset-2 transition-colors outline-none placeholder:text-neutral-400 focus:ring-2 ${
+              className={`h-11 w-full rounded-xl bg-transparent px-4 text-sm ring-offset-2 transition-colors outline-none placeholder:text-current focus:ring-2 ${
                 error
                   ? "border border-red-500 focus:ring-red-500 dark:border-red-500"
-                  : "border border-neutral-200 focus:ring-neutral-900 dark:border-neutral-700 dark:focus:ring-neutral-100"
+                  : "border border-current focus:ring-current"
               }`}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
@@ -151,7 +157,10 @@ export function CustomerProfileCard() {
             </Button>
             <Button
               className="rounded-xl"
-              style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
+              style={{
+                backgroundColor: "green",
+                color: "white",
+              }}
               onClick={handleSave}
               disabled={loading}
             >

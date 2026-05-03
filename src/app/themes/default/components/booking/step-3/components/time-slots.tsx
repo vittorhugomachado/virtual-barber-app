@@ -55,7 +55,7 @@ export function TimeSlots({
       <div className="mb-4 flex items-center gap-2">
         <button
           onClick={onBack}
-          className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 "
         >
           <ArrowLeft size={16} />
         </button>
@@ -66,7 +66,7 @@ export function TimeSlots({
             className="h-7 w-7 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 ">
             <User size={14} className="text-neutral-400" />
           </div>
         )}
@@ -102,8 +102,8 @@ export function TimeSlots({
                         isSelected
                           ? "border-transparent"
                           : available
-                            ? "border-neutral-200 hover:border-neutral-400 dark:border-neutral-800"
-                            : "cursor-not-allowed border-neutral-200 opacity-35 dark:border-neutral-800"
+                            ? "border-neutral-200 hover:border-neutral-400"
+                            : "cursor-not-allowed border-neutral-200 opacity-35"
                       }`}
                       style={
                         isSelected && style.primary_color

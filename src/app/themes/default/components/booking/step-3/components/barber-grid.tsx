@@ -17,8 +17,8 @@ export function BarberGrid({ serviceId, selection, onSelect }: BarberGridProps) 
 
   if (eligible.length === 0) {
     return (
-      <p className="py-4 text-center text-sm text-neutral-400">
-        Nenhum profissional disponÃ­vel para este serviÃ§o.
+      <p className="py-4 text-center text-sm text-current">
+        Nenhum profissional disponível para este serviço.
       </p>
     );
   }
@@ -34,7 +34,7 @@ export function BarberGrid({ serviceId, selection, onSelect }: BarberGridProps) 
             className={`flex flex-col items-center gap-2 rounded-xl border p-3 transition-colors ${
               isSelected
                 ? "border-transparent"
-                : "border-neutral-200 hover:border-neutral-400 dark:border-neutral-800"
+                : "border-current/15 hover:border-current/50"
             }`}
             style={
               isSelected && style.primary_color
@@ -52,8 +52,8 @@ export function BarberGrid({ serviceId, selection, onSelect }: BarberGridProps) 
                 className="h-12 w-12 rounded-full object-cover"
               />
             ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
-                <User size={20} className="text-neutral-400" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-current/15">
+                <User size={20} className="text-current" />
               </div>
             )}
             <span className="text-center text-xs leading-tight font-medium">

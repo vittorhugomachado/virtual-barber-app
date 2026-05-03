@@ -42,7 +42,7 @@ export function Team() {
               <AvatarFallback
                 className="text-base font-medium"
                 style={{
-                  backgroundColor: darkenColor(style.background_color, 0.5),
+                  backgroundColor: darkenColor(style.background_color, 0.15),
                   color: style.text_color,
                 }}
               >

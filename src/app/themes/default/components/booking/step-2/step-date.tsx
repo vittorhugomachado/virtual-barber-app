@@ -67,13 +67,13 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
+      <div className="rounded-2xl border border-current -4">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <button
             onClick={prevMonth}
             disabled={isPrevDisabled}
-            className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:hover:bg-neutral-800"
+            className="rounded-full p-1.5 text-current disabled:opacity-30"
           >
             <ChevronLeft size={18} />
           </button>
@@ -83,7 +83,7 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
           <button
             onClick={nextMonth}
             disabled={isNextDisabled}
-            className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:hover:bg-neutral-800"
+            className="rounded-full p-1.5 text-current disabled:text-opacity-30"
           >
             <ChevronRight size={18} />
           </button>
@@ -94,7 +94,7 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
           {DAYS_SHORT.map(d => (
             <div
               key={d}
-              className="py-1 text-center text-xs font-medium text-neutral-400"
+              className="py-1 text-center text-xs font-medium current"
             >
               {d}
             </div>
@@ -118,8 +118,8 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
                   isSelected
                     ? ""
                     : disabled
-                      ? "cursor-not-allowed text-neutral-300 dark:text-neutral-600"
-                      : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      ? "cursor-not-allowed text-current/20 "
+                      : "hover:bg-current/10 text-current"
                 }`}
                 style={
                   isSelected && style.primary_color

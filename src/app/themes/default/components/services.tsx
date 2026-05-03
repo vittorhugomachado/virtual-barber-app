@@ -1,4 +1,5 @@
-import { Check, Plus, Scissors } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { Check, ChevronLeft, ChevronRight, Plus, Scissors } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { useCart } from "../../../hooks/use-cart";
 import type { Service } from "../../types";
@@ -7,10 +8,24 @@ import { formatDuration } from "@/utils/format-duration";
 import { useBarbershopData } from "../../../contexts/barbershop-data/barbershop-data-context";
 import { useStyle } from "../../../contexts/style-context/style-context";
 
+const SERVICES_PER_PAGE = 10;
+const SERVICES_SCROLL_OFFSET = 140;
+
 export function Services() {
   const { services } = useBarbershopData();
   const { addService, removeService, hasService } = useCart();
   const { style } = useStyle();
+  const [currentPage, setCurrentPage] = useState(1);
+  const servicesTopRef = useRef<HTMLDivElement>(null);
+
+  const totalPages = Math.ceil(services.length / SERVICES_PER_PAGE);
+  const safeCurrentPage =
+    totalPages > 0 ? Math.min(currentPage, totalPages) : 1;
+
+  const paginatedServices = useMemo(() => {
+    const start = (safeCurrentPage - 1) * SERVICES_PER_PAGE;
+    return services.slice(start, start + SERVICES_PER_PAGE);
+  }, [safeCurrentPage, services]);
 
   if (!services.length) return null;
 
@@ -22,15 +37,31 @@ export function Services() {
     }
   }
 
+  function handlePageChange(page: number) {
+    setCurrentPage(page);
+
+    if (!servicesTopRef.current) return;
+
+    const top =
+      servicesTopRef.current.getBoundingClientRect().top +
+      window.scrollY -
+      SERVICES_SCROLL_OFFSET;
+
+    window.scrollTo({
+      top: Math.max(top, 0),
+      behavior: "smooth",
+    });
+  }
+
   return (
-    <div className="flex-1">
+    <div ref={servicesTopRef} className="flex-1 scroll-mt-36">
       <div className="mb-4 flex items-center justify-center gap-2 lg:justify-start">
         <Scissors size={18} />
         <h2 className="text-2xl font-medium md:text-4xl">Serviços</h2>
       </div>
 
       <div className="flex flex-col divide-y divide-current/10 overflow-hidden rounded-xl border border-current/10">
-        {services.map(service => {
+        {paginatedServices.map(service => {
           const inCart = hasService(service.id);
           return (
             <div
@@ -104,6 +135,67 @@ export function Services() {
           );
         })}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <span className="text-sm text-current/60">
+            Página {safeCurrentPage} de {totalPages}
+          </span>
+
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              size="icon-sm"
+              variant="outline"
+              aria-label="Página anterior"
+              disabled={safeCurrentPage === 1}
+              onClick={() => handlePageChange(Math.max(1, safeCurrentPage - 1))}
+            >
+              <ChevronLeft size={16} />
+            </Button>
+
+            {Array.from({ length: totalPages }, (_, index) => {
+              const page = index + 1;
+              const isCurrentPage = page === safeCurrentPage;
+
+              return (
+                <Button
+                  key={page}
+                  type="button"
+                  size="sm"
+                  variant={isCurrentPage ? "default" : "outline"}
+                  aria-current={isCurrentPage ? "page" : undefined}
+                  className="min-w-8 rounded-full"
+                  style={
+                    isCurrentPage
+                      ? {
+                          backgroundColor: style.primary_color,
+                          color: style.text_button_color,
+                        }
+                      : { border: "1px solid" }
+                  }
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Button>
+              );
+            })}
+
+            <Button
+              type="button"
+              size="icon-sm"
+              variant="outline"
+              aria-label="Próxima página"
+              disabled={safeCurrentPage === totalPages}
+              onClick={() =>
+                handlePageChange(Math.min(totalPages, safeCurrentPage + 1))
+              }
+            >
+              <ChevronRight size={16} />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

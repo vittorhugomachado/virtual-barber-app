@@ -6,6 +6,7 @@ import type { Service } from "../../../../types";
 import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
 import { useBarbershopData } from "../../../../../contexts/barbershop-data/barbershop-data-context";
+import { darkenColor } from "@/utils/darken-color";
 
 interface StepServicesProps {
   onContinue: () => void;
@@ -28,7 +29,7 @@ export function StepServices({ onContinue }: StepServicesProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="flex flex-col divide-y divide-current/15 overflow-hidden rounded-xl border border-current/15">
         {services.map(service => {
           const inCart = hasService(service.id);
 
@@ -45,13 +46,13 @@ export function StepServices({ onContinue }: StepServicesProps) {
                     className="h-12 w-12 shrink-0 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800">
-                    <Scissors size={16} className="text-neutral-400" />
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-current/20">
+                    <Scissors size={16} className="text-current" />
                   </div>
                 )}
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-medium">{service.name}</span>
-                  <div className="flex items-center gap-2 text-xs text-neutral-400">
+                  <div className="flex items-center gap-2 text-xs text-current/80">
                     {service.duration_min != null && (
                       <span>{formatDuration(service.duration_min)}</span>
                     )}
@@ -67,8 +68,8 @@ export function StepServices({ onContinue }: StepServicesProps) {
                 className="shrink-0 rounded-full"
                 style={
                   inCart
-                    ? { backgroundColor: style.primary_color, color: style.text_button_color }
-                    : undefined
+                    ? { backgroundColor: "green", color: "white" }
+                    : {border: "1px solid", borderColor: style.text_color }
                 }
                 onClick={() => handleToggle(service)}
               >
@@ -79,19 +80,19 @@ export function StepServices({ onContinue }: StepServicesProps) {
         })}
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 rounded-xl border border-neutral-800 bg-neutral-900 px-3.5 py-2.5 text-sm">
-        <Scissors className="hidden h-3.5 w-3.5 text-neutral-400 sm:block" />
-        <span className="font-medium text-neutral-200">
+      <div className="flex items-center justify-center gap-1.5 rounded-xl border px-3.5 py-2.5 text-sm" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
+        <Scissors className="hidden h-3.5 w-3.5 text-current sm:block" />
+        <span className="font-medium text-current">
           {items.length} serviço{items.length > 1 ? "s" : ""}
         </span>
-        <span className="mx-1 text-neutral-600">|</span>
-        <Clock className="hidden h-3.5 w-3.5 text-neutral-400 sm:block" />
-        <span className="font-medium text-neutral-200">
+        <span className="mx-1 text-current">|</span>
+        <Clock className="hidden h-3.5 w-3.5 text-current sm:block" />
+        <span className="font-medium text-current">
           {formatDuration(totalDuration)}
         </span>
-        <span className="mx-1 text-neutral-600">|</span>
-        <DollarSign className="hidden h-3.5 w-3.5 text-neutral-400 sm:block" />
-        <span className="font-medium text-neutral-200">{formatPrice(total)}</span>
+        <span className="mx-1 text-current">|</span>
+        <DollarSign className="hidden h-3.5 w-3.5 text-current sm:block" />
+        <span className="font-medium text-current">{formatPrice(total)}</span>
       </div>
 
       <Button
