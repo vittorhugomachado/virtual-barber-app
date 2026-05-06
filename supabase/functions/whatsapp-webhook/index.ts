@@ -112,6 +112,12 @@ Deno.serve(async (req) => {
             continue;
           }
 
+          console.log("WhatsApp auth message parsed", {
+            phoneNumberId,
+            fromLast4: normalizedFrom.slice(-4),
+            hasSixDigitCode: true,
+          });
+
           // Valida o codigo e ja marca como usado em uma operacao so.
           // Isso evita que o mesmo codigo seja processado duas vezes em corrida.
           const { data: loginCode, error: loginCodeError } = await supabase

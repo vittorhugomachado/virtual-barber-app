@@ -3,6 +3,8 @@ import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
 export const APP_BASE_URL =
   Deno.env.get("APP_BASE_URL") ?? "https://virtualbarber.com.br";
+export const WHATSAPP_GRAPH_VERSION =
+  Deno.env.get("WHATSAPP_GRAPH_VERSION") ?? "v25.0";
 
 // Headers compartilhados para permitir chamadas do frontend e preflight OPTIONS.
 export const corsHeaders = {
@@ -130,7 +132,7 @@ export async function sendWhatsAppText(
 ): Promise<boolean> {
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v22.0/${phoneNumberId}/messages`,
+      `https://graph.facebook.com/${WHATSAPP_GRAPH_VERSION}/${phoneNumberId}/messages`,
       {
         method: "POST",
         headers: {

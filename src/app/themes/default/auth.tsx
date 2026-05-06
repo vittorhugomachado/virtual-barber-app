@@ -11,9 +11,14 @@ import {
   getCustomerFromAuthUser,
   getPostAuthRedirectPath,
 } from "@/app/lib/auth";
-import { darkenColor } from "@/utils/darken-color";
 
 const OTP_CHANNEL: "sms" | "whatsapp" = "whatsapp";
+
+interface RequestWhatsAppLoginResponse {
+  code: string;
+  whatsappUrl: string;
+  expiresInSeconds: number;
+}
 
 export default function DefaultAuthPage() {
   const navigate = useNavigate();
@@ -25,6 +30,8 @@ export default function DefaultAuthPage() {
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [error, setError] = useState("");
+  const [whatsappLoginCode, setWhatsappLoginCode] = useState("");
+  const [whatsappUrl, setWhatsappUrl] = useState("");
   const from = searchParams.get("from");
 
   useEffect(() => {
@@ -54,28 +61,52 @@ export default function DefaultAuthPage() {
 
   async function handleSendOtp() {
     setError("");
+    setWhatsappLoginCode("");
+    setWhatsappUrl("");
     const digits = phone.replace(/\D/g, "");
 
     if (digits.length !== 11) {
-      setError("Digite um número de celular válido com DDD.");
+      setError("Digite um numero de celular valido com DDD.");
+      return;
+    }
+
+    if (!data?.id || !data?.slug) {
+      setError("Nao foi possivel carregar os dados da barbearia.");
       return;
     }
 
     setLoading(true);
     try {
-      const e164Phone = toE164(phone);
-
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: e164Phone,
-        options: { channel: OTP_CHANNEL },
-      });
+      const { data: loginData, error } =
+        await supabase.functions.invoke<RequestWhatsAppLoginResponse>(
+          "request-whatsapp-login",
+          {
+            body: {
+              barbershop_id: data.id,
+              barbershop_name: data.name,
+              slug: data.slug,
+              phone: digits,
+            },
+          },
+        );
 
       if (error) {
-        setError(error.message);
+        setError(error.message || "Nao foi possivel gerar o codigo.");
         return;
       }
 
+      if (!loginData?.code || !loginData?.whatsappUrl) {
+        setError("A funcao nao retornou o codigo esperado.");
+        return;
+      }
+
+      setWhatsappLoginCode(loginData.code);
+      setWhatsappUrl(loginData.whatsappUrl);
       setStep("otp");
+
+      console.log("Codigo WhatsApp criado com sucesso", {
+        expiresInSeconds: loginData.expiresInSeconds,
+      });
     } finally {
       setLoading(false);
     }
@@ -217,6 +248,26 @@ export default function DefaultAuthPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
+            {whatsappLoginCode && (
+              <div className="rounded-xl border border-current/20 p-4 text-center">
+                <p className="text-sm text-current/80">Seu codigo e</p>
+                <p className="mt-1 text-3xl font-semibold tracking-[0.2em]">
+                  {whatsappLoginCode}
+                </p>
+              </div>
+            )}
+            {whatsappUrl && (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium hover:opacity-85"
+                style={{ backgroundColor: data?.style.primary_color, color: data?.style.text_button_color }}
+              >
+                <FaWhatsapp size={16} />
+                Enviar codigo no WhatsApp
+              </a>
+            )}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-current">
                 Código de verificação
@@ -248,6 +299,8 @@ export default function DefaultAuthPage() {
                 setStep("phone");
                 setOtp("");
                 setError("");
+                setWhatsappLoginCode("");
+                setWhatsappUrl("");
               }}
             >
               Usar outro número
