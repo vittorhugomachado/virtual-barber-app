@@ -74,7 +74,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           <div className="flex flex-wrap justify-center gap-3">
             <Button
               variant="outline"
-              className="rounded-full px-5 py-1"
+              className="border-current rounded-full px-5 py-1 bg-transparent hover:bg-current/10 hover:text-current"
               onClick={() => navigate(`/${props.slug}/perfil`)}
             >
               Meus agendamentos

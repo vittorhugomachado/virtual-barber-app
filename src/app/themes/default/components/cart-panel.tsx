@@ -49,7 +49,7 @@ export function CartPanel() {
                 <li
                   key={service.id}
                   className="flex border-l-2 items-center justify-between gap-2 px-3 py-2.5"
-                  style={{ borderColor: darkenColor(style.text_color, 0.15) }}
+                  style={{ borderColor: darkenColor(style.background_color, 0.4) }}
                 >
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="truncate text-sm font-medium">

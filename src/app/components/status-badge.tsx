@@ -16,7 +16,7 @@ export function StatusBadge({ openingHours, classTailwind }: StatusBadgeProps) {
         {open ? "Aberto" : "Fechado"}
       </span>
       {open && closesAt && (
-        <span className="text-sm text-neutral-400">· até {closesAt}</span>
+        <span className="text-sm text-current/80">· até {closesAt}</span>
       )}
     </div>
   );

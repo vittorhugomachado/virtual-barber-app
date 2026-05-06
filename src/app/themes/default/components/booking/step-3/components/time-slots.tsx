@@ -55,7 +55,7 @@ export function TimeSlots({
       <div className="mb-4 flex items-center gap-2">
         <button
           onClick={onBack}
-          className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 "
+          className="rounded-full p-1 text-current hover:bg-current/20"
         >
           <ArrowLeft size={16} />
         </button>
@@ -75,17 +75,17 @@ export function TimeSlots({
 
       {loading ? (
         <div className="flex justify-center py-6">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-800" />
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
         </div>
       ) : allSlotsForDay.length === 0 ? (
-        <p className="py-6 text-center text-sm text-neutral-400">
-          Nenhum horÃ¡rio disponÃ­vel neste dia.
+        <p className="py-6 text-center text-sm text-current">
+          Nenhum horário disponí­vel neste dia.
         </p>
       ) : (
         <div className="flex flex-col gap-4">
           {periods.map(({ key, slots: periodSlots }) => (
             <div key={key}>
-              <p className="mb-2 text-xs font-semibold tracking-wide text-neutral-400 uppercase">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-current uppercase">
                 {PERIOD_LABELS[key]}
               </p>
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
@@ -102,8 +102,8 @@ export function TimeSlots({
                         isSelected
                           ? "border-transparent"
                           : available
-                            ? "border-neutral-200 hover:border-neutral-400"
-                            : "cursor-not-allowed border-neutral-200 opacity-35"
+                            ? "border-current hover:bg-current/10"
+                            : "cursor-not-allowed border-current opacity-35"
                       }`}
                       style={
                         isSelected && style.primary_color

@@ -95,9 +95,7 @@ export function Services() {
                       </span>
                     )}
                     {service.duration_min != null && service.price != null && (
-                      <span className="text-xs text-current">
-                        |
-                      </span>
+                      <span className="text-xs text-current">|</span>
                     )}
                     {service.price != null && (
                       <span className="text-xs font-medium whitespace-nowrap text-current">
@@ -110,12 +108,12 @@ export function Services() {
 
               <Button
                 size="sm"
-                className="shrink-0 rounded-full"
+                className="shrink-0 rounded-full bg-transparent text-current hover:bg-current/20 hover:text-current"
                 variant={inCart ? "default" : "outline"}
                 style={
                   inCart
-                    ? { backgroundColor: style.primary_color, color: style.text_button_color }
-                    : { border: "1px solid" }
+                    ? { backgroundColor: "green", color: "white" }
+                    : { border: "1px solid", borderColor: style.text_color }
                 }
                 onClick={() => handleToggle(service)}
               >
@@ -127,7 +125,7 @@ export function Services() {
                 ) : (
                   <>
                     <Plus size={14} className="md:mr-1" />
-                    <span className="hidden md:block"> Adicionado</span>
+                    <span className="hidden md:block"> Adicionar</span>
                   </>
                 )}
               </Button>
@@ -150,6 +148,7 @@ export function Services() {
               aria-label="Página anterior"
               disabled={safeCurrentPage === 1}
               onClick={() => handlePageChange(Math.max(1, safeCurrentPage - 1))}
+              className="border-transparent bg-transparent hover:bg-current/20 hover:text-current"
             >
               <ChevronLeft size={16} />
             </Button>
@@ -165,15 +164,18 @@ export function Services() {
                   size="sm"
                   variant={isCurrentPage ? "default" : "outline"}
                   aria-current={isCurrentPage ? "page" : undefined}
-                  className="min-w-8 rounded-full"
-                  style={
-                    isCurrentPage
-                      ? {
-                          backgroundColor: style.primary_color,
-                          color: style.text_button_color,
-                        }
-                      : { border: "1px solid" }
-                  }
+                  className={`min-w-8 rounded-full`}
+                  style={{
+                    color: isCurrentPage
+                      ? style.text_button_color
+                      : style.text_color,
+                    backgroundColor: isCurrentPage
+                      ? style.primary_color
+                      : "transparent",
+                    borderColor: isCurrentPage
+                      ? style.background_color
+                      : style.text_color,
+                  }}
                   onClick={() => handlePageChange(page)}
                 >
                   {page}
@@ -190,6 +192,7 @@ export function Services() {
               onClick={() =>
                 handlePageChange(Math.min(totalPages, safeCurrentPage + 1))
               }
+              className="border-transparent bg-transparent hover:bg-current/20 hover:text-current"
             >
               <ChevronRight size={16} />
             </Button>

@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, Check, Scissors } from "lucide-react";
 import { useAvailableSlots } from "../../../../../../hooks/use-available-slots";
 import { useBarbershopData } from "../../../../../../contexts/barbershop-data/barbershop-data-context";
-import { useStyle } from "../../../../../../contexts/style-context/style-context";
 import type { Barber } from "../../../../../types";
 import { formatDuration } from "@/utils/format-duration";
 import { formatPrice } from "@/utils/format-price";
@@ -26,17 +25,18 @@ export function ServiceSlotCard({
   onSelect,
   autoOpen,
 }: ServiceSlotCardProps) {
-  const { style } = useStyle();
   const { id: barbershopId, openingHours, services } = useBarbershopData();
   const [open, setOpen] = useState(autoOpen ?? false);
   const [viewBarber, setViewBarber] = useState<Barber | null>(null);
-  const service = services.find(currentService => currentService.id === serviceId);
+  const service = services.find(
+    currentService => currentService.id === serviceId,
+  );
   const duration = service?.duration_min ?? 30;
   const shouldUsePreloadedSlots = preloadedSlotsByBarber !== undefined;
 
   const { slots, loading } = useAvailableSlots({
     barbershopId,
-    barberId: shouldUsePreloadedSlots ? null : viewBarber?.id ?? null,
+    barberId: shouldUsePreloadedSlots ? null : (viewBarber?.id ?? null),
     customerId: shouldUsePreloadedSlots ? null : customerId,
     date: shouldUsePreloadedSlots ? null : date,
     totalDuration: duration,
@@ -134,7 +134,7 @@ export function ServiceSlotCard({
           {isComplete ? (
             <div
               className="flex h-5 w-5 items-center justify-center rounded-full"
-              style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
+              style={{ backgroundColor: "green", color: "white" }}
             >
               <Check size={10} />
             </div>
@@ -150,7 +150,7 @@ export function ServiceSlotCard({
       </button>
 
       {open && (
-        <div className="border-t border-current/15 px-4 pb-4 pt-3">
+        <div className="border-t border-current/15 px-4 pt-3 pb-4">
           {!viewBarber ? (
             <BarberGrid
               serviceId={service.id}

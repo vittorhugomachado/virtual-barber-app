@@ -117,7 +117,7 @@ const STATUS_CLASS: Record<AppointmentStatus, string> = {
   cancelled_by_barbershop:
     "bg-red-500 text-white",
   no_show:
-    "bg-gray-500 text-black",
+    "bg-gray-400 text-black",
 };
 
 type FilterTab =
@@ -139,7 +139,7 @@ const FILTER_CLASS: Record<FilterTab, string> = {
   all: "border border-current/30 bg-transparent text-current",
   scheduled: "bg-blue-600 text-white",
   cancelled: "bg-red-500 text-white",
-  no_show: "bg-gray-500 text-black",
+  no_show: "bg-gray-400 text-black",
   completed: "bg-green-600 text-white",
 };
 
@@ -465,14 +465,14 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-20 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-current/10">
               <Calendar size={24} className="text-current" />
             </div>
             {visibleAppointments.length === 0 ? (
               <>
                 <div>
                   <p className="font-medium">Nenhum agendamento ainda</p>
-                  <p className="mt-1 text-sm text-neutral-400">
+                  <p className="mt-1 text-sm text-current/80">
                     Que tal agendar seu proximo corte?
                   </p>
                 </div>
@@ -488,7 +488,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                 </Button>
               </>
             ) : (
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-current/80">
                 Nenhum agendamento neste filtro.
               </p>
             )}

@@ -73,7 +73,7 @@ export function StepBarberTime({
         />
       ))}
 
-      <div className="flex items-center justify-center gap-1.5 rounded-xl border px-3.5 py-2.5 text-sm" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
+      <div className="flex items-center justify-center gap-1.5 rounded-xl border border-current/20 px-3.5 py-2.5 text-sm" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
         <FileText className="hidden h-3.5 w-3.5 text-current sm:block" />
         <span className="font-medium text-current">
           {items.length} serviço{items.length > 1 ? "s" : ""}

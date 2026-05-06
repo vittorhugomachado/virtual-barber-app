@@ -295,7 +295,7 @@ export function StepConfirm({
       <div className="flex gap-3">
         <Button
           variant="outline"
-          className="h-11 flex-1 rounded-full"
+          className="h-11 flex-1 rounded-full border-current text-current bg-transparent hover:bg-current/10 hover:text-current"
           onClick={onBack}
         >
           Voltar

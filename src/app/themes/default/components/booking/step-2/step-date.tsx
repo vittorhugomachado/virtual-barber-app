@@ -67,7 +67,7 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-2xl border border-current -4">
+      <div className="rounded-2xl border border-current">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <button

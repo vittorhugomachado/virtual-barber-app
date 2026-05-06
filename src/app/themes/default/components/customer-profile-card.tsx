@@ -104,7 +104,7 @@ export function CustomerProfileCard() {
 
           <Button
             variant="outline"
-            className="gap-2 rounded-full"
+            className="gap-2 rounded-full border-current bg-transparent hover:bg-current/10 hover:text-current"
             onClick={() => {
               setName(currentCustomer.name?.trim() ?? "");
               setError("");

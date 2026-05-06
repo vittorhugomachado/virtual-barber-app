@@ -65,13 +65,13 @@ export function Navbar() {
         <>
           <button
             onClick={handlePerfil}
-            className="text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            className="text-sm text-current transition-colors hover:text-current/85"
           >
             Meus agendamentos
           </button>
           <button
             onClick={() => setShowLogoutDialog(true)}
-            className="text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            className="text-sm text-current transition-colors hover:text-current/85"
           >
             Sair
           </button>
@@ -79,7 +79,7 @@ export function Navbar() {
       ) : (
         <button
           onClick={() => navigate(`/${slug}/entrar`)}
-          className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+          className="cursor-pointer text-sm text-current transition-colors hover:text-current/85"
         >
           Entrar
         </button>
@@ -152,7 +152,7 @@ export function Navbar() {
               ) : (
                 <button
                   onClick={() => navigate(`/${slug}/entrar`)}
-                  className="cursor-pointer text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+                  className="cursor-pointer text-sm text-current transition-colors hover:text-current/85"
                 >
                   Entrar
                 </button>
@@ -161,17 +161,18 @@ export function Navbar() {
 
             {/* logo + status + menu mobile */}
             <div className="flex flex-1 items-center justify-between md:hidden">
-              <BarbershopLogo name={name} className="text-2xl" />
+              <BarbershopLogo name={name} className="text-2xl text-current" />
               {!isPreview ? (
                 <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
                   <SheetTrigger asChild>
-                    <button className="p-2 text-neutral-600 dark:text-neutral-400">
+                    <button className="p-2 text-current">
                       {menuOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                   </SheetTrigger>
                   <SheetContent
                     side="left"
                     className="flex w-fit flex-col gap-6 pt-3"
+                    style={{ backgroundColor: style.background_color, color: style.text_color }}
                   >
                     <SheetTitle className="sr-only">
                       Menu de navegação
@@ -180,7 +181,7 @@ export function Navbar() {
                       Links de navegação do site
                     </SheetDescription>
                     <div className="flex flex-col gap-1 pl-4">
-                      <BarbershopLogo name={name} className="text-2xl" />
+                      <BarbershopLogo name={name} className="text-2xl text-current" />
                       <StatusBadge openingHours={openingHours} />
                     </div>
                     <nav className="mx-auto flex max-w-40 flex-col gap-4">
@@ -237,7 +238,7 @@ export function Navbar() {
         >
           <DialogHeader>
             <DialogTitle>Sair da conta</DialogTitle>
-            <DialogDescription>
+            <DialogDescription style={{ color: darkenColor(style.text_color) }}>
               Tem certeza que deseja sair? Você precisará fazer login novamente
               para agendar.
             </DialogDescription>
