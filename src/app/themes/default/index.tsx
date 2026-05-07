@@ -1,4 +1,9 @@
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { supabase } from "@/app/lib/supabase";
+import { useAuthStore } from "@/app/store/auth-store";
 import { type BarbershopPageProps } from "../types";
+import type { Customer } from "../types";
 import { Navbar } from "./components/nav-bar";
 import { Gallery } from "./components/gallery";
 import { Team } from "./components/team";
@@ -9,7 +14,45 @@ import { Footer } from "../../components/footer";
 import { SectionNav } from "./components/section-nav";
 import { CartPanel } from "./components/cart-panel";
 
+interface ConsumeWhatsAppLoginTokenResponse {
+  success: boolean;
+  customer: Customer;
+  expiresInDays: number;
+}
+
 export default function DefaultTheme(props: BarbershopPageProps) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { setCustomer, setLoading } = useAuthStore();
+  const loginToken = searchParams.get("token");
+
+  useEffect(() => {
+    if (!loginToken) return;
+
+    setLoading(true);
+
+    supabase.functions
+      .invoke<ConsumeWhatsAppLoginTokenResponse>(
+        "consume-whatsapp-login-token",
+        {
+          body: { token: loginToken },
+        },
+      )
+      .then(({ data, error }) => {
+        if (error || !data?.success || !data.customer) {
+          console.error("Nao foi possivel consumir token WhatsApp", error);
+          navigate(`/${props.slug}/entrar`, { replace: true });
+          return;
+        }
+
+        setCustomer(data.customer);
+        navigate(`/${props.slug}`, { replace: true });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [loginToken, navigate, props.slug, setCustomer, setLoading]);
+
   const activeBarber =
     props.barbers?.filter(barber => barber.is_active === true) || [];
 

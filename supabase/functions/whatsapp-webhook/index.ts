@@ -205,7 +205,7 @@ Deno.serve(async (req) => {
           const loginLink = buildLoginUrl(barbershop.slug, tokenInsert.token);
           // O token puro vai somente no link enviado pelo WhatsApp.
           const successMessage = [
-            "Parabens! Seu codigo foi confirmado.",
+            "Parabéns! Seu código foi confirmado.",
             `Clique no link abaixo para acessar a ${barbershop.name}:`,
             loginLink,
           ].join("\n\n");

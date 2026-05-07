@@ -148,7 +148,9 @@ export function extractSixDigitCode(text: string): string | null {
 // Monta o link publico de entrada da barbearia, com token quando for o link final.
 export function buildLoginUrl(slug?: string | null, token?: string): string {
   const safeSlug = slug?.trim();
-  const path = safeSlug ? `/${encodeURIComponent(safeSlug)}/entrar` : "/entrar";
+  const path = safeSlug
+    ? `/${encodeURIComponent(safeSlug)}${token ? "" : "/entrar"}`
+    : "/entrar";
   const url = new URL(path, APP_BASE_URL);
 
   if (token) {
