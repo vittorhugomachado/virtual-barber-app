@@ -27,7 +27,7 @@ interface ConsumeWhatsAppLoginTokenResponse {
 
 export default function DefaultAuthPage() {
   const navigate = useNavigate();
-  const { setCustomer, setLoading, isLoading } = useAuthStore();
+  const { isAuthenticated, setCustomer, setLoading, isLoading } = useAuthStore();
   const { slug } = useParams<{ slug: string }>();
   const { data } = useBarbershop(slug ?? "");
   const [searchParams] = useSearchParams();
@@ -41,6 +41,11 @@ export default function DefaultAuthPage() {
   const loginToken = searchParams.get("token");
 
   useEffect(() => {
+    if (isAuthenticated && !loginToken) {
+      navigate(getPostAuthRedirectPath(slug, from), { replace: true });
+      return;
+    }
+
     if (loginToken) {
       setError("");
       setIsConsumingLoginToken(true);
@@ -97,7 +102,16 @@ export default function DefaultAuthPage() {
         navigate(getPostAuthRedirectPath(slug, from), { replace: true });
       }
     });
-  }, [slug, navigate, setCustomer, setLoading, from, data?.id, loginToken]);
+  }, [
+    isAuthenticated,
+    slug,
+    navigate,
+    setCustomer,
+    setLoading,
+    from,
+    data?.id,
+    loginToken,
+  ]);
 
   async function handleSendOtp() {
     setError("");
