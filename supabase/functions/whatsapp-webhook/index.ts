@@ -3,7 +3,7 @@ import {
   buildLoginUrl,
   corsHeaders,
   createServiceClient,
-  extractSixDigitCode,
+  extractSixDigitCodeCandidates,
   generateSecureToken,
   getBrazilianPhoneVariants,
   normalizeBrazilianPhone,
@@ -98,10 +98,10 @@ Deno.serve(async (req) => {
           }
 
           const text = message.text?.body ?? "";
-          const code = extractSixDigitCode(text);
+          const codeCandidates = extractSixDigitCodeCandidates(text);
 
-          // No code means no auth intent. Return OK without replying.
-          if (!code || !message.from) {
+          // Sem 6 ou 7 digitos, nao ha intencao clara de autenticacao.
+          if (!codeCandidates.length || !message.from) {
             continue;
           }
 
@@ -117,6 +117,7 @@ Deno.serve(async (req) => {
             phoneNumberId,
             fromLast4: normalizedFrom.slice(-4),
             hasSixDigitCode: true,
+            codeCandidateCount: codeCandidates.length,
           });
 
           const phoneVariants = getBrazilianPhoneVariants(normalizedFrom);
@@ -126,7 +127,7 @@ Deno.serve(async (req) => {
           const { data: loginCode, error: loginCodeError } = await supabase
             .from("whatsapp_login_codes")
             .update({ used: true })
-            .eq("code", code)
+            .in("code", codeCandidates)
             .in("phone", phoneVariants)
             .eq("used", false)
             .gt("expires_at", new Date().toISOString())
@@ -135,14 +136,34 @@ Deno.serve(async (req) => {
 
           if (loginCodeError) {
             console.error("Failed to validate WhatsApp login code", loginCodeError);
-            await logInvalidCodeDiagnostics(supabase, normalizedFrom, phoneVariants, code);
-            await sendInvalidCodeMessage(supabase, phoneNumberId, normalizedFrom, code);
+            await logInvalidCodeDiagnostics(
+              supabase,
+              normalizedFrom,
+              phoneVariants,
+              codeCandidates,
+            );
+            await sendInvalidCodeMessage(
+              supabase,
+              phoneNumberId,
+              normalizedFrom,
+              codeCandidates,
+            );
             continue;
           }
 
           if (!loginCode) {
-            await logInvalidCodeDiagnostics(supabase, normalizedFrom, phoneVariants, code);
-            await sendInvalidCodeMessage(supabase, phoneNumberId, normalizedFrom, code);
+            await logInvalidCodeDiagnostics(
+              supabase,
+              normalizedFrom,
+              phoneVariants,
+              codeCandidates,
+            );
+            await sendInvalidCodeMessage(
+              supabase,
+              phoneNumberId,
+              normalizedFrom,
+              codeCandidates,
+            );
             continue;
           }
 
@@ -243,13 +264,13 @@ async function logInvalidCodeDiagnostics(
   supabase: ReturnType<typeof createServiceClient>,
   normalizedFrom: string,
   phoneVariants: string[],
-  code: string,
+  codeCandidates: string[],
 ): Promise<void> {
   const nowIso = new Date().toISOString();
   const { data, error } = await supabase
     .from("whatsapp_login_codes")
     .select("id, phone, used, expires_at, created_at")
-    .eq("code", code)
+    .in("code", codeCandidates)
     .order("created_at", { ascending: false })
     .limit(3);
 
@@ -263,6 +284,7 @@ async function logInvalidCodeDiagnostics(
     fromLast4: normalizedFrom.slice(-4),
     fromLength: normalizedFrom.length,
     phoneVariantLengths: phoneVariants.map((phone) => phone.length),
+    codeCandidateCount: codeCandidates.length,
     records: (data ?? []).map((record) => ({
       id: record.id,
       phoneLast4: record.phone?.slice(-4),
@@ -281,9 +303,9 @@ async function sendInvalidCodeMessage(
   supabase: ReturnType<typeof createServiceClient>,
   phoneNumberId: string,
   to: string,
-  code: string,
+  codeCandidates: string[],
 ): Promise<void> {
-  const slug = await findBestSlugForPhone(supabase, to, code);
+  const slug = await findBestSlugForPhone(supabase, to, codeCandidates);
   const loginUrl = buildLoginUrl(slug);
   const message =
     `O codigo que voce enviou e invalido ou esta expirado. Voce pode solicitar um novo codigo no link abaixo: ${loginUrl}`;
@@ -297,7 +319,7 @@ async function sendInvalidCodeMessage(
 async function findBestSlugForPhone(
   supabase: ReturnType<typeof createServiceClient>,
   phone: string,
-  code: string,
+  codeCandidates: string[],
 ): Promise<string | null> {
   const phoneVariants = getBrazilianPhoneVariants(phone);
 
@@ -307,7 +329,7 @@ async function findBestSlugForPhone(
     .from("whatsapp_login_codes")
     .select("barbershop_id")
     .in("phone", phoneVariants)
-    .eq("code", code)
+    .in("code", codeCandidates)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

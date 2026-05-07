@@ -98,7 +98,7 @@ export function generateSixDigitCode(): string {
   const array = new Uint32Array(1);
   crypto.getRandomValues(array);
 
-  return (array[0] % 1_000_000).toString().padStart(6, "0");
+  return (array[0] % 1_000_000).toString().padStart(7, "0");
 }
 
 // Gera token de login unico com 32 bytes aleatorios, retornado em hexadecimal.
@@ -120,12 +120,29 @@ export async function sha256(value: string): Promise<string> {
   ).join("");
 }
 
-// Procura exatamente um codigo de 6 digitos dentro da mensagem recebida.
-// Mensagens sem esse padrao sao ignoradas pelo webhook.
-export function extractSixDigitCode(text: string): string | null {
-  const match = text.match(/(?:^|\D)(\d{6})(?!\d)/);
+// Procura um codigo de 6 digitos ou uma sequencia de 7 digitos com erro de digitacao.
+// Para 7 digitos, retorna os 6 primeiros e os 6 ultimos como candidatos.
+export function extractSixDigitCodeCandidates(text: string): string[] {
+  const match = text.match(/(?:^|\D)(\d{6,7})(?!\d)/);
 
-  return match?.[1] ?? null;
+  if (!match) {
+    return [];
+  }
+
+  const value = match[1];
+
+  if (value.length === 6) {
+    return [value];
+  }
+
+  return Array.from(new Set([value.slice(0, 6), value.slice(1)]));
+}
+
+// Mantem a API antiga para usos que so precisam do primeiro candidato.
+export function extractSixDigitCode(text: string): string | null {
+  const [code] = extractSixDigitCodeCandidates(text);
+
+  return code ?? null;
 }
 
 // Monta o link publico de entrada da barbearia, com token quando for o link final.
