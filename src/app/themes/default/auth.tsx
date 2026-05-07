@@ -12,8 +12,6 @@ import {
   getPostAuthRedirectPath,
 } from "@/app/lib/auth";
 
-const OTP_CHANNEL: "sms" | "whatsapp" = "whatsapp";
-
 interface RequestWhatsAppLoginResponse {
   code: string;
   whatsappUrl: string;
@@ -27,7 +25,6 @@ export default function DefaultAuthPage() {
   const { data } = useBarbershop(slug ?? "");
   const [searchParams] = useSearchParams();
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [error, setError] = useState("");
   const [whatsappLoginCode, setWhatsappLoginCode] = useState("");
@@ -41,7 +38,7 @@ export default function DefaultAuthPage() {
           await getCustomerFromAuthUser(session.user);
 
         if (customerError || !existingCustomer) {
-          setError("Nao foi possivel carregar sua sessao. Tente novamente.");
+          // setError("Nao foi possivel carregar sua sessao. Tente novamente.");
           return;
         }
 
@@ -54,11 +51,6 @@ export default function DefaultAuthPage() {
     });
   }, [slug, navigate, setCustomer, from, data?.id]);
 
-  function toE164(formatted: string) {
-    const digits = formatted.replace(/\D/g, "");
-    return `+55${digits}`;
-  }
-
   async function handleSendOtp() {
     setError("");
     setWhatsappLoginCode("");
@@ -66,12 +58,12 @@ export default function DefaultAuthPage() {
     const digits = phone.replace(/\D/g, "");
 
     if (digits.length !== 11) {
-      setError("Digite um numero de celular valido com DDD.");
+      setError("Digite um número de celular válido com DDD.");
       return;
     }
 
     if (!data?.id || !data?.slug) {
-      setError("Nao foi possivel carregar os dados da barbearia.");
+      setError("Não foi possível carregar os dados da barbearia.");
       return;
     }
 
@@ -96,7 +88,7 @@ export default function DefaultAuthPage() {
       }
 
       if (!loginData?.code || !loginData?.whatsappUrl) {
-        setError("A funcao nao retornou o codigo esperado.");
+        setError("A função não retornou o código esperado.");
         return;
       }
 
@@ -104,90 +96,9 @@ export default function DefaultAuthPage() {
       setWhatsappUrl(loginData.whatsappUrl);
       setStep("otp");
 
-      console.log("Codigo WhatsApp criado com sucesso", {
+      console.log("Código WhatsApp criado com sucesso", {
         expiresInSeconds: loginData.expiresInSeconds,
       });
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleVerifyOtp() {
-    setError("");
-    setLoading(true);
-
-    try {
-      const e164Phone = toE164(phone);
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.verifyOtp({
-        phone: e164Phone,
-        token: otp,
-        type: "sms",
-      });
-
-      if (error) {
-        setError(error.message);
-        return;
-      }
-
-      if (!session) {
-        setError("Código inválido ou sessão não iniciada.");
-        return;
-      }
-
-      const user = session.user;
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .upsert(
-          { id: user.id, role: "customer" },
-          { onConflict: "id", ignoreDuplicates: true },
-        );
-
-      if (profileError) {
-        setError("Nao foi possivel finalizar seu cadastro. Tente novamente.");
-        return;
-      }
-
-      const { error: customerUpsertError } = await supabase
-        .from("customers_auth")
-        .upsert(
-        {
-          auth_user_id: user.id,
-          phone: user.phone?.replace(/^55/, "") ?? null,
-          name: "",
-        },
-        { onConflict: "auth_user_id", ignoreDuplicates: true },
-      );
-
-      if (customerUpsertError) {
-        setError("Nao foi possivel salvar seus dados. Tente novamente.");
-        return;
-      }
-
-      const { data: customerAuth, error: customerFetchError } = await supabase
-        .from("customers_auth")
-        .select("id, name, phone")
-        .eq("auth_user_id", user.id)
-        .single();
-
-      if (customerFetchError || !customerAuth) {
-        setError("Nao foi possivel carregar seu perfil. Tente novamente.");
-        return;
-      }
-
-      setCustomer({
-        id: customerAuth.id ?? user.id,
-        name:
-          customerAuth.name ||
-          (user.user_metadata?.full_name ?? user.user_metadata?.name ?? ""),
-        phone: customerAuth.phone ?? user.phone?.replace(/^55/, "") ?? "",
-        auth_user_id: user.id,
-        barbershop_id: data?.id ?? null,
-      });
-      navigate(getPostAuthRedirectPath(slug, from), { replace: true });
     } finally {
       setLoading(false);
     }
@@ -212,9 +123,9 @@ export default function DefaultAuthPage() {
           <p className="mt-1 text-sm text-current">
             {step === "phone"
               ? from === "agendar"
-                ? "Para agendar, informe seu whatsapp"
+                ? "Para agendar, informe seu whatsApp"
                 : "Informe seu whatsapp"
-              : `Enviamos um código para ${phone} via ${OTP_CHANNEL === "sms" ? "SMS" : "WhatsApp"}`}
+              : `Clique no botão abaixo e envie seu código pelo WhatsApp para entrar.`}
           </p>
         </div>
 
@@ -229,7 +140,10 @@ export default function DefaultAuthPage() {
                 inputMode="numeric"
                 placeholder="(00) 00000-0000"
                 value={phone}
-                onChange={e => setPhone(formatPhone(e.target.value))}
+                onChange={e => {
+                  setPhone(formatPhone(e.target.value))
+                  setError("")
+                }}
                 className="h-11 w-full rounded-xl border border-current bg-transparent px-4 text-sm transition-colors outline-none placeholder:text-current/60 focus:ring-2 focus:ring-current/60"
               />
             </div>
@@ -241,16 +155,14 @@ export default function DefaultAuthPage() {
               disabled={isLoading || phone.replace(/\D/g, "").length < 10}
             >
               <FaWhatsapp size={16} />
-              {OTP_CHANNEL === "sms"
-                ? "Enviar código por SMS"
-                : "Enviar código"}
+              Gerar código
             </Button>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {whatsappLoginCode && (
               <div className="rounded-xl border border-current/20 p-4 text-center">
-                <p className="text-sm text-current/80">Seu codigo e</p>
+                <p className="text-sm text-current/80">Seu código é</p>
                 <p className="mt-1 text-3xl font-semibold tracking-[0.2em]">
                   {whatsappLoginCode}
                 </p>
@@ -265,39 +177,13 @@ export default function DefaultAuthPage() {
                 style={{ backgroundColor: data?.style.primary_color, color: data?.style.text_button_color }}
               >
                 <FaWhatsapp size={16} />
-                Enviar codigo no WhatsApp
+                Confirmar Whatsapp
               </a>
             )}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-current">
-                Código de verificação
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="000000"
-                maxLength={6}
-                value={otp}
-                onChange={e =>
-                  setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                }
-                className="h-11 w-full rounded-xl border border-current bg-transparent px-4 text-sm transition-colors outline-none placeholder:text-current/60 focus:ring-2 focus:ring-current/60"
-              />
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button
-              className="h-11 w-full gap-2 rounded-xl hover:opacity-85"
-              style={{ backgroundColor: data?.style.primary_color, color: data?.style.text_button_color }}
-              onClick={handleVerifyOtp}
-              disabled={isLoading || otp.length < 6}
-            >
-              Verificar
-            </Button>
             <button
               className="text-sm text-current underline-offset-4 hover:underline"
               onClick={() => {
                 setStep("phone");
-                setOtp("");
                 setError("");
                 setWhatsappLoginCode("");
                 setWhatsappUrl("");

@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
 
     // Em producao, evite logar o codigo. Ele volta ao frontend por regra do fluxo.
     // O frontend exibe o codigo e oferece este link para o cliente enviar a mensagem.
-    const whatsappText = encodeURIComponent(`Ola, meu codigo e ${code}`);
+    const whatsappText = encodeURIComponent(`Olá, meu código é ${code}`);
     const whatsappUrl = `https://wa.me/${systemNumber}?text=${whatsappText}`;
 
     return jsonResponse({
