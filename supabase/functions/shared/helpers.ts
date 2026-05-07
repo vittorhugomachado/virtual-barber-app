@@ -98,7 +98,7 @@ export function generateSixDigitCode(): string {
   const array = new Uint32Array(1);
   crypto.getRandomValues(array);
 
-  return (array[0] % 1_000_000).toString().padStart(7, "0");
+  return (array[0] % 1_000_000).toString().padStart(6, "0");
 }
 
 // Gera token de login unico com 32 bytes aleatorios, retornado em hexadecimal.
