@@ -5,6 +5,7 @@ import {
   createServiceClient,
   extractSixDigitCode,
   generateSecureToken,
+  getBrazilianPhoneVariants,
   normalizeBrazilianPhone,
   sendWhatsAppText,
   sha256,
@@ -118,13 +119,15 @@ Deno.serve(async (req) => {
             hasSixDigitCode: true,
           });
 
+          const phoneVariants = getBrazilianPhoneVariants(normalizedFrom);
+
           // Valida o codigo e ja marca como usado em uma operacao so.
           // Isso evita que o mesmo codigo seja processado duas vezes em corrida.
           const { data: loginCode, error: loginCodeError } = await supabase
             .from("whatsapp_login_codes")
             .update({ used: true })
             .eq("code", code)
-            .eq("phone", normalizedFrom)
+            .in("phone", phoneVariants)
             .eq("used", false)
             .gt("expires_at", new Date().toISOString())
             .select("id, barbershop_id, phone")
@@ -132,11 +135,13 @@ Deno.serve(async (req) => {
 
           if (loginCodeError) {
             console.error("Failed to validate WhatsApp login code", loginCodeError);
+            await logInvalidCodeDiagnostics(supabase, normalizedFrom, phoneVariants, code);
             await sendInvalidCodeMessage(supabase, phoneNumberId, normalizedFrom, code);
             continue;
           }
 
           if (!loginCode) {
+            await logInvalidCodeDiagnostics(supabase, normalizedFrom, phoneVariants, code);
             await sendInvalidCodeMessage(supabase, phoneNumberId, normalizedFrom, code);
             continue;
           }
@@ -164,7 +169,7 @@ Deno.serve(async (req) => {
           const tokenInsert = await insertLoginToken(
             supabase,
             loginCode.barbershop_id,
-            normalizedFrom,
+            loginCode.phone,
           );
 
           if (!tokenInsert) {
@@ -178,8 +183,11 @@ Deno.serve(async (req) => {
 
           const loginLink = buildLoginUrl(barbershop.slug, tokenInsert.token);
           // O token puro vai somente no link enviado pelo WhatsApp.
-          const successMessage =
-            `Parabens! Seu codigo foi confirmado. Clique no link abaixo para acessar a ${barbershop.name}: ${loginLink}`;
+          const successMessage = [
+            "Parabens! Seu codigo foi confirmado.",
+            `Clique no link abaixo para acessar a ${barbershop.name}:`,
+            loginLink,
+          ].join("\n\n");
 
           await sendWhatsAppText(phoneNumberId, normalizedFrom, successMessage);
         }
@@ -230,6 +238,44 @@ async function insertLoginToken(
   return null;
 }
 
+// Loga por que um codigo nao passou na validacao sem expor o codigo completo.
+async function logInvalidCodeDiagnostics(
+  supabase: ReturnType<typeof createServiceClient>,
+  normalizedFrom: string,
+  phoneVariants: string[],
+  code: string,
+): Promise<void> {
+  const nowIso = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("whatsapp_login_codes")
+    .select("id, phone, used, expires_at, created_at")
+    .eq("code", code)
+    .order("created_at", { ascending: false })
+    .limit(3);
+
+  if (error) {
+    console.error("Failed to inspect invalid WhatsApp login code", error);
+    return;
+  }
+
+  console.log("WhatsApp login code did not match active record", {
+    nowIso,
+    fromLast4: normalizedFrom.slice(-4),
+    fromLength: normalizedFrom.length,
+    phoneVariantLengths: phoneVariants.map((phone) => phone.length),
+    records: (data ?? []).map((record) => ({
+      id: record.id,
+      phoneLast4: record.phone?.slice(-4),
+      phoneLength: record.phone?.length,
+      phoneMatches: phoneVariants.includes(record.phone),
+      used: record.used,
+      expiresAt: record.expires_at,
+      expired: new Date(record.expires_at).getTime() <= new Date(nowIso).getTime(),
+      createdAt: record.created_at,
+    })),
+  });
+}
+
 // Quando o codigo nao e valido, responde com link para pedir outro codigo.
 async function sendInvalidCodeMessage(
   supabase: ReturnType<typeof createServiceClient>,
@@ -253,12 +299,14 @@ async function findBestSlugForPhone(
   phone: string,
   code: string,
 ): Promise<string | null> {
+  const phoneVariants = getBrazilianPhoneVariants(phone);
+
   // Sem uma coluna whatsapp_phone_number_id em barbershops, o melhor fallback
   // e usar o historico de codigos do proprio telefone.
   const { data: codeRecord } = await supabase
     .from("whatsapp_login_codes")
     .select("barbershop_id")
-    .eq("phone", phone)
+    .in("phone", phoneVariants)
     .eq("code", code)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -269,7 +317,7 @@ async function findBestSlugForPhone(
     : await supabase
       .from("whatsapp_login_codes")
       .select("barbershop_id")
-      .eq("phone", phone)
+      .in("phone", phoneVariants)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();

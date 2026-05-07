@@ -3,6 +3,7 @@ import {
   corsHeaders,
   createServiceClient,
   generateSixDigitCode,
+  getBrazilianPhoneVariants,
   getRequiredEnv,
   jsonResponse,
   normalizeBrazilianPhone,
@@ -60,6 +61,7 @@ Deno.serve(async (req) => {
 
   try {
     const supabase = createServiceClient();
+    const phoneVariants = getBrazilianPhoneVariants(normalizedPhone);
 
     // Confere slug e id juntos para evitar gerar codigo para outra barbearia.
     const { data: barbershop, error: barbershopError } = await supabase
@@ -83,7 +85,7 @@ Deno.serve(async (req) => {
       .from("whatsapp_login_codes")
       .update({ used: true })
       .eq("barbershop_id", barbershop.id)
-      .eq("phone", normalizedPhone)
+      .in("phone", phoneVariants)
       .eq("used", false);
 
     if (invalidateError) {
@@ -101,7 +103,7 @@ Deno.serve(async (req) => {
         .from("whatsapp_login_codes")
         .select("id")
         .eq("barbershop_id", barbershop.id)
-        .eq("phone", normalizedPhone)
+        .in("phone", phoneVariants)
         .eq("code", code)
         .eq("used", false)
         .gt("expires_at", new Date().toISOString())

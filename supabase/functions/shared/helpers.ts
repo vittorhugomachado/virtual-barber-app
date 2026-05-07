@@ -75,6 +75,23 @@ export function normalizeBrazilianPhone(phone: string): string {
   throw new Error("Numero de WhatsApp invalido. Informe DDD + numero.");
 }
 
+// Retorna variantes brasileiras equivalentes com e sem o nono digito.
+// Alguns webhooks da Meta podem entregar o remetente sem o 9 apos o DDD.
+export function getBrazilianPhoneVariants(phone: string): string[] {
+  const normalized = normalizeBrazilianPhone(phone);
+  const variants = new Set([normalized]);
+
+  if (normalized.startsWith("55") && normalized.length === 13) {
+    variants.add(`${normalized.slice(0, 4)}${normalized.slice(5)}`);
+  }
+
+  if (normalized.startsWith("55") && normalized.length === 12) {
+    variants.add(`${normalized.slice(0, 4)}9${normalized.slice(4)}`);
+  }
+
+  return Array.from(variants);
+}
+
 // Gera um codigo numerico de 6 digitos usando crypto.getRandomValues.
 // O codigo e mostrado ao usuario e depois validado pelo webhook.
 export function generateSixDigitCode(): string {
@@ -143,7 +160,10 @@ export async function sendWhatsAppText(
           messaging_product: "whatsapp",
           to,
           type: "text",
-          text: { body: text },
+          text: {
+            preview_url: true,
+            body: text,
+          },
         }),
       },
     );
