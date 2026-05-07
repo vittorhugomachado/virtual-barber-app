@@ -5,6 +5,26 @@ import { useAuthStore } from "@/app/store/auth-store";
 import type { Customer } from "@/app/themes/types";
 import { getPostAuthRedirectPath } from "@/app/lib/auth";
 
+function getPhoneVariants(phone?: string | null) {
+  const digits = phone?.replace(/\D/g, "") ?? "";
+  if (!digits) return [];
+
+  const normalized = digits.startsWith("55") ? digits : `55${digits}`;
+  const variants = new Set([normalized]);
+
+  if (normalized.startsWith("55") && normalized.length === 13) {
+    variants.add(`${normalized.slice(0, 4)}${normalized.slice(5)}`);
+  }
+
+  if (normalized.startsWith("55") && normalized.length === 12) {
+    variants.add(`${normalized.slice(0, 4)}9${normalized.slice(4)}`);
+  }
+
+  variants.add(normalized.replace(/^55/, ""));
+
+  return Array.from(variants);
+}
+
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const { setCustomer } = useAuthStore();
@@ -28,45 +48,69 @@ export function AuthCallbackPage() {
     async function handleSession(user: {
       id: string;
       email?: string;
+      phone?: string;
       user_metadata?: Record<string, string>;
     }) {
       if (handled) return;
       handled = true;
 
-      const { error: upsertError } = await supabase
-        .from("customers_auth")
-        .upsert(
-          {
-            auth_user_id: user.id,
-            name:
-              user.user_metadata?.full_name ??
-              user.user_metadata?.name ??
-              "",
-          },
-          { onConflict: "auth_user_id", ignoreDuplicates: true },
-        );
+      const name =
+        user.user_metadata?.full_name ??
+        user.user_metadata?.name ??
+        "";
+      const phoneVariants = getPhoneVariants(user.phone);
 
-      if (upsertError) {
+      const existingQuery = supabase
+        .from("customers")
+        .select("id, name, phone, barbershop_id, auth")
+        .eq("auth", true)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      const { data: existingCustomer, error: selectError } = phoneVariants.length
+        ? await existingQuery.in("phone", phoneVariants).maybeSingle()
+        : await existingQuery.maybeSingle();
+
+      if (selectError) {
         setError("Nao foi possivel concluir a autenticacao. Tente novamente.");
         return;
       }
 
-      const { data: customerData, error: selectError } = await supabase
-        .from("customers_auth")
-        .select("id, name, phone, auth_user_id")
-        .eq("auth_user_id", user.id)
-        .maybeSingle();
+      const normalizedPhone = phoneVariants[0] ?? null;
+      const { data: customerData, error: writeError } = existingCustomer
+        ? await supabase
+          .from("customers")
+          .update({
+            auth: true,
+            name: existingCustomer.name || name,
+            phone: existingCustomer.phone ?? normalizedPhone,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existingCustomer.id)
+          .eq("auth", true)
+          .select("id, name, phone, barbershop_id, auth")
+          .single()
+        : await supabase
+          .from("customers")
+          .insert({
+            name,
+            phone: normalizedPhone,
+            auth: true,
+          })
+          .select("id, name, phone, barbershop_id, auth")
+          .single();
 
-      if (selectError || !customerData) {
+      if (writeError || !customerData) {
         setError("Nao foi possivel concluir a autenticacao. Tente novamente.");
         return;
       }
 
       const c: Customer = {
         id: customerData.id,
-        name: customerData.name,
-        phone: customerData.phone,
-        auth_user_id: customerData.auth_user_id,
+        name: customerData.name ?? "",
+        phone: customerData.phone ?? "",
+        barbershop_id: customerData.barbershop_id,
+        auth: customerData.auth === true,
       };
       setCustomer(c);
       setLocalCustomer(c);

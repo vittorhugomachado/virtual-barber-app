@@ -52,9 +52,10 @@ export function CustomerProfileCard() {
     setError("");
     try {
       const { error: updateError } = await supabase
-        .from("customers_auth")
+        .from("customers")
         .update({ name: normalizedName })
-        .eq("id", currentCustomer.id);
+        .eq("id", currentCustomer.id)
+        .eq("auth", true);
 
       if (updateError) {
         setError("NÃ£o foi possÃ­vel atualizar seu nome. Tente novamente.");

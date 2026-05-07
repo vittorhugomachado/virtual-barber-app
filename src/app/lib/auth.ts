@@ -3,37 +3,65 @@ import { supabase } from "./supabase";
 import type { Customer } from "@/app/themes/types";
 
 function normalizePhone(phone?: string | null) {
-  return phone?.replace(/^\+?55/, "") ?? "";
+  return phone?.replace(/\D/g, "").replace(/^55/, "") ?? "";
+}
+
+function getPhoneVariants(phone?: string | null) {
+  const digits = phone?.replace(/\D/g, "") ?? "";
+  const normalized = digits.startsWith("55") ? digits : `55${digits}`;
+  const variants = new Set([normalized]);
+
+  if (normalized.startsWith("55") && normalized.length === 13) {
+    variants.add(`${normalized.slice(0, 4)}${normalized.slice(5)}`);
+  }
+
+  if (normalized.startsWith("55") && normalized.length === 12) {
+    variants.add(`${normalized.slice(0, 4)}9${normalized.slice(4)}`);
+  }
+
+  variants.add(normalizePhone(normalized));
+
+  return Array.from(variants).filter(Boolean);
 }
 
 export async function getCustomerFromAuthUser(
   user: User,
 ): Promise<{ data: Customer | null; error: Error | null }> {
-  const { data: customerAuth, error } = await supabase
-    .from("customers_auth")
-    .select("id, name, phone, auth_user_id")
-    .eq("auth_user_id", user.id)
+  const phoneVariants = getPhoneVariants(user.phone);
+
+  if (phoneVariants.length === 0) {
+    return { data: null, error: null };
+  }
+
+  const { data: customer, error } = await supabase
+    .from("customers")
+    .select("id, name, phone, barbershop_id, auth")
+    .eq("auth", true)
+    .in("phone", phoneVariants)
+    .order("created_at", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error) {
     return { data: null, error: new Error(error.message) };
   }
 
-  if (!customerAuth) {
+  if (!customer) {
     return { data: null, error: null };
   }
 
   return {
     data: {
-      id: customerAuth.id,
+      id: customer.id,
       name:
-        customerAuth.name ||
+        customer.name ||
         user.user_metadata?.full_name ||
         user.user_metadata?.name ||
         "",
-      phone: customerAuth.phone ?? normalizePhone(user.phone),
-      auth_user_id: user.id,
-      barbershop_id: null,
+      phone: customer.phone ?? normalizePhone(user.phone),
+      auth: customer.auth === true,
+      auth_user_id: null,
+      barbershop_id: customer.barbershop_id,
     },
     error: null,
   };

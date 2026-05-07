@@ -11,11 +11,18 @@ import {
   getCustomerFromAuthUser,
   getPostAuthRedirectPath,
 } from "@/app/lib/auth";
+import type { Customer } from "../types";
 
 interface RequestWhatsAppLoginResponse {
   code: string;
   whatsappUrl: string;
   expiresInSeconds: number;
+}
+
+interface ConsumeWhatsAppLoginTokenResponse {
+  success: boolean;
+  customer: Customer;
+  expiresInDays: number;
 }
 
 export default function DefaultAuthPage() {
@@ -29,9 +36,50 @@ export default function DefaultAuthPage() {
   const [error, setError] = useState("");
   const [whatsappLoginCode, setWhatsappLoginCode] = useState("");
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [isConsumingLoginToken, setIsConsumingLoginToken] = useState(false);
   const from = searchParams.get("from");
+  const loginToken = searchParams.get("token");
 
   useEffect(() => {
+    if (loginToken) {
+      setError("");
+      setIsConsumingLoginToken(true);
+      setLoading(true);
+      console.log("Consumindo token de login WhatsApp", {
+        tokenLength: loginToken.length,
+        slug,
+      });
+
+      supabase.functions
+        .invoke<ConsumeWhatsAppLoginTokenResponse>(
+          "consume-whatsapp-login-token",
+          {
+            body: { token: loginToken },
+          },
+        )
+        .then(({ data: tokenData, error: tokenError }) => {
+          console.log("Resposta consume-whatsapp-login-token", {
+            hasData: Boolean(tokenData),
+            hasError: Boolean(tokenError),
+            success: tokenData?.success === true,
+          });
+
+          if (tokenError || !tokenData?.success || !tokenData.customer) {
+            setError("Link de login invalido ou expirado. Solicite um novo codigo.");
+            return;
+          }
+
+          setCustomer(tokenData.customer);
+          navigate(getPostAuthRedirectPath(slug, from), { replace: true });
+        })
+        .finally(() => {
+          setLoading(false);
+          setIsConsumingLoginToken(false);
+        });
+
+      return;
+    }
+
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
         const { data: existingCustomer, error: customerError } =
@@ -49,7 +97,7 @@ export default function DefaultAuthPage() {
         navigate(getPostAuthRedirectPath(slug, from), { replace: true });
       }
     });
-  }, [slug, navigate, setCustomer, from, data?.id]);
+  }, [slug, navigate, setCustomer, setLoading, from, data?.id, loginToken]);
 
   async function handleSendOtp() {
     setError("");
@@ -110,6 +158,18 @@ export default function DefaultAuthPage() {
         {data?.name && <BarbershopLogo name={data.name} className="text-3xl" />}
       </header>
       <div className="mx-auto w-[90vw] max-w-md rounded-2xl border border-current/10 p-8 shadow-sm">
+        {isConsumingLoginToken ? (
+          <div className="py-8 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Entrando...
+            </h1>
+            <p className="mt-2 text-sm text-current">
+              Validando seu link de acesso pelo WhatsApp.
+            </p>
+            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+          </div>
+        ) : (
+          <>
         <div className="mb-8 text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full" style={{ backgroundColor: data?.style.primary_color }}>
             <FaWhatsapp
@@ -192,6 +252,8 @@ export default function DefaultAuthPage() {
               Usar outro número
             </button>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

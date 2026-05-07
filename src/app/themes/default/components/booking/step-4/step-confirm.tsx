@@ -118,9 +118,10 @@ export function StepConfirm({
 
       if (requiresName) {
         const { error: customerError } = await supabase
-          .from("customers_auth")
+          .from("customers")
           .update({ name: normalizedDisplayName })
-          .eq("id", customerId);
+          .eq("id", customerId)
+          .eq("auth", true);
 
         if (customerError) {
           setError("Nao foi possivel salvar seu nome. Tente novamente.");

@@ -11,14 +11,43 @@ import { useAuthStore } from "./app/store/auth-store";
 import { LandingPage } from "./landing-page";
 import { PrivacyPolicyPage } from "./portal/pages/privacy-policy";
 
+function hasPersistedWhatsAppCustomer() {
+  try {
+    const rawAuth = window.localStorage.getItem("vb-auth");
+    if (!rawAuth) return false;
+
+    const parsed = JSON.parse(rawAuth) as {
+      state?: {
+        customer?: {
+          auth?: boolean;
+        } | null;
+        isAuthenticated?: boolean;
+      };
+    };
+
+    return parsed.state?.isAuthenticated === true &&
+      parsed.state.customer?.auth === true;
+  } catch {
+    return false;
+  }
+}
+
 export function App() {
-  const { setCustomer, clearCustomer, setLoading } = useAuthStore();
+  const { customer, setCustomer, clearCustomer, setLoading } = useAuthStore();
 
   useEffect(() => {
     let active = true;
 
     void supabase.auth.getSession().then(({ data: { session } }) => {
       if (!active) return;
+
+      if (
+        customer?.auth ||
+        useAuthStore.getState().customer?.auth ||
+        hasPersistedWhatsAppCustomer()
+      ) {
+        return;
+      }
 
       return syncAuthStoreWithSession(session, {
         setCustomer,
@@ -32,6 +61,13 @@ export function App() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return;
 
+      if (
+        useAuthStore.getState().customer?.auth ||
+        hasPersistedWhatsAppCustomer()
+      ) {
+        return;
+      }
+
       void syncAuthStoreWithSession(session, {
         setCustomer,
         clearCustomer,
@@ -43,7 +79,7 @@ export function App() {
       active = false;
       subscription.unsubscribe();
     };
-  }, [setCustomer, clearCustomer, setLoading]);
+  }, [customer?.auth, setCustomer, clearCustomer, setLoading]);
 
   return (
     <BrowserRouter>

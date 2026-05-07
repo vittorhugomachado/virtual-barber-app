@@ -8,7 +8,7 @@ interface AuthState {
   isLoading: boolean;
 
   setCustomer: (customer: Customer) => void;
-  clearCustomer: () => void;
+  clearCustomer: (options?: { force?: boolean }) => void;
   setLoading: (loading: boolean) => void;
 }
 
@@ -21,7 +21,14 @@ export const useAuthStore = create<AuthState>()(
 
       setCustomer: customer => set({ customer, isAuthenticated: true }),
 
-      clearCustomer: () => set({ customer: null, isAuthenticated: false }),
+      clearCustomer: options =>
+        set(state => {
+          if (state.customer?.auth && !options?.force) {
+            return state;
+          }
+
+          return { customer: null, isAuthenticated: false };
+        }),
 
       setLoading: loading => set({ isLoading: loading }),
     }),

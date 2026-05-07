@@ -3,12 +3,18 @@ import type { Session, User } from "@supabase/supabase-js";
 
 const supabaseMocks = vi.hoisted(() => {
   const maybeSingle = vi.fn();
-  const eq = vi.fn(() => ({ maybeSingle }));
+  const limit = vi.fn(() => ({ maybeSingle }));
+  const order = vi.fn(() => ({ limit }));
+  const inFilter = vi.fn(() => ({ order }));
+  const eq = vi.fn(() => ({ in: inFilter }));
   const select = vi.fn(() => ({ eq }));
   const from = vi.fn(() => ({ select }));
 
   return {
     maybeSingle,
+    limit,
+    order,
+    inFilter,
     eq,
     select,
     from,
@@ -68,13 +74,14 @@ describe("auth helpers", () => {
     expect(getPostAuthRedirectPath(undefined, "agendar")).toBe("/");
   });
 
-  it("hydrates the customer from customers_auth when the row exists", async () => {
+  it("hydrates the customer from authenticated customers when the row exists", async () => {
     supabaseMocks.maybeSingle.mockResolvedValueOnce({
       data: {
         id: "customer-1",
         name: "Vitor",
-        phone: "11999999999",
-        auth_user_id: "user-1",
+        phone: "5511999999999",
+        barbershop_id: "barbershop-1",
+        auth: true,
       },
       error: null,
     });
@@ -90,13 +97,14 @@ describe("auth helpers", () => {
     expect(result.data).toEqual({
       id: "customer-1",
       name: "Vitor",
-      phone: "11999999999",
-      auth_user_id: "user-1",
-      barbershop_id: null,
+      phone: "5511999999999",
+      auth: true,
+      auth_user_id: null,
+      barbershop_id: "barbershop-1",
     });
   });
 
-  it("falls back to auth metadata and phone when customers_auth is missing", async () => {
+  it("returns null when no authenticated customer exists", async () => {
     supabaseMocks.maybeSingle.mockResolvedValueOnce({
       data: null,
       error: null,
@@ -110,13 +118,7 @@ describe("auth helpers", () => {
     const result = await getCustomerFromAuthUser(user);
 
     expect(result.error).toBeNull();
-    expect(result.data).toEqual({
-      id: "user-1",
-      name: "Nome do OAuth",
-      phone: "11888887777",
-      auth_user_id: "user-1",
-      barbershop_id: null,
-    });
+    expect(result.data).toBeNull();
   });
 
   it("clears the auth store when there is no active session", async () => {
@@ -139,8 +141,9 @@ describe("auth helpers", () => {
       data: {
         id: "customer-1",
         name: "Cliente",
-        phone: "11999999999",
-        auth_user_id: "user-1",
+        phone: "5511999999999",
+        barbershop_id: "barbershop-1",
+        auth: true,
       },
       error: null,
     });
@@ -157,9 +160,10 @@ describe("auth helpers", () => {
     expect(handlers.setCustomer).toHaveBeenCalledWith({
       id: "customer-1",
       name: "Cliente",
-      phone: "11999999999",
-      auth_user_id: "user-1",
-      barbershop_id: null,
+      phone: "5511999999999",
+      auth: true,
+      auth_user_id: null,
+      barbershop_id: "barbershop-1",
     });
     expect(handlers.setLoading).toHaveBeenNthCalledWith(1, true);
     expect(handlers.setLoading).toHaveBeenLastCalledWith(false);

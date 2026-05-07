@@ -7,7 +7,7 @@ export function useAuth() {
   async function signOut() {
     setLoading(true)
     await supabase.auth.signOut()
-    clearCustomer()
+    clearCustomer({ force: true })
     setLoading(false)
   }
 

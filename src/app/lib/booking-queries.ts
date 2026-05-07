@@ -64,10 +64,14 @@ export async function getCurrentCustomer() {
 
   if (!user) return { data: null, error: null };
 
+  const digits = user.phone?.replace(/\D/g, "") ?? "";
+  const phone = digits.startsWith("55") ? digits : `55${digits}`;
+
   const { data, error } = await supabase
-    .from("customers_auth")
-    .select("id, name, phone, created_at")
-    .eq("auth_user_id", user.id)
+    .from("customers")
+    .select("id, name, phone, created_at, barbershop_id, auth")
+    .eq("auth", true)
+    .eq("phone", phone)
     .maybeSingle();
 
   if (error) return { data: null, error };
