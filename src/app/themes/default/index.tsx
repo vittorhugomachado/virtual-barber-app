@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/app/lib/supabase";
 import { useAuthStore } from "@/app/store/auth-store";
@@ -13,6 +13,7 @@ import { BarberShopHours } from "./components/barbershop-hours";
 import { Footer } from "../../components/footer";
 import { SectionNav } from "./components/section-nav";
 import { CartPanel } from "./components/cart-panel";
+import { ExpiredLoginLinkModal } from "./components/expired-login-link-modal";
 
 interface ConsumeWhatsAppLoginTokenResponse {
   success: boolean;
@@ -22,12 +23,29 @@ interface ConsumeWhatsAppLoginTokenResponse {
 
 export default function DefaultTheme(props: BarbershopPageProps) {
   const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
-  const { setCustomer, setLoading } = useAuthStore();
+  const { isAuthenticated, setCustomer, setLoading } = useAuthStore();
   const loginToken = searchParams.get("token");
+  const consumedTokenRef = useRef<string | null>(null);
+  const [showExpiredTokenModal, setShowExpiredTokenModal] = useState(false);
+
+  function continueWithoutLogin() {
+    setShowExpiredTokenModal(false);
+    navigate(`/${props.slug}`, { replace: true });
+  }
 
   useEffect(() => {
     if (!loginToken) return;
+
+    if (isAuthenticated) {
+      navigate(`/${props.slug}`, { replace: true });
+      return;
+    }
+
+    if (consumedTokenRef.current === loginToken) return;
+
+    consumedTokenRef.current = loginToken;
 
     setLoading(true);
 
@@ -41,7 +59,7 @@ export default function DefaultTheme(props: BarbershopPageProps) {
       .then(({ data, error }) => {
         if (error || !data?.success || !data.customer) {
           console.error("Nao foi possivel consumir token WhatsApp", error);
-          navigate(`/${props.slug}/entrar`, { replace: true });
+          setShowExpiredTokenModal(true);
           return;
         }
 
@@ -51,7 +69,14 @@ export default function DefaultTheme(props: BarbershopPageProps) {
       .finally(() => {
         setLoading(false);
       });
-  }, [loginToken, navigate, props.slug, setCustomer, setLoading]);
+  }, [
+    isAuthenticated,
+    loginToken,
+    navigate,
+    props.slug,
+    setCustomer,
+    setLoading,
+  ]);
 
   const activeBarber =
     props.barbers?.filter(barber => barber.is_active === true) || [];
@@ -83,6 +108,11 @@ export default function DefaultTheme(props: BarbershopPageProps) {
         <Location />
       </main>
       <Footer />
+      <ExpiredLoginLinkModal
+        open={showExpiredTokenModal}
+        onContinueWithoutLogin={continueWithoutLogin}
+        onEnter={() => navigate(`/${props.slug}/entrar`, { replace: true })}
+      />
     </div>
   );
 }

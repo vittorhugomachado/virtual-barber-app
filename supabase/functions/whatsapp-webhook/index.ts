@@ -308,7 +308,7 @@ async function sendInvalidCodeMessage(
   const slug = await findBestSlugForPhone(supabase, to, codeCandidates);
   const loginUrl = buildLoginUrl(slug);
   const message =
-    `O codigo que voce enviou e invalido ou esta expirado. Voce pode solicitar um novo codigo no link abaixo: ${loginUrl}`;
+    `O código que você enviou e inválido ou está expirado. Você pode solicitar um novo código no link abaixo: ${loginUrl}`;
 
   await sendWhatsAppText(phoneNumberId, to, message);
 }

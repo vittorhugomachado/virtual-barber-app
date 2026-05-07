@@ -29,7 +29,7 @@ import { darkenColor } from "@/utils/darken-color";
 export function Navbar() {
   const { name, openingHours } = useBarbershopData();
   const { style } = useStyle();
-  const { isAuthenticated, signOut } = useAuth();
+  const { isAuthenticated, isLoading, signOut } = useAuth();
   const { slug } = useParams<{ slug: string }>();
   const location = useLocation();
   const { items } = useCart();
@@ -61,7 +61,9 @@ export function Navbar() {
 
   const mobileNavLinks = (
     <>
-      {isAuthenticated ? (
+      {isLoading ? (
+        <div className="h-5 w-20 animate-pulse rounded-full bg-current/15" />
+      ) : isAuthenticated ? (
         <>
           <button
             onClick={handlePerfil}
@@ -98,7 +100,9 @@ export function Navbar() {
             {/* desktop nav */}
             <nav className="mr-3 hidden items-center gap-6 md:flex">
               {!shouldHideScheduleButton && <BookingButton />}
-              {isAuthenticated ? (
+              {isLoading ? (
+                <div className="h-9 w-14 animate-pulse rounded-full border border-current/20 bg-current/10" />
+              ) : isAuthenticated ? (
                 <div className="relative">
                   <button
                     type="button"
