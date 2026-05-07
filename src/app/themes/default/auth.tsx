@@ -174,7 +174,7 @@ export default function DefaultAuthPage() {
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full" style={{ backgroundColor: data?.style.primary_color }}>
             <FaWhatsapp
               size={24}
-              style={{color: data?.style.background_color}}
+              style={{color: data?.style.text_button_color}}
             />
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">

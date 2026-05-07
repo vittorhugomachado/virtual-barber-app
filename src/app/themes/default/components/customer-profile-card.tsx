@@ -84,6 +84,7 @@ export function CustomerProfileCard() {
               style={{
                 backgroundColor: `${style.primary_color}20`,
                 color: style.primary_color,
+                border: `2px solid ${style.primary_color}`,
               }}
             >
               {initials || <User size={22} />}

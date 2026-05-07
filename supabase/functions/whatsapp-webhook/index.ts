@@ -322,15 +322,27 @@ async function findActiveCodeWithDifferentPhone(
     : null;
 }
 
-function formatBrazilianPhoneForMessage(phone: string): string {
+function formatBrazilianPhoneForMessage(phone: string, withoutNine?: boolean): string {
   const digits = phone.replace(/\D/g, "").replace(/^55/, "");
 
   if (digits.length === 10) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    let formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    
+    if (!withoutNine) {
+      formatted = `(${digits.slice(0, 2)}) 9${digits.slice(2, 6)}-${digits.slice(6)}`;
+    }
+    
+    return formatted;
   }
 
   if (digits.length === 11) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    let formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    
+    if (!withoutNine) {
+      formatted = `(${digits.slice(0, 2)}) 9${digits.slice(3, 8)}-${digits.slice(8)}`;
+    }
+    
+    return formatted;
   }
 
   return `+${phone.replace(/\D/g, "")}`;
@@ -341,7 +353,7 @@ async function sendWrongPhoneMessage(
   to: string,
   loginUrl: string,
 ): Promise<void> {
-  const formattedPhone = formatBrazilianPhoneForMessage(to);
+  const formattedPhone = formatBrazilianPhoneForMessage(to, false);
   const message = [
     "⚠️ Número diferente",
     `O número que você digitou na página é diferente desse que você está usando. Por favor insira seu número atual ${formattedPhone}:`,
