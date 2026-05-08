@@ -25,6 +25,36 @@ interface ConsumeWhatsAppLoginTokenResponse {
   expiresInDays: number;
 }
 
+const TRANSIENT_FUNCTION_ERROR_PATTERNS = [
+  "err_connection_closed",
+  "failed to fetch",
+  "fetch failed",
+  "functionsfetcherror",
+  "load failed",
+  "networkerror",
+];
+
+function isTransientFunctionError(error: unknown) {
+  if (!error) {
+    return false;
+  }
+
+  const text =
+    error instanceof Error
+      ? `${error.name} ${error.message}`
+      : JSON.stringify(error);
+
+  const normalizedText = text.toLowerCase();
+
+  return TRANSIENT_FUNCTION_ERROR_PATTERNS.some(pattern =>
+    normalizedText.includes(pattern),
+  );
+}
+
+function wait(milliseconds: number) {
+  return new Promise(resolve => window.setTimeout(resolve, milliseconds));
+}
+
 export default function DefaultAuthPage() {
   const navigate = useNavigate();
   const { isAuthenticated, setCustomer, setLoading, isLoading } =
@@ -134,21 +164,50 @@ export default function DefaultAuthPage() {
 
     setLoading(true);
     try {
-      const { data: loginData, error } =
-        await supabase.functions.invoke<RequestWhatsAppLoginResponse>(
-          "request-whatsapp-login",
-          {
-            body: {
-              barbershop_id: data.id,
-              barbershop_name: data.name,
-              slug: data.slug,
-              phone: digits,
-            },
-          },
-        );
+      let loginData: RequestWhatsAppLoginResponse | null = null;
+      let requestError: unknown = null;
 
-      if (error) {
-        setError(error.message || "Nao foi possivel gerar o codigo.");
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const { data: attemptData, error: attemptError } =
+          await supabase.functions.invoke<RequestWhatsAppLoginResponse>(
+            "request-whatsapp-login",
+            {
+              body: {
+                barbershop_id: data.id,
+                barbershop_name: data.name,
+                slug: data.slug,
+                phone: digits,
+              },
+            },
+          );
+
+        loginData = attemptData;
+        requestError = attemptError;
+
+        if (!attemptError) {
+          break;
+        }
+
+        if (attempt === 0 && isTransientFunctionError(attemptError)) {
+          console.warn(
+            "Falha transitoria ao gerar codigo WhatsApp. Tentando novamente.",
+            {
+              message: attemptError.message,
+            },
+          );
+          await wait(500);
+          continue;
+        }
+
+        break;
+      }
+
+      if (requestError) {
+        setError(
+          requestError instanceof Error && requestError.message
+            ? requestError.message
+            : "Nao foi possivel gerar o codigo.",
+        );
         return;
       }
 
@@ -183,7 +242,11 @@ export default function DefaultAuthPage() {
             <p className="mt-2 text-sm text-current">
               Validando seu link de acesso pelo WhatsApp.
             </p>
-            {error && <p className="mt-4 text-sm text-red-500 text-center">Ocorreu um erro inesperado. Tente novamente mais tarde</p>}
+            {error && (
+              <p className="mt-4 text-center text-sm text-red-500">
+                Ocorreu um erro inesperado. Tente novamente mais tarde
+              </p>
+            )}
           </div>
         ) : (
           <>
@@ -227,7 +290,11 @@ export default function DefaultAuthPage() {
                     className="h-11 w-full rounded-xl border border-current bg-transparent px-4 text-sm transition-colors outline-none placeholder:text-current/60 focus:ring-2 focus:ring-current/60"
                   />
                 </div>
-                {error && <p className="text-sm text-red-500 text-center">Ocorreu um erro inesperado. Tente novamente mais tarde</p>}
+                {error && (
+                  <p className="text-center text-sm text-red-500">
+                    Ocorreu um erro inesperado. Tente novamente mais tarde
+                  </p>
+                )}
                 <Button
                   className="h-11 w-full gap-2 rounded-xl hover:opacity-85"
                   style={{
