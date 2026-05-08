@@ -18,6 +18,11 @@ import { ExpiredLoginLinkModal } from "./components/expired-login-link-modal";
 interface ConsumeWhatsAppLoginTokenResponse {
   success: boolean;
   customer: Customer;
+  session?: {
+    access_token: string;
+    refresh_token: string;
+  };
+  userId?: string;
   expiresInDays: number;
 }
 
@@ -56,15 +61,34 @@ export default function DefaultTheme(props: BarbershopPageProps) {
           body: { token: loginToken },
         },
       )
-      .then(({ data, error }) => {
+      .then(async ({ data, error }) => {
+        // ← Adicione "async"
         if (error || !data?.success || !data.customer) {
           console.error("Nao foi possivel consumir token WhatsApp", error);
           setShowExpiredTokenModal(true);
           return;
         }
 
+        // 🔑 CRIA A SESSÃO COM OS TOKENS RECEBIDOS
+        if (data.session?.access_token && data.session?.refresh_token) {
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token,
+          });
+
+          if (sessionError) {
+            console.error("Erro ao criar sessão:", sessionError);
+            setShowExpiredTokenModal(true);
+            return;
+          }
+        }
+
         setCustomer(data.customer);
         navigate(`/${props.slug}`, { replace: true });
+      })
+      .catch(error => {
+        console.error("Erro na requisição:", error);
+        setShowExpiredTokenModal(true);
       })
       .finally(() => {
         setLoading(false);

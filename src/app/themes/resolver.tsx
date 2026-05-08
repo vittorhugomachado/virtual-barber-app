@@ -6,6 +6,7 @@ import { CartProvider } from "../contexts/cart-context/cart-provider";
 import { StyleProvider } from "../contexts/style-context/style-provider";
 import { BarbershopDataProvider } from "../contexts/barbershop-data/barbershop-data-provider";
 import type { StoreStyle } from "./types";
+import { supabase } from "@/app/lib/supabase";
 
 export type PageType = "home" | "auth" | "booking" | "profile";
 
@@ -81,6 +82,21 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
     useState<Partial<StoreStyle> | null>(null);
   const isPreview =
     new URLSearchParams(window.location.search).get("preview") === "true";
+
+  async function ConfirmSession() {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      console.log("Usuário realmente logado:", user.id, user.email);
+    } else {
+      console.log("Não está logado");
+    }
+  }
+
+  ConfirmSession();
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -159,7 +175,9 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
     document.title = data ? `${data.name}` : "Barbershop";
     document.documentElement.classList.toggle(
       "dark",
-      isDarkColor(previewStyleOverride?.background_color ?? data?.style.background_color),
+      isDarkColor(
+        previewStyleOverride?.background_color ?? data?.style.background_color,
+      ),
     );
   }, [data, previewStyleOverride?.background_color]);
 
@@ -183,10 +201,7 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
 
   return (
     <CartProvider slug={slug ?? ""}>
-      <StyleProvider
-        style={style}
-        isDarkBackground={isDarkBackground}
-      >
+      <StyleProvider style={style} isDarkBackground={isDarkBackground}>
         <div
           className="min-h-screen bg-(--store-background) text-(--store-text)"
           style={themeStyle}
