@@ -27,7 +27,8 @@ interface ConsumeWhatsAppLoginTokenResponse {
 
 export default function DefaultAuthPage() {
   const navigate = useNavigate();
-  const { isAuthenticated, setCustomer, setLoading, isLoading } = useAuthStore();
+  const { isAuthenticated, setCustomer, setLoading, isLoading } =
+    useAuthStore();
   const { slug } = useParams<{ slug: string }>();
   const { data } = useBarbershop(slug ?? "");
   const [searchParams] = useSearchParams();
@@ -70,7 +71,9 @@ export default function DefaultAuthPage() {
           });
 
           if (tokenError || !tokenData?.success || !tokenData.customer) {
-            setError("Link de login invalido ou expirado. Solicite um novo codigo.");
+            setError(
+              "Link de login invalido ou expirado. Solicite um novo codigo.",
+            );
             return;
           }
 
@@ -113,7 +116,7 @@ export default function DefaultAuthPage() {
     loginToken,
   ]);
 
-  async function handleSendOtp() {
+  async function handleSendCode() {
     setError("");
     setWhatsappLoginCode("");
     setWhatsappUrl("");
@@ -180,93 +183,102 @@ export default function DefaultAuthPage() {
             <p className="mt-2 text-sm text-current">
               Validando seu link de acesso pelo WhatsApp.
             </p>
-            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+            {error && <p className="mt-4 text-sm text-red-500 text-center">Ocorreu um erro inesperado. Tente novamente mais tarde</p>}
           </div>
         ) : (
           <>
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full" style={{ backgroundColor: data?.style.primary_color }}>
-            <FaWhatsapp
-              size={24}
-              style={{color: data?.style.text_button_color}}
-            />
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {step === "phone" ? "Entrar" : "Confirmar código"}
-          </h1>
-          <p className="mt-1 text-sm text-current">
-            {step === "phone"
-              ? from === "agendar"
-                ? "Para agendar, informe seu whatsApp"
-                : "Informe seu whatsapp"
-              : `Clique no botão abaixo e envie seu código pelo WhatsApp para entrar.`}
-          </p>
-        </div>
-
-        {step === "phone" ? (
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-current">
-                Telefone
-              </label>
-              <input
-                type="tel"
-                inputMode="numeric"
-                placeholder="(00) 00000-0000"
-                value={phone}
-                onChange={e => {
-                  setPhone(formatPhone(e.target.value))
-                  setError("")
-                }}
-                className="h-11 w-full rounded-xl border border-current bg-transparent px-4 text-sm transition-colors outline-none placeholder:text-current/60 focus:ring-2 focus:ring-current/60"
-              />
+            <div className="mb-8 text-center">
+              <div
+                className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full"
+                style={{ backgroundColor: data?.style.primary_color }}
+              >
+                <FaWhatsapp
+                  size={24}
+                  style={{ color: data?.style.text_button_color }}
+                />
+              </div>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                {step === "phone" ? "Entrar" : "Confirmar código"}
+              </h1>
+              <p className="mt-1 text-sm text-current">
+                {step === "phone"
+                  ? from === "agendar"
+                    ? "Para agendar, informe seu whatsApp"
+                    : "Informe seu whatsapp"
+                  : `Clique no botão abaixo e envie seu código pelo WhatsApp para entrar.`}
+              </p>
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button
-              className="h-11 w-full gap-2 rounded-xl hover:opacity-85"
-              style={{ backgroundColor: data?.style.primary_color, color: data?.style.text_button_color }}
-              onClick={handleSendOtp}
-              disabled={isLoading || phone.replace(/\D/g, "").length < 10}
-            >
-              <FaWhatsapp size={16} />
-              Gerar código
-            </Button>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {whatsappLoginCode && (
-              <div className="rounded-xl border border-current/20 p-4 text-center">
-                <p className="text-sm text-current/80">Seu código é</p>
-                <p className="mt-1 text-3xl font-semibold tracking-[0.2em]">
-                  {whatsappLoginCode}
-                </p>
+
+            {step === "phone" ? (
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-current">
+                    Telefone
+                  </label>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    placeholder="(00) 00000-0000"
+                    value={phone}
+                    onChange={e => {
+                      setPhone(formatPhone(e.target.value));
+                      setError("");
+                    }}
+                    className="h-11 w-full rounded-xl border border-current bg-transparent px-4 text-sm transition-colors outline-none placeholder:text-current/60 focus:ring-2 focus:ring-current/60"
+                  />
+                </div>
+                {error && <p className="text-sm text-red-500 text-center">Ocorreu um erro inesperado. Tente novamente mais tarde</p>}
+                <Button
+                  className="h-11 w-full gap-2 rounded-xl hover:opacity-85"
+                  style={{
+                    backgroundColor: data?.style.primary_color,
+                    color: data?.style.text_button_color,
+                  }}
+                  onClick={handleSendCode}
+                  disabled={isLoading || phone.replace(/\D/g, "").length < 10}
+                >
+                  <FaWhatsapp size={16} />
+                  Gerar código
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {whatsappLoginCode && (
+                  <div className="rounded-xl border border-current/20 p-4 text-center">
+                    <p className="text-sm text-current/80">Seu código é</p>
+                    <p className="mt-1 text-3xl font-semibold tracking-[0.2em]">
+                      {whatsappLoginCode}
+                    </p>
+                  </div>
+                )}
+                {whatsappUrl && (
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium hover:opacity-85"
+                    style={{
+                      backgroundColor: data?.style.primary_color,
+                      color: data?.style.text_button_color,
+                    }}
+                  >
+                    <FaWhatsapp size={16} />
+                    Confirmar Whatsapp
+                  </a>
+                )}
+                <button
+                  className="text-sm text-current underline-offset-4 hover:underline"
+                  onClick={() => {
+                    setStep("phone");
+                    setError("");
+                    setWhatsappLoginCode("");
+                    setWhatsappUrl("");
+                  }}
+                >
+                  Usar outro número
+                </button>
               </div>
             )}
-            {whatsappUrl && (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium hover:opacity-85"
-                style={{ backgroundColor: data?.style.primary_color, color: data?.style.text_button_color }}
-              >
-                <FaWhatsapp size={16} />
-                Confirmar Whatsapp
-              </a>
-            )}
-            <button
-              className="text-sm text-current underline-offset-4 hover:underline"
-              onClick={() => {
-                setStep("phone");
-                setError("");
-                setWhatsappLoginCode("");
-                setWhatsappUrl("");
-              }}
-            >
-              Usar outro número
-            </button>
-          </div>
-        )}
           </>
         )}
       </div>
