@@ -1,7 +1,7 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import {
   corsHeaders,
   createServiceClient,
+  generateSecureToken, // ← ADICIONAR ESTE
   getBrazilianPhoneVariants,
   jsonResponse,
   sha256,
@@ -11,7 +11,80 @@ interface RequestBody {
   token?: string;
 }
 
-Deno.serve(async (req) => {
+interface authUserResponse {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  token_type: string;
+}
+
+async function createOrGetAuthUserWithSession(
+  supabase: ReturnType<typeof createServiceClient>,
+  customer: {
+    id: string;
+    barbershop_id: string;
+    name?: string | null;
+    phone: string;
+  },
+): Promise<{
+  userId: string;
+  access_token: string;
+  refresh_token: string;
+} | null> {
+  const email = `${customer.barbershop_id}.${customer.phone}@whatsapp-login.virtualbarber.com.br`;
+  const password = generateSecureToken();
+
+  // Tenta criar usuário no Auth
+  const { data: createdUser, error: createError } =
+    await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        customer_id: customer.id,
+        barbershop_id: customer.barbershop_id,
+        phone: customer.phone,
+        login_provider: "whatsapp",
+      },
+    });
+
+  let userId: string | null = null;
+
+  if (createdUser?.user) {
+    userId = createdUser.user.id;
+  } else if (createError) {
+    // Busca usuário existente
+    const { data: existingUser } = await supabase.auth.admin.listUsers();
+    const user = existingUser.users.find(u => u.email === email);
+    if (user) {
+      userId = user.id;
+      // Atualiza senha do usuário existente
+      await supabase.auth.admin.updateUserById(userId, { password });
+    }
+  }
+
+  if (!userId) return null;
+
+  // 🔑 FAZ LOGIN para obter os tokens
+  const { data: signIn, error: signInError } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+  if (signInError || !signIn.session) {
+    console.error("Failed to sign in:", signInError);
+    return null;
+  }
+
+  return {
+    userId,
+    access_token: signIn.session.access_token,
+    refresh_token: signIn.session.refresh_token,
+  };
+}
+
+Deno.serve(async req => {
   // Libera o preflight CORS feito pelo navegador antes da chamada POST.
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
@@ -62,7 +135,7 @@ Deno.serve(async (req) => {
     // A tabela customers_auth sera descontinuada para este fluxo.
     const { data: existingCustomer, error: customerFetchError } = await supabase
       .from("customers")
-      .select("id, barbershop_id, name, phone, auth")
+      .select("id, barbershop_id, name, phone, auth, auth_user_id")
       .eq("barbershop_id", loginToken.barbershop_id)
       .in("phone", phoneVariants)
       .order("created_at", { ascending: false })
@@ -76,26 +149,40 @@ Deno.serve(async (req) => {
 
     const { data: customer, error: customerWriteError } = existingCustomer
       ? await supabase
-        .from("customers")
-        .update({
-          auth: true,
-          phone: loginToken.phone,
-          updated_at: now,
-        })
-        .eq("id", existingCustomer.id)
-        .select("id, barbershop_id, name, phone, auth")
-        .single()
+          .from("customers")
+          .update({
+            auth: true,
+            phone: loginToken.phone,
+            updated_at: now,
+          })
+          .eq("id", existingCustomer.id)
+          .select("id, barbershop_id, name, phone, auth")
+          .single()
       : await supabase
-        .from("customers")
-        .insert({
-          barbershop_id: loginToken.barbershop_id,
-          phone: loginToken.phone,
-          name: "",
-          auth: true,
-          updated_at: now,
-        })
-        .select("id, barbershop_id, name, phone, auth")
-        .single();
+          .from("customers")
+          .insert({
+            barbershop_id: loginToken.barbershop_id,
+            phone: loginToken.phone,
+            name: "",
+            auth: true,
+            updated_at: now,
+          })
+          .select("id, barbershop_id, name, phone, auth")
+          .single();
+
+    const authSession = await createOrGetAuthUserWithSession(
+      supabase,
+      customer,
+    );
+
+    if (!authSession) {
+      return jsonResponse({ error: "Erro ao criar sessão" }, 500);
+    }
+
+    await supabase
+      .from("customers")
+      .update({ auth_user_id: authSession.userId })
+      .eq("id", customer.id);
 
     if (customerWriteError || !customer) {
       console.error("Failed to persist WhatsApp customer", customerWriteError);
@@ -114,6 +201,11 @@ Deno.serve(async (req) => {
       },
       phone: customer.phone ?? loginToken.phone,
       barbershopId: customer.barbershop_id,
+      session: {
+        access_token: authSession.access_token,
+        refresh_token: authSession.refresh_token,
+      },
+      userId: authSession.userId,
       expiresInDays: 7,
     });
   } catch (error) {
