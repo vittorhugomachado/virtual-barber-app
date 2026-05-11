@@ -7,12 +7,20 @@ export function Location() {
 
   if (!address) return null;
 
-  const mapQuery =
-    address.latitude && address.longitude
-      ? `${address.latitude},${address.longitude}`
-      : `${address.street} ${address.number}, ${address.neighborhood}, ${address.city}, ${address.state}`;
+  let queryAddress = `${address.street}, ${address.number}`;
+  if (address.city && address.state) {
+    queryAddress += `, ${address.city} - ${address.state}`;
+  }
+  if (address.neighborhood) {
+    queryAddress += `, ${address.neighborhood}`;
+  }
 
-  const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed&z=16`;
+  const API_KEY = import.meta.env.VITE_API_GOOGLE_MAPS;
+
+  const mapSrc = `https://www.google.com/maps/embed/v1/search?key=${API_KEY}&q=${encodeURIComponent(queryAddress)}&zoom=16`;
+
+  console.log("URL do mapa:", mapSrc);
+  console.log("Endereço formatado:", queryAddress);
 
   return (
     <section id="localizacao" className="mt-18">
@@ -36,9 +44,7 @@ export function Location() {
 
         <div className="flex flex-col gap-4 lg:w-72 lg:shrink-0">
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-current">
-              Endereço
-            </span>
+            <span className="text-sm font-medium text-current">Endereço</span>
             <span className="text-sm text-current/70">
               {address.street}, {address.number}
             </span>
@@ -57,10 +63,8 @@ export function Location() {
 
           {phone && (
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-current">
-                Contato
-              </span>
-              <p className="flex items-center gap-1.5 text-sm transition-colors text-current/70">
+              <span className="text-sm font-medium text-current">Contato</span>
+              <p className="flex items-center gap-1.5 text-sm text-current/70 transition-colors">
                 <Phone size={14} className="shrink-0" />
                 {formatPhone(phone)}
               </p>
