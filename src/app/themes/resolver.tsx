@@ -159,7 +159,9 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
     document.title = data ? `${data.name}` : "Barbershop";
     document.documentElement.classList.toggle(
       "dark",
-      isDarkColor(previewStyleOverride?.background_color ?? data?.style.background_color),
+      isDarkColor(
+        previewStyleOverride?.background_color ?? data?.style.background_color,
+      ),
     );
   }, [data, previewStyleOverride?.background_color]);
 
@@ -183,10 +185,7 @@ export function ThemeResolver({ page }: ThemeResolverProps) {
 
   return (
     <CartProvider slug={slug ?? ""}>
-      <StyleProvider
-        style={style}
-        isDarkBackground={isDarkBackground}
-      >
+      <StyleProvider style={style} isDarkBackground={isDarkBackground}>
         <div
           className="min-h-screen bg-(--store-background) text-(--store-text)"
           style={themeStyle}
