@@ -71,6 +71,25 @@ describe("calculateAvailableSlots", () => {
     expect(slots).toEqual(["10:00", "10:30"]);
   });
 
+  it("blocks appointments stored in UTC using the local Brazil time", () => {
+    const barberAppointments = [
+      makeAppointment(
+        "2026-03-30T12:30:00.000Z",
+        "2026-03-30T13:00:00.000Z",
+      ),
+    ];
+
+    const slots = calculateAvailableSlots({
+      date: "2026-03-30",
+      totalDuration: 30,
+      openingHours,
+      barberAppointments,
+      customerAppointments: [],
+    });
+
+    expect(slots).toEqual(["09:00", "10:00", "10:30", "11:00", "11:30"]);
+  });
+
   it("respects explicit barber hours even when use_custom_hours is false", () => {
     const barberAvailability: BarberAvailability[] = [
       {
