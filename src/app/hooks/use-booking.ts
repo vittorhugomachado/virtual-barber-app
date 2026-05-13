@@ -1,6 +1,7 @@
 import { useBookingStore } from '@/app/store/booking-store'
 import { useAuthStore } from '@/app/store/auth-store'
 import { createAppointments, getAppointmentErrorMessage } from '@/app/lib/booking-queries'
+import { localDateTimeToIso } from '@/utils/date-time'
 
 export function useBooking() {
   const booking = useBookingStore()
@@ -21,7 +22,7 @@ export function useBooking() {
     }
 
     const duration = selection.service.duration_min ?? 30
-    const startsAt = new Date(`${selection.date}T${selection.time}:00`)
+    const startsAt = new Date(localDateTimeToIso(selection.date, selection.time))
     const endsAt = new Date(startsAt.getTime() + duration * 60000)
 
     const { error } = await createAppointments([{

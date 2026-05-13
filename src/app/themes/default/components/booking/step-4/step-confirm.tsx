@@ -14,6 +14,7 @@ import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
 import { addMinutes, formatDate, timeToMinutes } from "@/utils/format-time";
 import { darkenColor } from "@/utils/darken-color";
+import { localDateTimeToIso } from "@/utils/date-time";
 
 interface StepConfirmProps {
   barbershopId: string;
@@ -136,8 +137,11 @@ export function StepConfirm({
       const appointments = services.map(service => {
         const selection = serviceSelections[service.id];
         const duration = service.duration_min ?? 30;
-        const startsAt = `${date}T${selection.time}:00`;
-        const endsAt = `${date}T${addMinutes(selection.time, duration)}:00`;
+        const startsAt = localDateTimeToIso(date, selection.time);
+        const endsAt = localDateTimeToIso(
+          date,
+          addMinutes(selection.time, duration),
+        );
 
         return {
           barbershop_id: barbershopId,

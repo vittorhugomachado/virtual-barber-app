@@ -1,13 +1,12 @@
 import { supabase } from "./supabase";
+import { getLocalDayRange } from "@/utils/date-time";
 
 function getUtcRangeForLocalDate(date: string) {
-  const start = new Date(`${date}T00:00:00`);
-  const end = new Date(`${date}T00:00:00`);
-  end.setDate(end.getDate() + 1);
+  const { startIso, endIso } = getLocalDayRange(date);
 
   return {
-    start: start.toISOString(),
-    end: end.toISOString(),
+    start: startIso,
+    end: endIso,
   };
 }
 

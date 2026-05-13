@@ -32,6 +32,7 @@ import { formatPrice } from "@/utils/format-price";
 import { formatDuration } from "@/utils/format-duration";
 import type { AppointmentStatus, BarbershopPageProps } from "../types";
 import { darkenColor } from "@/utils/darken-color";
+import { formatLocalTime, toLocalDateKey } from "@/utils/date-time";
 
 type AppointmentRow = {
   id: string;
@@ -212,7 +213,7 @@ function AppointmentCard({
       <div className="flex flex-wrap gap-3 text-xs text-current/80">
         <div className="flex items-center gap-1.5">
           <Clock size={12} />
-          <span>{appt.starts_at.slice(11, 16)}</span>
+          <span>{formatLocalTime(appt.starts_at)}</span>
           {durationMin != null && (
             <span className="text-current/80">
               | {formatDuration(durationMin)}
@@ -390,7 +391,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const groups = useMemo(() => {
     const map = new Map<string, NormalizedAppointment[]>();
     for (const appt of filtered) {
-      const day = appt.starts_at.slice(0, 10);
+      const day = toLocalDateKey(new Date(appt.starts_at));
       if (!map.has(day)) map.set(day, []);
       map.get(day)!.push(appt);
     }

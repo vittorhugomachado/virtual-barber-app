@@ -5,6 +5,7 @@ import {
   getAppointmentsForCustomerOnDate,
 } from "@/app/lib/booking-queries";
 import { getEffectivePeriodsForDay } from "@/utils/format-time";
+import { getLocalTimeMinutes, toLocalDateKey } from "@/utils/date-time";
 
 export interface SlotAppointment {
   starts_at: string;
@@ -25,10 +26,7 @@ function minutesToTime(minutes: number) {
 }
 
 function getLocalDateString(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return toLocalDateKey(date);
 }
 
 export function calculateAvailableSlots({
@@ -81,8 +79,8 @@ export function calculateAvailableSlots({
       }
 
       const overlapsAppointment = (appointment: SlotAppointment) => {
-        const appointmentStart = timeToMinutes(appointment.starts_at.slice(11, 16));
-        const appointmentEnd = timeToMinutes(appointment.ends_at.slice(11, 16));
+        const appointmentStart = getLocalTimeMinutes(appointment.starts_at);
+        const appointmentEnd = getLocalTimeMinutes(appointment.ends_at);
         return current < appointmentEnd && slotEnd > appointmentStart;
       };
 
