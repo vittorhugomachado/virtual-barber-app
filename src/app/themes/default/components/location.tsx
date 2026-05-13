@@ -19,9 +19,6 @@ export function Location() {
 
   const mapSrc = `https://www.google.com/maps/embed/v1/search?key=${API_KEY}&q=${encodeURIComponent(queryAddress)}&zoom=16`;
 
-  console.log("URL do mapa:", mapSrc);
-  console.log("Endereço formatado:", queryAddress);
-
   return (
     <section id="localizacao" className="mt-18">
       <div className="mb-4 flex items-center justify-center gap-2">
