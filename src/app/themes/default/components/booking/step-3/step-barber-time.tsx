@@ -45,6 +45,7 @@ export function StepBarberTime({
     openingHours,
   });
 
+  console.log(slotsByService)
   return (
     <div className="flex flex-col gap-4">
       {items.map((service, index) => (

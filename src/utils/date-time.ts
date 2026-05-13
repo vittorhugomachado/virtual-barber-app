@@ -18,8 +18,17 @@ export function toLocalDateKey(date: Date = new Date()) {
   return DATE_KEY_FORMATTER.format(date);
 }
 
+export function parseDatabaseDateTime(value: string) {
+  const normalized = value
+    .trim()
+    .replace(" ", "T")
+    .replace(/([+-]\d{2})$/, "$1:00");
+
+  return new Date(normalized);
+}
+
 export function formatLocalTime(isoString: string) {
-  return TIME_FORMATTER.format(new Date(isoString));
+  return TIME_FORMATTER.format(parseDatabaseDateTime(isoString));
 }
 
 export function getLocalTimeMinutes(isoString: string) {

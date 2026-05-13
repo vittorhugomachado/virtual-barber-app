@@ -19,7 +19,7 @@ function isActiveAppointmentStatus(status: string) {
 }
 
 async function getAppointmentsOnDateByField(
-  field: "barber_id" | "customer_id",
+  field: "barber_id" | "customer_id" | "manual_customer_id",
   entityId: string,
   barbershopId: string,
   date: string,
@@ -134,6 +134,29 @@ export async function getAppointmentsForCustomerOnDate(
     barbershopId,
     date,
   );
+}
+
+export async function getAppointmentsForCustomerOrManualCustomerOnDate(
+  barbershopId: string,
+  customerId: string,
+  date: string,
+) {
+  const [customerAppointments, manualCustomerAppointments] = await Promise.all([
+    getAppointmentsOnDateByField(
+      "customer_id",
+      customerId,
+      barbershopId,
+      date,
+    ),
+    getAppointmentsOnDateByField(
+      "manual_customer_id",
+      customerId,
+      barbershopId,
+      date,
+    ),
+  ]);
+
+  return [...customerAppointments, ...manualCustomerAppointments];
 }
 
 export async function createAppointments(

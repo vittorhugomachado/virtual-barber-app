@@ -33,8 +33,7 @@ export function TimeSlots({
   const allSlotsWithStatus: SlotWithStatus[] = allSlotsForDay.map(time => ({
     time,
     available: availableSet.has(time),
-  })); // RETORNA O OBEJTO DE CADA LOTE DE 30 MINUTOS COM O STATUS DE DISPONIBILIDADE
-
+  }));
   const periods = [ //ORGANIZA OS SLOTS PELO PERÃODO (MANHÃƒ, TARDE E NOITE)
     {
       key: "manha" as const,

@@ -137,19 +137,23 @@ export function StepConfirm({
       const appointments = services.map(service => {
         const selection = serviceSelections[service.id];
         const duration = service.duration_min ?? 30;
-        const startsAt = localDateTimeToIso(date, selection.time);
-        const endsAt = localDateTimeToIso(
-          date,
-          addMinutes(selection.time, duration),
-        );
-
+        const startsAt = new Date(localDateTimeToIso(date, selection.time));
+        const endsAt = new Date(startsAt.getTime() + duration * 60 * 1000);
+        console.log("Agendamento:", {
+          barbershop_id: barbershopId,
+          barber_id: selection.barber.id,
+          service_id: service.id,
+          customer_id: customerId,
+          starts_at: startsAt.toISOString(),
+          ends_at: endsAt.toISOString(),
+        });
         return {
           barbershop_id: barbershopId,
           barber_id: selection.barber.id,
           service_id: service.id,
           customer_id: customerId,
-          starts_at: startsAt,
-          ends_at: endsAt,
+          starts_at: startsAt.toISOString(),
+          ends_at: endsAt.toISOString(),
         };
       });
 
@@ -249,7 +253,12 @@ export function StepConfirm({
                   </div>
                 </div>
 
-                <div className="mt-2 flex items-center gap-4 rounded-md px-3 py-2 border border-current/15" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
+                <div
+                  className="mt-2 flex items-center gap-4 rounded-md border border-current/15 px-3 py-2"
+                  style={{
+                    backgroundColor: darkenColor(style.background_color, 0.15),
+                  }}
+                >
                   <div className="flex items-center gap-2">
                     {selection.barber.avatar_url ? (
                       <img
@@ -300,7 +309,7 @@ export function StepConfirm({
       <div className="flex gap-3">
         <Button
           variant="outline"
-          className="h-11 flex-1 rounded-full border-current text-current bg-transparent hover:bg-current/10 hover:text-current"
+          className="h-11 flex-1 rounded-full border-current bg-transparent text-current hover:bg-current/10 hover:text-current"
           onClick={onBack}
         >
           Voltar
