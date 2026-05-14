@@ -9,7 +9,6 @@ import { formatDuration } from "@/utils/format-duration";
 import { formatPrice } from "@/utils/format-price";
 import { darkenColor } from "@/utils/darken-color";
 import { useBookingSlots } from "@/app/hooks/use-booking-slots";
-import { supabase } from "@/app/lib/supabase";
 
 interface StepBarberTimeProps {
   customerId: string;
@@ -48,18 +47,8 @@ export function StepBarberTime({
     services: items,
   });
 
-  async function verifySession() {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (session) {
-      console.log("Sessão existe (não verificada):", session.user.id);
-    }
-  }
-
-
-  verifySession()
+  console.log(bookingSlots)
+  console.log(date)
 
   return (
     <div className="flex flex-col gap-4">

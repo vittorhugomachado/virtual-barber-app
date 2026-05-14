@@ -33,6 +33,7 @@ import { formatDuration } from "@/utils/format-duration";
 import type { AppointmentStatus, BarbershopPageProps } from "../types";
 import { darkenColor } from "@/utils/darken-color";
 import { formatLocalTime, toLocalDateKey } from "@/utils/date-time";
+import { supabase } from "@/app/lib/supabase";
 
 type AppointmentRow = {
   id: string;
@@ -111,22 +112,13 @@ const STATUS_LABEL: Record<AppointmentStatus, string> = {
 
 const STATUS_CLASS: Record<AppointmentStatus, string> = {
   scheduled: "bg-blue-600 text-white",
-  completed:
-    "bg-green-600 text-white",
-  cancelled_by_customer:
-    "bg-red-500 text-white",
-  cancelled_by_barbershop:
-    "bg-red-500 text-white",
-  no_show:
-    "bg-gray-400 text-black",
+  completed: "bg-green-600 text-white",
+  cancelled_by_customer: "bg-red-500 text-white",
+  cancelled_by_barbershop: "bg-red-500 text-white",
+  no_show: "bg-gray-400 text-black",
 };
 
-type FilterTab =
-  | "all"
-  | "scheduled"
-  | "cancelled"
-  | "no_show"
-  | "completed";
+type FilterTab = "all" | "scheduled" | "cancelled" | "no_show" | "completed";
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: "all", label: "Todos" },
@@ -144,11 +136,7 @@ const FILTER_CLASS: Record<FilterTab, string> = {
   completed: "bg-green-600 text-white",
 };
 
-function AppointmentStatusBadge({
-  appt,
-}: {
-  appt: NormalizedAppointment;
-}) {
+function AppointmentStatusBadge({ appt }: { appt: NormalizedAppointment }) {
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASS[appt.status]}`}
@@ -240,7 +228,7 @@ function AppointmentCard({
           <Button
             type="button"
             variant="outline"
-            style={{backgroundColor: "red"}}
+            style={{ backgroundColor: "red" }}
             className="w-full max-w-56 rounded-full border border-white bg-red-600 text-white hover:text-white/80"
             onClick={() => {
               setCancelError(null);
@@ -294,7 +282,6 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const [filter, setFilter] = useState<FilterTab>("all");
   const [ascending, setAscending] = useState(false);
   const lastLoadedKeyRef = useRef<string | null>(null);
-
   const customerId = customer?.id ?? null;
   const visibleAppointments = useMemo(
     () => (customerId ? appointments : []),
@@ -324,10 +311,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await getCustomerAppointments(
-        resolvedCustomerId,
-        props.id,
-      );
+      const { data, error } = await getCustomerAppointments(props.id);
 
       if (error) {
         setError("Nao foi possivel carregar seus agendamentos.");
@@ -376,14 +360,16 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const filterCounts = useMemo(
     () => ({
       all: visibleAppointments.length,
-      scheduled: visibleAppointments.filter(a => a.status === "scheduled").length,
+      scheduled: visibleAppointments.filter(a => a.status === "scheduled")
+        .length,
       cancelled: visibleAppointments.filter(
         a =>
           a.status === "cancelled_by_customer" ||
           a.status === "cancelled_by_barbershop",
       ).length,
       no_show: visibleAppointments.filter(a => a.status === "no_show").length,
-      completed: visibleAppointments.filter(a => a.status === "completed").length,
+      completed: visibleAppointments.filter(a => a.status === "completed")
+        .length,
     }),
     [visibleAppointments],
   );
@@ -502,7 +488,10 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
                   <div
                     className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                     style={{
-                      backgroundColor: darkenColor(style.background_color, 0.15),
+                      backgroundColor: darkenColor(
+                        style.background_color,
+                        0.15,
+                      ),
                       color: style.text_color,
                     }}
                   >

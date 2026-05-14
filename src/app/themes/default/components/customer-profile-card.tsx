@@ -51,14 +51,19 @@ export function CustomerProfileCard() {
     setLoading(true);
     setError("");
     try {
-      const { error: updateError } = await supabase
-        .from("customers")
-        .update({ name: normalizedName })
-        .eq("id", currentCustomer.id)
-        .eq("auth", true);
+      const { data, error: updateError } = await supabase.rpc(
+        "vb_update_customer_profile",
+        {
+          p_name: normalizedName,
+        },
+      );
+
+      if (data) {
+        setCustomer(data);
+      }
 
       if (updateError) {
-        setError("NÃ£o foi possÃ­vel atualizar seu nome. Tente novamente.");
+        setError("Não foi possível atualizar seu nome. Tente novamente.");
         return;
       }
 
@@ -120,7 +125,10 @@ export function CustomerProfileCard() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="mx-auto w-[90vw] max-w-md rounded-2xl" style={{ backgroundColor: style.background_color }}>
+        <DialogContent
+          className="mx-auto w-[90vw] max-w-md rounded-2xl"
+          style={{ backgroundColor: style.background_color }}
+        >
           <DialogHeader>
             <DialogTitle>Editar nome</DialogTitle>
             <DialogDescription>
