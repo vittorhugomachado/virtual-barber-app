@@ -1,19 +1,12 @@
 import { ArrowLeft, User } from "lucide-react";
-import type { Barber } from "../../../../../types";
-import type { ServiceSelection } from "../../../../../types";
+import type { BarberSlots, ServiceSelection, Slot } from "../../../../../types";
 import { getTimePeriod } from "@/utils/format-time";
 import { PERIOD_LABELS } from "../../../../../types";
 import { useStyle } from "../../../../../../contexts/style-context/style-context";
 
-interface SlotWithStatus {
-  time: string;
-  available: boolean;
-}
-
 interface TimeSlotsProps {
-  viewBarber: Barber;
-  allSlotsForDay: string[];
-  availableSet: Set<string>;
+  viewBarber: BarberSlots;
+  slots: Slot[];
   selection?: ServiceSelection;
   loading: boolean;
   onBack: () => void;
@@ -22,32 +15,27 @@ interface TimeSlotsProps {
 
 export function TimeSlots({
   viewBarber,
-  allSlotsForDay,
-  availableSet,
+  slots,
   selection,
   loading,
   onBack,
   onTimeClick,
 }: TimeSlotsProps) {
   const { style } = useStyle();
-  const allSlotsWithStatus: SlotWithStatus[] = allSlotsForDay.map(time => ({
-    time,
-    available: availableSet.has(time),
-  }));
-  const periods = [ //ORGANIZA OS SLOTS PELO PERÃODO (MANHÃƒ, TARDE E NOITE)
+  const periods = [
     {
       key: "manha" as const,
-      slots: allSlotsWithStatus.filter(s => getTimePeriod(s.time) === "manha"),
+      slots: slots.filter(slot => getTimePeriod(slot.time) === "manha"),
     },
     {
       key: "tarde" as const,
-      slots: allSlotsWithStatus.filter(s => getTimePeriod(s.time) === "tarde"),
+      slots: slots.filter(slot => getTimePeriod(slot.time) === "tarde"),
     },
     {
       key: "noite" as const,
-      slots: allSlotsWithStatus.filter(s => getTimePeriod(s.time) === "noite"),
+      slots: slots.filter(slot => getTimePeriod(slot.time) === "noite"),
     },
-  ].filter(p => p.slots.length > 0);
+  ].filter(period => period.slots.length > 0);
 
   return (
     <>
@@ -65,7 +53,7 @@ export function TimeSlots({
             className="h-7 w-7 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 ">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100">
             <User size={14} className="text-neutral-400" />
           </div>
         )}
@@ -76,9 +64,9 @@ export function TimeSlots({
         <div className="flex justify-center py-6">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
         </div>
-      ) : allSlotsForDay.length === 0 ? (
+      ) : slots.length === 0 ? (
         <p className="py-6 text-center text-sm text-current">
-          Nenhum horário disponí­vel neste dia.
+          Nenhum horario disponivel neste dia.
         </p>
       ) : (
         <div className="flex flex-col gap-4">
@@ -88,14 +76,15 @@ export function TimeSlots({
                 {PERIOD_LABELS[key]}
               </p>
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {periodSlots.map(({ time: slot, available }) => {
+                {periodSlots.map(({ time, available }) => {
                   const isSelected =
-                    selection?.barber.id === viewBarber.id &&
-                    selection.time === slot;
+                    selection?.barber.id === viewBarber.barber_id &&
+                    selection.time === time;
+
                   return (
                     <button
-                      key={slot}
-                      onClick={() => available && onTimeClick(slot)}
+                      key={time}
+                      onClick={() => available && onTimeClick(time)}
                       disabled={!available}
                       className={`rounded-xl border py-2 text-sm font-medium transition-colors ${
                         isSelected
@@ -113,7 +102,7 @@ export function TimeSlots({
                           : undefined
                       }
                     >
-                      {slot}
+                      {time}
                     </button>
                   );
                 })}

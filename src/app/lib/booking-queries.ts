@@ -164,6 +164,7 @@ export async function createAppointments(
     barbershop_id: string;
     barber_id: string;
     service_id: string;
+    customer_auth_id: string;
     customer_id: string;
     starts_at: string;
     ends_at: string;

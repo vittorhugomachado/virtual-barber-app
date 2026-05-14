@@ -2,13 +2,14 @@ import { FileText, Clock, DollarSign } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { useBarbershopData } from "../../../../../contexts/barbershop-data/barbershop-data-context";
 import { useCart } from "../../../../../hooks/use-cart";
-import { useAggregatedBookingData } from "../../../../../hooks/use-aggregated-booking-data";
 import { ServiceSlotCard } from "./components/service-slot-card";
 import { useStyle } from "../../../../../contexts/style-context/style-context";
 import type { ServiceSelection } from "../../../../types";
 import { formatDuration } from "@/utils/format-duration";
 import { formatPrice } from "@/utils/format-price";
 import { darkenColor } from "@/utils/darken-color";
+import { useBookingSlots } from "@/app/hooks/use-booking-slots";
+import { supabase } from "@/app/lib/supabase";
 
 interface StepBarberTimeProps {
   customerId: string;
@@ -27,7 +28,7 @@ export function StepBarberTime({
 }: StepBarberTimeProps) {
   const { style } = useStyle();
   const { items, total } = useCart();
-  const { id: barbershopId, barbers, openingHours } = useBarbershopData();
+  const { id: barbershopId } = useBarbershopData();
 
   const allSelected =
     items.length > 0 && items.every(service => !!selections[service.id]);
@@ -36,45 +37,80 @@ export function StepBarberTime({
     0,
   );
 
-  const { slotsByService, loading } = useAggregatedBookingData({
+  const {
+    data: bookingSlots,
+    loading,
+    error,
+  } = useBookingSlots({
     barbershopId,
     customerId,
     date,
     services: items,
-    barbers,
-    openingHours,
   });
 
-  console.log(slotsByService)
+  async function verifySession() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session) {
+      console.log("Sessão existe (não verificada):", session.user.id);
+    }
+  }
+
+
+  verifySession()
+
   return (
     <div className="flex flex-col gap-4">
-      {items.map((service, index) => (
-        <ServiceSlotCard
-          key={service.id}
-          serviceId={service.id}
-          customerId={customerId}
-          date={date}
-          selection={selections[service.id]}
-          otherSelections={items
-            .filter(
-              currentService =>
-                currentService.id !== service.id &&
-                !!selections[currentService.id],
-            )
-            .map(currentService => ({
-              time: selections[currentService.id].time,
-              duration: currentService.duration_min ?? 30,
-            }))}
-          preloadedSlotsByBarber={slotsByService[service.id] ?? {}}
-          preloadedLoading={loading}
-          onSelect={selection =>
-            onSelectionsChange({ ...selections, [service.id]: selection })
-          }
-          autoOpen={index === 0}
-        />
-      ))}
+      {error && (
+        <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-600">
+          Nao foi possivel carregar os horarios. Tente novamente.
+        </p>
+      )}
 
-      <div className="flex items-center justify-center gap-1.5 rounded-xl border border-current/20 px-3.5 py-2.5 text-sm" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
+      {items.map((service, index) => {
+        const serviceSlotData = bookingSlots.find(
+          slot => slot.service_id === service.id,
+        ) ?? {
+          service_id: service.id,
+          service_name: service.name,
+          duration_min: service.duration_min ?? 30,
+          price: service.price ?? null,
+          image_url: service.image_url ?? null,
+          barbers: [],
+        };
+
+        const otherSelections = items
+          .filter(
+            currentService =>
+              currentService.id !== service.id &&
+              !!selections[currentService.id],
+          )
+          .map(currentService => ({
+            time: selections[currentService.id].time,
+            duration: currentService.duration_min ?? 30,
+          }));
+
+        return (
+          <ServiceSlotCard
+            key={service.id}
+            service={serviceSlotData}
+            selection={selections[service.id]}
+            otherSelections={otherSelections}
+            loading={loading}
+            onSelect={selection =>
+              onSelectionsChange({ ...selections, [service.id]: selection })
+            }
+            autoOpen={index === 0}
+          />
+        );
+      })}
+
+      <div
+        className="flex items-center justify-center gap-1.5 rounded-xl border border-current/20 px-3.5 py-2.5 text-sm"
+        style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}
+      >
         <FileText className="hidden h-3.5 w-3.5 text-current sm:block" />
         <span className="font-medium text-current">
           {items.length} serviço{items.length > 1 ? "s" : ""}
@@ -86,14 +122,15 @@ export function StepBarberTime({
         </span>
         <span className="mx-1 text-current">|</span>
         <DollarSign className="hidden h-3.5 w-3.5 text-current sm:block" />
-        <span className="font-medium text-current">
-          {formatPrice(total)}
-        </span>
+        <span className="font-medium text-current">{formatPrice(total)}</span>
       </div>
 
       <Button
         className="h-11 w-full rounded-full"
-        style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
+        style={{
+          backgroundColor: style.primary_color,
+          color: style.text_button_color,
+        }}
         disabled={!allSelected}
         onClick={onContinue}
       >

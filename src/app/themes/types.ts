@@ -184,8 +184,14 @@ export interface Customer {
   barbershop_id?: string | null;
 }
 
+export interface SelectedBarber {
+  id: string;
+  name: string;
+  avatar_url?: string | null;
+}
+
 export interface ServiceSelection {
-  barber: Barber;
+  barber: SelectedBarber;
   time: string;
 }
 
@@ -197,14 +203,11 @@ export interface OtherSelection {
 // ─── Agendamento ────────────────────────────────────────────────────────────
 
 export interface ServiceSlotCardProps {
-  serviceId: string;
-  customerId?: string | null;
-  date: string;
+  service?: ServiceBookingSlots;
   selection?: ServiceSelection;
-  otherSelections: OtherSelection[];
-  preloadedSlotsByBarber?: Record<string, string[]>;
-  preloadedLoading?: boolean;
-  onSelect: (sel: ServiceSelection) => void;
+  otherSelections: { time: string; duration: number }[];
+  loading: boolean;
+  onSelect: (selection: ServiceSelection) => void;
   autoOpen?: boolean;
 }
 
@@ -214,4 +217,32 @@ export interface StepBarberTimeProps {
   selections: Record<string, ServiceSelection>;
   onSelectionsChange: (selections: Record<string, ServiceSelection>) => void;
   onContinue: () => void;
+}
+
+export type Slot = {
+  time: string;
+  available: boolean;
+};
+
+export type BarberSlots = {
+  barber_id: string;
+  name: string;
+  avatar_url: string | null;
+  slots: Slot[];
+};
+
+export type ServiceBookingSlots = {
+  service_id: string;
+  service_name: string;
+  duration_min: number;
+  price: number | null;
+  image_url: string | null;
+  barbers: BarberSlots[];
+};
+
+export interface UseBookingSlotsParams {
+  barbershopId: string | null;
+  customerId: string | null;
+  date: string | null;
+  services: { id: string }[];
 }

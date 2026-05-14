@@ -28,6 +28,7 @@ export function useBooking() {
     const { error } = await createAppointments([{
       barbershop_id: barbershopId,
       customer_id: customer.id,
+      customer_auth_id: customer.auth_user_id ?? "usuario-nao-autenticado",
       barber_id: selection.barber.id,
       service_id: selection.service.id,
       starts_at: startsAt.toISOString(),

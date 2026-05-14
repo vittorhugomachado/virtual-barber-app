@@ -1,35 +1,46 @@
 import { User } from "lucide-react";
-import { useBarbershopData } from "../../../../../../contexts/barbershop-data/barbershop-data-context";
-import type { Barber } from "../../../../../types";
-import type { ServiceSelection } from "../../../../../types";
 import { useStyle } from "../../../../../../contexts/style-context/style-context";
+import type { BarberSlots } from "../../../../../types";
 
 interface BarberGridProps {
-  serviceId: string;
-  selection?: ServiceSelection;
-  onSelect: (barber: Barber) => void;
+  barbers: BarberSlots[];
+  selectedBarberId?: string;
+  loading: boolean;
+  onSelect: (barber: BarberSlots) => void;
 }
 
-export function BarberGrid({ serviceId, selection, onSelect }: BarberGridProps) {
+export function BarberGrid({
+  barbers,
+  selectedBarberId,
+  loading,
+  onSelect,
+}: BarberGridProps) {
   const { style } = useStyle();
-  const { barbers } = useBarbershopData();
-  const eligible = barbers.filter(barber => barber.serviceIds.includes(serviceId));
 
-  if (eligible.length === 0) {
+  if (loading) {
+    return (
+      <div className="flex justify-center py-6">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (barbers.length === 0) {
     return (
       <p className="py-4 text-center text-sm text-current">
-        Nenhum profissional disponível para este serviço.
+        Nenhum profissional disponivel para este servico.
       </p>
     );
   }
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-      {eligible.map(barber => {
-        const isSelected = selection?.barber.id === barber.id;
+      {barbers.map(barber => {
+        const isSelected = selectedBarberId === barber.barber_id;
+
         return (
           <button
-            key={barber.id}
+            key={barber.barber_id}
             onClick={() => onSelect(barber)}
             className={`flex flex-col items-center gap-2 rounded-xl border p-3 transition-colors ${
               isSelected

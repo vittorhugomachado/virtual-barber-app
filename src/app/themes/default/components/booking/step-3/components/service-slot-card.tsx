@@ -1,92 +1,71 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, Check, Scissors } from "lucide-react";
-import { useAvailableSlots } from "../../../../../../hooks/use-available-slots";
-import { useBarbershopData } from "../../../../../../contexts/barbershop-data/barbershop-data-context";
-import type { Barber } from "../../../../../types";
+import type { BarberSlots, ServiceSlotCardProps } from "../../../../../types";
 import { formatDuration } from "@/utils/format-duration";
 import { formatPrice } from "@/utils/format-price";
-import type { ServiceSlotCardProps } from "../../../../../types";
 import { BarberGrid } from "./barber-grid";
 import { TimeSlots } from "./time-slots";
-import {
-  addMinutes,
-  getAllSlotsForDay,
-  timeToMinutes,
-} from "@/utils/format-time";
+import { addMinutes, timeToMinutes } from "@/utils/format-time";
 
 export function ServiceSlotCard({
-  serviceId,
-  customerId,
-  date,
+  service,
   selection,
   otherSelections,
-  preloadedSlotsByBarber,
-  preloadedLoading,
+  loading,
   onSelect,
   autoOpen,
 }: ServiceSlotCardProps) {
-  const { id: barbershopId, openingHours, services } = useBarbershopData();
   const [open, setOpen] = useState(autoOpen ?? false);
-  const [viewBarber, setViewBarber] = useState<Barber | null>(null);
-  const service = services.find(
-    currentService => currentService.id === serviceId,
-  );
-  const duration = service?.duration_min ?? 30;
-  const shouldUsePreloadedSlots = preloadedSlotsByBarber !== undefined;
+  const [viewBarber, setViewBarber] = useState<BarberSlots | null>(null);
 
-  const { slots, loading } = useAvailableSlots({
-    barbershopId,
-    barberId: shouldUsePreloadedSlots ? null : (viewBarber?.id ?? null),
-    customerId: shouldUsePreloadedSlots ? null : customerId,
-    date: shouldUsePreloadedSlots ? null : date,
-    totalDuration: duration,
-    openingHours,
-    barberAvailability: viewBarber?.availability,
-  });
-
-  const rawSlots = useMemo(() => {
-    if (!viewBarber) {
-      return [];
-    }
-
-    if (shouldUsePreloadedSlots) {
-      return preloadedSlotsByBarber?.[viewBarber.id] ?? [];
-    }
-
-    return slots;
-  }, [preloadedSlotsByBarber, shouldUsePreloadedSlots, slots, viewBarber]);
-
-  const availableSlots = rawSlots.filter(slot => {
-    const start = timeToMinutes(slot);
-    const end = start + duration;
-
-    return !otherSelections.some(other => {
-      const otherStart = timeToMinutes(other.time);
-      const otherEnd = otherStart + other.duration;
-      return start < otherEnd && end > otherStart;
-    });
-  });
-
-  const availableSet = new Set(availableSlots);
-  const allSlotsForDay = viewBarber
-    ? getAllSlotsForDay(openingHours, date, duration)
-    : [];
-  const isLoading = shouldUsePreloadedSlots ? !!preloadedLoading : loading;
   const isComplete = !!selection;
-
-  if (!service) return null;
+  const duration = service?.duration_min ?? 30;
 
   function handleToggle() {
-    if (!open) setViewBarber(selection?.barber ?? null);
+    if (!open && selection) {
+      const selectedBarber = service?.barbers.find(
+        barber => barber.barber_id === selection.barber.id,
+      );
+      setViewBarber(selectedBarber ?? null);
+    }
     setOpen(current => !current);
   }
 
   function handleTimeClick(time: string) {
     if (!viewBarber) return;
-    onSelect({ barber: viewBarber, time });
+    onSelect({
+      barber: {
+        id: viewBarber.barber_id,
+        name: viewBarber.name,
+        avatar_url: viewBarber.avatar_url,
+      },
+      time,
+    });
     setOpen(false);
     setViewBarber(null);
   }
+
+  const filteredSlots = useMemo(() => {
+    if (!viewBarber) return [];
+
+    return viewBarber.slots.map(slot => {
+      const start = timeToMinutes(slot.time);
+      const end = start + duration;
+
+      const hasLocalConflict = otherSelections.some(other => {
+        const otherStart = timeToMinutes(other.time);
+        const otherEnd = otherStart + other.duration;
+        return start < otherEnd && end > otherStart;
+      });
+
+      return {
+        ...slot,
+        available: slot.available && !hasLocalConflict,
+      };
+    });
+  }, [duration, otherSelections, viewBarber]);
+
+  if (!service) return null;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-current/15">
@@ -98,7 +77,7 @@ export function ServiceSlotCard({
           {service.image_url ? (
             <img
               src={service.image_url}
-              alt={service.name}
+              alt={service.service_name}
               className="h-10 w-10 shrink-0 rounded-lg object-cover"
             />
           ) : (
@@ -107,12 +86,12 @@ export function ServiceSlotCard({
             </div>
           )}
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-medium">{service.name}</span>
+            <span className="text-sm font-medium">{service.service_name}</span>
             {isComplete ? (
               <span className="text-xs text-current">
                 {selection.barber.name} | {selection.time}
-                {service.duration_min
-                  ? ` - ${addMinutes(selection.time, service.duration_min)}`
+                {duration
+                  ? ` - ${addMinutes(selection.time, duration)}`
                   : ""}
               </span>
             ) : (
@@ -153,17 +132,17 @@ export function ServiceSlotCard({
         <div className="border-t border-current/15 px-4 pt-3 pb-4">
           {!viewBarber ? (
             <BarberGrid
-              serviceId={service.id}
-              selection={selection}
+              barbers={service.barbers}
+              selectedBarberId={selection?.barber.id}
+              loading={loading}
               onSelect={setViewBarber}
             />
           ) : (
             <TimeSlots
               viewBarber={viewBarber}
-              allSlotsForDay={allSlotsForDay}
-              availableSet={availableSet}
+              slots={filteredSlots}
               selection={selection}
-              loading={isLoading}
+              loading={loading}
               onBack={() => setViewBarber(null)}
               onTimeClick={handleTimeClick}
             />
