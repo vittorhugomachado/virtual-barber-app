@@ -18,7 +18,7 @@ import { localDateTimeToIso } from "@/utils/date-time";
 
 interface StepConfirmProps {
   barbershopId: string;
-  customerAuthId: string;
+  customerId: string;
   services: Service[];
   date: string;
   serviceSelections: Record<string, ServiceSelection>;
@@ -70,7 +70,7 @@ function hasSelectionConflicts(
 
 export function StepConfirm({
   barbershopId,
-  customerAuthId,
+  customerId,
   services,
   date,
   serviceSelections,
@@ -82,7 +82,7 @@ export function StepConfirm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState(customer?.name?.trim() ?? "");
-console.log(customer)
+
   const total = services.reduce(
     (sum, service) => sum + (service.price ?? 0),
     0,
@@ -121,7 +121,7 @@ console.log(customer)
         const { error: customerError } = await supabase
           .from("customers")
           .update({ name: normalizedDisplayName })
-          .eq("auth_user_id", customerAuthId)
+          .eq("id", customerId)
           .eq("auth", true);
 
         if (customerError) {
@@ -143,7 +143,7 @@ console.log(customer)
           barbershop_id: barbershopId,
           barber_id: selection.barber.id,
           service_id: service.id,
-          customer_auth_id: customerAuthId,
+          customer_id: customerId,
           starts_at: startsAt.toISOString(),
           ends_at: endsAt.toISOString(),
         });
@@ -151,8 +151,7 @@ console.log(customer)
           barbershop_id: barbershopId,
           barber_id: selection.barber.id,
           service_id: service.id,
-          customer_id: customer?.id ?? "usuario-nao-autenticado",
-          customer_auth_id: customer?.auth_user_id ?? "usuario-nao-autenticado",
+          customer_id: customerId,
           starts_at: startsAt.toISOString(),
           ends_at: endsAt.toISOString(),
         };

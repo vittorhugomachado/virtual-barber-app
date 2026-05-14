@@ -171,7 +171,7 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         {step === 3 && date && allSelected && customer && (
           <StepConfirm
             barbershopId={props.id}
-            customerAuthId={customer.auth_user_id || "xxxxxx"}
+            customerId={customer.id}
             services={items}
             date={date}
             serviceSelections={serviceSelections}
