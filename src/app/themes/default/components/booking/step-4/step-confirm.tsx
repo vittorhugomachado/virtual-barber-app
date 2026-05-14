@@ -2,10 +2,7 @@ import { useState } from "react";
 import { User, Calendar, Clock, Scissors } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { useStyle } from "../../../../../contexts/style-context/style-context";
-import {
-  createAppointments,
-  getAppointmentErrorMessage,
-} from "@/app/lib/booking-queries";
+import { getAppointmentErrorMessage } from "@/app/lib/booking-queries";
 import { useAuthStore } from "@/app/store/auth-store";
 import { supabase } from "@/app/lib/supabase";
 import type { Service } from "../../../../types";
@@ -139,26 +136,22 @@ export function StepConfirm({
         const duration = service.duration_min ?? 30;
         const startsAt = new Date(localDateTimeToIso(date, selection.time));
         const endsAt = new Date(startsAt.getTime() + duration * 60 * 1000);
-        console.log("Agendamento:", {
-          barbershop_id: barbershopId,
-          barber_id: selection.barber.id,
-          service_id: service.id,
-          customer_id: customerId,
-          starts_at: startsAt.toISOString(),
-          ends_at: endsAt.toISOString(),
-        });
+
         return {
-          barbershop_id: barbershopId,
           barber_id: selection.barber.id,
           service_id: service.id,
-          customer_id: customerId,
           starts_at: startsAt.toISOString(),
           ends_at: endsAt.toISOString(),
         };
       });
 
-      const { error: appointmentError } =
-        await createAppointments(appointments);
+      const { error: appointmentError } = await supabase.rpc(
+        "vb_create_appointments",
+        {
+          p_barbershop_id: barbershopId,
+          p_appointments: appointments,
+        },
+      );
       if (appointmentError) {
         console.error("Erro ao confirmar agendamento", {
           message: appointmentError.message,
