@@ -6,6 +6,10 @@ function normalizePhone(phone?: string | null) {
   return phone?.replace(/\D/g, "").replace(/^55/, "") ?? "";
 }
 
+function getAuthUserPhone(user: User) {
+  return user.phone || user.user_metadata?.phone || null;
+}
+
 function getPhoneVariants(phone?: string | null) {
   const digits = phone?.replace(/\D/g, "") ?? "";
   const normalized = digits.startsWith("55") ? digits : `55${digits}`;
@@ -27,7 +31,8 @@ function getPhoneVariants(phone?: string | null) {
 export async function getCustomerFromAuthUser(
   user: User,
 ): Promise<{ data: Customer | null; error: Error | null }> {
-  const phoneVariants = getPhoneVariants(user.phone);
+  const authPhone = getAuthUserPhone(user);
+  const phoneVariants = getPhoneVariants(authPhone);
 
   if (phoneVariants.length === 0) {
     return { data: null, error: null };
@@ -58,7 +63,7 @@ export async function getCustomerFromAuthUser(
         user.user_metadata?.full_name ||
         user.user_metadata?.name ||
         "",
-      phone: customer.phone ?? normalizePhone(user.phone),
+      phone: customer.phone ?? normalizePhone(authPhone),
       auth: customer.auth === true,
       auth_user_id: null,
       barbershop_id: customer.barbershop_id,

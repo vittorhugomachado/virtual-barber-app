@@ -121,6 +121,40 @@ describe("auth helpers", () => {
     expect(result.data).toBeNull();
   });
 
+  it("uses the WhatsApp phone stored in user metadata when auth phone is empty", async () => {
+    supabaseMocks.maybeSingle.mockResolvedValueOnce({
+      data: {
+        id: "customer-1",
+        name: "Cliente WhatsApp",
+        phone: "5551980560089",
+        barbershop_id: "barbershop-1",
+        auth: true,
+      },
+      error: null,
+    });
+
+    const user = makeUser({
+      phone: "",
+      user_metadata: { phone: "5551980560089", name: "Vitor Hugo" },
+    });
+
+    const result = await getCustomerFromAuthUser(user);
+
+    expect(supabaseMocks.inFilter).toHaveBeenCalledWith(
+      "phone",
+      expect.arrayContaining(["5551980560089", "51980560089"]),
+    );
+    expect(result.error).toBeNull();
+    expect(result.data).toEqual({
+      id: "customer-1",
+      name: "Cliente WhatsApp",
+      phone: "5551980560089",
+      auth: true,
+      auth_user_id: null,
+      barbershop_id: "barbershop-1",
+    });
+  });
+
   it("clears the auth store when there is no active session", async () => {
     const handlers = {
       setCustomer: vi.fn(),
@@ -154,7 +188,10 @@ describe("auth helpers", () => {
       setLoading: vi.fn(),
     };
 
-    await syncAuthStoreWithSession(makeSession(makeUser()), handlers);
+    await syncAuthStoreWithSession(
+      makeSession(makeUser({ phone: "+5511999999999" })),
+      handlers,
+    );
 
     expect(handlers.clearCustomer).not.toHaveBeenCalled();
     expect(handlers.setCustomer).toHaveBeenCalledWith({

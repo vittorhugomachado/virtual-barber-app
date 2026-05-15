@@ -33,7 +33,6 @@ import { formatDuration } from "@/utils/format-duration";
 import type { AppointmentStatus, BarbershopPageProps } from "../types";
 import { darkenColor } from "@/utils/darken-color";
 import { formatLocalTime, toLocalDateKey } from "@/utils/date-time";
-import { supabase } from "@/app/lib/supabase";
 
 type AppointmentRow = {
   id: string;
@@ -310,7 +309,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
     async function loadAppointments() {
       setLoading(true);
       setError(null);
-
+      console.log(props)
       const { data, error } = await getCustomerAppointments(props.id);
 
       if (error) {
@@ -394,7 +393,7 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
       ),
     );
   }
-
+console.log(appointments)
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />

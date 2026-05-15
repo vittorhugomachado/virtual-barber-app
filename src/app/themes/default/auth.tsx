@@ -22,6 +22,11 @@ interface RequestWhatsAppLoginResponse {
 interface ConsumeWhatsAppLoginTokenResponse {
   success: boolean;
   customer: Customer;
+  session?: {
+    access_token: string;
+    refresh_token: string;
+  };
+  userId?: string;
   expiresInDays: number;
 }
 
@@ -93,7 +98,7 @@ export default function DefaultAuthPage() {
             body: { token: loginToken },
           },
         )
-        .then(({ data: tokenData, error: tokenError }) => {
+        .then(async ({ data: tokenData, error: tokenError }) => {
           console.log("Resposta consume-whatsapp-login-token", {
             hasData: Boolean(tokenData),
             hasError: Boolean(tokenError),
@@ -105,6 +110,24 @@ export default function DefaultAuthPage() {
               "Link de login invalido ou expirado. Solicite um novo codigo.",
             );
             return;
+          }
+
+          if (
+            tokenData.session?.access_token &&
+            tokenData.session?.refresh_token
+          ) {
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token: tokenData.session.access_token,
+              refresh_token: tokenData.session.refresh_token,
+            });
+
+            if (sessionError) {
+              console.error("Erro ao criar sessao:", sessionError);
+              setError(
+                "Nao foi possivel criar sua sessao. Solicite um novo codigo.",
+              );
+              return;
+            }
           }
 
           setCustomer(tokenData.customer);
