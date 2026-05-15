@@ -11,13 +11,6 @@ interface RequestBody {
   token?: string;
 }
 
-interface authUserResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  token_type: string;
-}
-
 async function createOrGetAuthUserWithSession(
   supabase: ReturnType<typeof createServiceClient>,
   customer: {
@@ -25,47 +18,66 @@ async function createOrGetAuthUserWithSession(
     barbershop_id: string;
     name?: string | null;
     phone: string;
+    auth_user_id?: string | null;
   },
 ): Promise<{
-  userId: string;
+  authUserId: string;
   access_token: string;
   refresh_token: string;
 } | null> {
   const email = `${customer.barbershop_id}.${customer.phone}@whatsapp-login.virtualbarber.com.br`;
+
   const password = generateSecureToken();
 
-  // Tenta criar usuário no Auth
-  const { data: createdUser, error: createError } =
-    await supabase.auth.admin.createUser({
-      email,
+  let authUserId: string;
+
+  // =====================================
+  // USUÁRIO JÁ EXISTE
+  // =====================================
+  if (customer.auth_user_id) {
+    authUserId = customer.auth_user_id;
+
+    await supabase.auth.admin.updateUserById(authUserId, {
       password,
-      email_confirm: true,
-      user_metadata: {
-        customer_id: customer.id,
-        barbershop_id: customer.barbershop_id,
-        phone: customer.phone,
-        login_provider: "whatsapp",
-      },
     });
-
-  let userId: string | null = null;
-
-  if (createdUser?.user) {
-    userId = createdUser.user.id;
-  } else if (createError) {
-    // Busca usuário existente
-    const { data: existingUser } = await supabase.auth.admin.listUsers();
-    const user = existingUser.users.find(u => u.email === email);
-    if (user) {
-      userId = user.id;
-      // Atualiza senha do usuário existente
-      await supabase.auth.admin.updateUserById(userId, { password });
-    }
   }
 
-  if (!userId) return null;
+  // =====================================
+  // CRIA NOVO USUÁRIO
+  // =====================================
+  else {
+    const { data: createdUser, error } =
+      await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          customer_id: customer.id,
+          barbershop_id: customer.barbershop_id,
+          phone: customer.phone,
+          login_provider: "whatsapp",
+        },
+      });
 
-  // 🔑 FAZ LOGIN para obter os tokens
+    if (error || !createdUser.user) {
+      console.error(error);
+      return null;
+    }
+
+    authUserId = createdUser.user.id;
+
+    // salva auth_user_id
+    await supabase
+      .from("customers")
+      .update({
+        auth_user_id: authUserId,
+      })
+      .eq("id", customer.id);
+  }
+
+  // =====================================
+  // LOGIN
+  // =====================================
   const { data: signIn, error: signInError } =
     await supabase.auth.signInWithPassword({
       email,
@@ -73,12 +85,12 @@ async function createOrGetAuthUserWithSession(
     });
 
   if (signInError || !signIn.session) {
-    console.error("Failed to sign in:", signInError);
+    console.error(signInError);
     return null;
   }
 
   return {
-    userId,
+    authUserId,
     access_token: signIn.session.access_token,
     refresh_token: signIn.session.refresh_token,
   };
@@ -156,7 +168,7 @@ Deno.serve(async req => {
             updated_at: now,
           })
           .eq("id", existingCustomer.id)
-          .select("id, barbershop_id, name, phone, auth")
+          .select("id, barbershop_id, name, phone, auth, auth_user_id")
           .single()
       : await supabase
           .from("customers")
@@ -167,7 +179,7 @@ Deno.serve(async req => {
             auth: true,
             updated_at: now,
           })
-          .select("id, barbershop_id, name, phone, auth")
+          .select("id, barbershop_id, name, phone, auth, auth_user_id")
           .single();
 
     const authSession = await createOrGetAuthUserWithSession(
@@ -181,7 +193,7 @@ Deno.serve(async req => {
 
     await supabase
       .from("customers")
-      .update({ auth_user_id: authSession.userId })
+      .update({ auth_user_id: authSession.authUserId })
       .eq("id", customer.id);
 
     if (customerWriteError || !customer) {
@@ -205,7 +217,7 @@ Deno.serve(async req => {
         access_token: authSession.access_token,
         refresh_token: authSession.refresh_token,
       },
-      userId: authSession.userId,
+      userId: authSession.authUserId,
       expiresInDays: 7,
     });
   } catch (error) {
