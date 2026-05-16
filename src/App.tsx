@@ -18,6 +18,7 @@ export function App() {
       setCustomer,
       clearCustomer,
       setLoading,
+      getCustomer: () => useAuthStore.getState().customer,
     });
   }, [setCustomer, clearCustomer, setLoading]);
 

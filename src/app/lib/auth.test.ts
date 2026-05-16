@@ -76,6 +76,10 @@ function makeSession(user: User): Session {
 describe("auth helpers", () => {
   beforeEach(() => {
     supabaseMocks.maybeSingle.mockReset();
+    supabaseMocks.maybeSingle.mockResolvedValue({
+      data: null,
+      error: null,
+    });
     supabaseMocks.limit.mockClear();
     supabaseMocks.order.mockClear();
     supabaseMocks.inFilter.mockClear();
@@ -183,16 +187,21 @@ describe("auth helpers", () => {
   });
 
   it("uses the WhatsApp phone stored in user metadata when auth phone is empty", async () => {
-    supabaseMocks.maybeSingle.mockResolvedValueOnce({
-      data: {
-        id: "customer-1",
-        name: "Cliente WhatsApp",
-        phone: "5551980560089",
-        barbershop_id: "barbershop-1",
-        auth: true,
-      },
-      error: null,
-    });
+    supabaseMocks.maybeSingle
+      .mockResolvedValueOnce({
+        data: null,
+        error: null,
+      })
+      .mockResolvedValueOnce({
+        data: {
+          id: "customer-1",
+          name: "Cliente WhatsApp",
+          phone: "5551980560089",
+          barbershop_id: "barbershop-1",
+          auth: true,
+        },
+        error: null,
+      });
 
     const user = makeUser({
       phone: "",

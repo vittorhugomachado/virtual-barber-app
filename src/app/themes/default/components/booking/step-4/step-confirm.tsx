@@ -127,6 +127,13 @@ export function StepConfirm({
         }
 
         if (customer) {
+          await supabase.auth.updateUser({
+            data: {
+              name: normalizedDisplayName,
+              full_name: normalizedDisplayName,
+            },
+          });
+
           setCustomer({ ...customer, name: normalizedDisplayName });
         }
       }
@@ -144,7 +151,6 @@ export function StepConfirm({
           ends_at: endsAt.toISOString(),
         };
       });
-      console.log(appointments)
       const { error: appointmentError } = await supabase.rpc(
         "vb_create_appointments",
         {

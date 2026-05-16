@@ -6,6 +6,7 @@ interface AuthStoreHandlers {
   setCustomer: (customer: Customer) => void;
   clearCustomer: (options?: { force?: boolean }) => void;
   setLoading: (loading: boolean) => void;
+  getCustomer?: () => Customer | null;
 }
 
 function normalizePhone(phone?: string | null) {
@@ -83,10 +84,33 @@ function getCustomerFromAuthMetadata(user: User): Customer | null {
   };
 }
 
+function hasName(customer?: Customer | null) {
+  return Boolean(customer?.name?.trim());
+}
+
+function preserveStoredName(
+  nextCustomer: Customer,
+  storedCustomer?: Customer | null,
+) {
+  if (hasName(nextCustomer) || !hasName(storedCustomer)) {
+    return nextCustomer;
+  }
+
+  if (storedCustomer?.id !== nextCustomer.id) {
+    return nextCustomer;
+  }
+
+  return {
+    ...nextCustomer,
+    name: storedCustomer.name,
+  };
+}
+
 export async function getCustomerFromAuthUser(
   user: User,
 ): Promise<{ data: Customer | null; error: Error | null }> {
   const customerId = user.user_metadata?.customer_id;
+  let lastError: Error | null = null;
 
   if (customerId) {
     const { data: customer, error } = await supabase
@@ -97,7 +121,7 @@ export async function getCustomerFromAuthUser(
       .maybeSingle();
 
     if (error) {
-      return { data: null, error: new Error(error.message) };
+      lastError = new Error(error.message);
     }
 
     if (customer) {
@@ -105,18 +129,41 @@ export async function getCustomerFromAuthUser(
     }
   }
 
+  const { data: customerByAuthUserId, error: authUserIdError } = await supabase
+    .from("customers")
+    .select("id, name, phone, barbershop_id, auth")
+    .eq("auth_user_id", user.id)
+    .eq("auth", true)
+    .maybeSingle();
+
+  if (authUserIdError) {
+    lastError = new Error(authUserIdError.message);
+  }
+
+  if (customerByAuthUserId) {
+    return { data: toCustomer(customerByAuthUserId, user), error: null };
+  }
+
   const authPhone = getAuthUserPhone(user);
   const phoneVariants = getPhoneVariants(authPhone);
 
   if (phoneVariants.length === 0) {
-    return { data: null, error: null };
+    return { data: null, error: lastError };
   }
 
-  const { data: customer, error } = await supabase
+  let phoneQuery = supabase
     .from("customers")
     .select("id, name, phone, barbershop_id, auth")
     .eq("auth", true)
-    .in("phone", phoneVariants)
+    .in("phone", phoneVariants);
+
+  const barbershopId = user.user_metadata?.barbershop_id;
+
+  if (barbershopId) {
+    phoneQuery = phoneQuery.eq("barbershop_id", barbershopId);
+  }
+
+  const { data: customer, error } = await phoneQuery
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -126,7 +173,7 @@ export async function getCustomerFromAuthUser(
   }
 
   if (!customer) {
-    return { data: null, error: null };
+    return { data: null, error: lastError };
   }
 
   return { data: toCustomer(customer, user), error: null };
@@ -146,15 +193,18 @@ export async function syncAuthStoreWithSession(
 
     const metadataCustomer = getCustomerFromAuthMetadata(session.user);
     const { data, error } = await getCustomerFromAuthUser(session.user);
+    const storedCustomer = handlers.getCustomer?.() ?? null;
 
     if (data) {
-      handlers.setCustomer(data);
-      return data;
+      const nextCustomer = preserveStoredName(data, storedCustomer);
+      handlers.setCustomer(nextCustomer);
+      return nextCustomer;
     }
 
     if (metadataCustomer) {
-      handlers.setCustomer(metadataCustomer);
-      return metadataCustomer;
+      const nextCustomer = preserveStoredName(metadataCustomer, storedCustomer);
+      handlers.setCustomer(nextCustomer);
+      return nextCustomer;
     }
 
     if (error) {

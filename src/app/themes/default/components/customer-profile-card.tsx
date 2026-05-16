@@ -51,21 +51,24 @@ export function CustomerProfileCard() {
     setLoading(true);
     setError("");
     try {
-      const { data, error: updateError } = await supabase.rpc(
+      const { error: updateError } = await supabase.rpc(
         "vb_update_customer_profile",
         {
           p_name: normalizedName,
         },
       );
 
-      if (data) {
-        setCustomer(data);
-      }
-
       if (updateError) {
         setError("Não foi possível atualizar seu nome. Tente novamente.");
         return;
       }
+
+      await supabase.auth.updateUser({
+        data: {
+          name: normalizedName,
+          full_name: normalizedName,
+        },
+      });
 
       setCustomer({ ...currentCustomer, name: normalizedName });
       setOpen(false);
