@@ -34,7 +34,7 @@ function hasPersistedWhatsAppCustomer() {
 
 export function App() {
   const { customer, setCustomer, clearCustomer, setLoading } = useAuthStore();
-
+  console.log(customer)
   useEffect(() => {
     let active = true;
 
