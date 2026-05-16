@@ -19,7 +19,7 @@ const STEPS = ["Serviços", "Data", "Profissional", "Confirmação"];
 export default function DefaultBookingPage(props: BarbershopPageProps) {
   const navigate = useNavigate();
   const { style } = useStyle();
-  const { isAuthenticated, customer } = useAuthStore();
+  const { isAuthenticated, isLoading, customer } = useAuthStore();
   const { items, clearCart } = useCart();
 
   const [step, setStep] = useState(0);
@@ -30,10 +30,10 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       navigate(`/${props.slug}/entrar?from=agendar`);
     }
-  }, [isAuthenticated, navigate, props.slug]);
+  }, [isAuthenticated, isLoading, navigate, props.slug]);
 
   function handleDateSelect(newDate: string) {
     if (newDate !== date) {
@@ -89,6 +89,17 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           </div>
         </main>
         <Footer />
+      </div>
+    );
+  }
+
+  if (isLoading || !customer) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        </main>
       </div>
     );
   }

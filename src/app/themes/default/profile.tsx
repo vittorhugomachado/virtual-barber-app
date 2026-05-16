@@ -273,7 +273,7 @@ function AppointmentCard({
 
 export default function DefaultProfilePage(props: BarbershopPageProps) {
   const navigate = useNavigate();
-  const { isAuthenticated, customer } = useAuthStore();
+  const { isAuthenticated, isLoading, customer } = useAuthStore();
   const { style } = useStyle();
   const [appointments, setAppointments] = useState<NormalizedAppointment[]>([]);
   const [loading, setLoading] = useState(() => Boolean(customer));
@@ -290,10 +290,10 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
   const visibleError = customerId ? error : null;
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       navigate(`/${props.slug}/entrar`);
     }
-  }, [isAuthenticated, props.slug, navigate]);
+  }, [isAuthenticated, isLoading, props.slug, navigate]);
 
   useEffect(() => {
     if (!customerId) {
@@ -309,7 +309,6 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
     async function loadAppointments() {
       setLoading(true);
       setError(null);
-      console.log(props)
       const { data, error } = await getCustomerAppointments(props.id);
 
       if (error) {
@@ -393,7 +392,17 @@ export default function DefaultProfilePage(props: BarbershopPageProps) {
       ),
     );
   }
-console.log(appointments)
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />

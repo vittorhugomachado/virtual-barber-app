@@ -2,13 +2,31 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session, User } from "@supabase/supabase-js";
 
 const supabaseMocks = vi.hoisted(() => {
+  const builder: {
+    select?: ReturnType<typeof vi.fn>;
+    eq?: ReturnType<typeof vi.fn>;
+    in?: ReturnType<typeof vi.fn>;
+    order?: ReturnType<typeof vi.fn>;
+    limit?: ReturnType<typeof vi.fn>;
+    maybeSingle?: ReturnType<typeof vi.fn>;
+  } = {};
+
   const maybeSingle = vi.fn();
-  const limit = vi.fn(() => ({ maybeSingle }));
-  const order = vi.fn(() => ({ limit }));
-  const inFilter = vi.fn(() => ({ order }));
-  const eq = vi.fn(() => ({ in: inFilter }));
-  const select = vi.fn(() => ({ eq }));
-  const from = vi.fn(() => ({ select }));
+  const limit = vi.fn(() => builder);
+  const order = vi.fn(() => builder);
+  const inFilter = vi.fn(() => builder);
+  const eq = vi.fn(() => builder);
+  const select = vi.fn(() => builder);
+  const from = vi.fn(() => builder);
+
+  Object.assign(builder, {
+    select,
+    eq,
+    in: inFilter,
+    order,
+    limit,
+    maybeSingle,
+  });
 
   return {
     maybeSingle,
@@ -57,7 +75,13 @@ function makeSession(user: User): Session {
 
 describe("auth helpers", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    supabaseMocks.maybeSingle.mockReset();
+    supabaseMocks.limit.mockClear();
+    supabaseMocks.order.mockClear();
+    supabaseMocks.inFilter.mockClear();
+    supabaseMocks.eq.mockClear();
+    supabaseMocks.select.mockClear();
+    supabaseMocks.from.mockClear();
   });
 
   it("builds the booking redirect when login starts from agendar", () => {
@@ -99,7 +123,7 @@ describe("auth helpers", () => {
       name: "Vitor",
       phone: "5511999999999",
       auth: true,
-      auth_user_id: null,
+      auth_user_id: "user-1",
       barbershop_id: "barbershop-1",
     });
   });
@@ -119,6 +143,43 @@ describe("auth helpers", () => {
 
     expect(result.error).toBeNull();
     expect(result.data).toBeNull();
+  });
+
+  it("keeps the user authenticated from Supabase metadata when the customer lookup fails", async () => {
+    supabaseMocks.maybeSingle.mockResolvedValueOnce({
+      data: null,
+      error: { message: "permission denied" },
+    });
+
+    const handlers = {
+      setCustomer: vi.fn(),
+      clearCustomer: vi.fn(),
+      setLoading: vi.fn(),
+    };
+
+    await syncAuthStoreWithSession(
+      makeSession(
+        makeUser({
+          user_metadata: {
+            customer_id: "customer-from-token",
+            barbershop_id: "barbershop-from-token",
+            phone: "5551980560089",
+            name: "Cliente Token",
+          },
+        }),
+      ),
+      handlers,
+    );
+
+    expect(handlers.clearCustomer).not.toHaveBeenCalled();
+    expect(handlers.setCustomer).toHaveBeenCalledWith({
+      id: "customer-from-token",
+      name: "Cliente Token",
+      phone: "51980560089",
+      auth: true,
+      auth_user_id: "user-1",
+      barbershop_id: "barbershop-from-token",
+    });
   });
 
   it("uses the WhatsApp phone stored in user metadata when auth phone is empty", async () => {
@@ -150,7 +211,7 @@ describe("auth helpers", () => {
       name: "Cliente WhatsApp",
       phone: "5551980560089",
       auth: true,
-      auth_user_id: null,
+      auth_user_id: "user-1",
       barbershop_id: "barbershop-1",
     });
   });
@@ -165,7 +226,7 @@ describe("auth helpers", () => {
     await syncAuthStoreWithSession(null, handlers);
 
     expect(handlers.setLoading).toHaveBeenNthCalledWith(1, true);
-    expect(handlers.clearCustomer).toHaveBeenCalledTimes(1);
+    expect(handlers.clearCustomer).toHaveBeenCalledWith({ force: true });
     expect(handlers.setCustomer).not.toHaveBeenCalled();
     expect(handlers.setLoading).toHaveBeenLastCalledWith(false);
   });
@@ -199,7 +260,7 @@ describe("auth helpers", () => {
       name: "Cliente",
       phone: "5511999999999",
       auth: true,
-      auth_user_id: null,
+      auth_user_id: "user-1",
       barbershop_id: "barbershop-1",
     });
     expect(handlers.setLoading).toHaveBeenNthCalledWith(1, true);
