@@ -47,9 +47,6 @@ export function StepBarberTime({
     services: items,
   });
 
-  console.log(bookingSlots)
-  console.log(date)
-
   return (
     <div className="flex flex-col gap-4">
       {error && (

@@ -86,10 +86,6 @@ export default function DefaultAuthPage() {
       setError("");
       setIsConsumingLoginToken(true);
       setLoading(true);
-      console.log("Consumindo token de login WhatsApp", {
-        tokenLength: loginToken.length,
-        slug,
-      });
 
       supabase.functions
         .invoke<ConsumeWhatsAppLoginTokenResponse>(
@@ -99,12 +95,6 @@ export default function DefaultAuthPage() {
           },
         )
         .then(async ({ data: tokenData, error: tokenError }) => {
-          console.log("Resposta consume-whatsapp-login-token", {
-            hasData: Boolean(tokenData),
-            hasError: Boolean(tokenError),
-            success: tokenData?.success === true,
-          });
-
           if (tokenError || !tokenData?.success || !tokenData.customer) {
             setError(
               "Link de login invalido ou expirado. Solicite um novo codigo.",
@@ -242,10 +232,6 @@ export default function DefaultAuthPage() {
       setWhatsappLoginCode(loginData.code);
       setWhatsappUrl(loginData.whatsappUrl);
       setStep("otp");
-
-      console.log("Código WhatsApp criado com sucesso", {
-        expiresInSeconds: loginData.expiresInSeconds,
-      });
     } finally {
       setLoading(false);
     }

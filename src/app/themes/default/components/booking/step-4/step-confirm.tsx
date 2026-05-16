@@ -151,6 +151,7 @@ export function StepConfirm({
           ends_at: endsAt.toISOString(),
         };
       });
+
       const { error: appointmentError } = await supabase.rpc(
         "vb_create_appointments",
         {

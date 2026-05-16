@@ -16,7 +16,7 @@ export function useBookingSlots({
     () => services.map(service => service.id),
     [services],
   );
-console.log(data)
+
   const enabled =
     !!barbershopId && !!customerId && !!date && serviceIds.length > 0;
 
