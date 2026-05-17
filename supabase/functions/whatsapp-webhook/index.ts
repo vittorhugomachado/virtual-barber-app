@@ -100,11 +100,7 @@ Deno.serve(async req => {
             continue;
           }
 
-          const text = message.text?.body ?? "";
-          const codeCandidates = extractSixDigitCodeCandidates(text);
-
-          // Sem 6 ou 7 digitos, nao ha intencao clara de autenticacao.
-          if (!codeCandidates.length || !message.from) {
+          if (!message.from) {
             continue;
           }
 
@@ -116,14 +112,27 @@ Deno.serve(async req => {
             continue;
           }
 
+          const phoneVariants = getBrazilianPhoneVariants(normalizedFrom);
+          await upsertWhatsAppWindowsForPhone(
+            supabase,
+            phoneVariants,
+            normalizedFrom,
+          );
+
+          const text = message.text?.body ?? "";
+          const codeCandidates = extractSixDigitCodeCandidates(text);
+
+          // Sem 6 ou 7 digitos, nao ha intencao clara de autenticacao.
+          if (!codeCandidates.length) {
+            continue;
+          }
+
           console.log("WhatsApp auth message parsed", {
             phoneNumberId,
             fromLast4: normalizedFrom.slice(-4),
             hasSixDigitCode: true,
             codeCandidateCount: codeCandidates.length,
           });
-
-          const phoneVariants = getBrazilianPhoneVariants(normalizedFrom);
 
           // Valida o codigo e ja marca como usado em uma operacao so.
           // Isso evita que o mesmo codigo seja processado duas vezes em corrida.
@@ -322,6 +331,75 @@ async function findActiveCodeWithDifferentPhone(
     : null;
 }
 
+async function upsertWhatsAppWindowsForPhone(
+  supabase: ReturnType<typeof createServiceClient>,
+  phoneVariants: string[],
+  normalizedPhone: string,
+): Promise<void> {
+  const nowIso = new Date().toISOString();
+  const { data: customers, error } = await supabase
+    .from("customers")
+    .select("id, barbershop_id, phone")
+    .in("phone", phoneVariants)
+    .eq("auth", true);
+
+  if (error) {
+    console.error("Failed to fetch customers for WhatsApp window", {
+      message: error.message,
+      phoneLast4: normalizedPhone.slice(-4),
+    });
+    return;
+  }
+
+  const windowsByKey = new Map<string, {
+    barbershop_id: string;
+    customer_id: string;
+    phone: string;
+    last_message_at: string;
+    updated_at: string;
+  }>();
+
+  for (const customer of customers ?? []) {
+    if (!customer.barbershop_id || !customer.phone) {
+      continue;
+    }
+
+    windowsByKey.set(`${customer.barbershop_id}:${customer.phone}`, {
+      barbershop_id: customer.barbershop_id,
+      customer_id: customer.id,
+      phone: customer.phone,
+      last_message_at: nowIso,
+      updated_at: nowIso,
+    });
+  }
+
+  const windowRows = Array.from(windowsByKey.values());
+
+  if (windowRows.length === 0) {
+    return;
+  }
+
+  for (const windowRow of windowRows) {
+    const { error: upsertError } = await supabase.rpc(
+      "upsert_whatsapp_window",
+      {
+        p_barbershop_id: windowRow.barbershop_id,
+        p_customer_id: windowRow.customer_id,
+        p_phone: windowRow.phone,
+        p_last_message_at: windowRow.last_message_at,
+      },
+    );
+
+    if (upsertError) {
+      console.error("Failed to upsert WhatsApp window", {
+        message: upsertError.message,
+        phoneLast4: normalizedPhone.slice(-4),
+        barbershopId: windowRow.barbershop_id,
+      });
+    }
+  }
+}
+
 function formatBrazilianPhoneForMessage(phone: string, withoutNine?: boolean): string {
   const digits = phone.replace(/\D/g, "").replace(/^55/, "");
 
@@ -465,5 +543,3 @@ async function findBestSlugForPhone(
 
   return barbershop?.slug ?? null;
 }
-
-

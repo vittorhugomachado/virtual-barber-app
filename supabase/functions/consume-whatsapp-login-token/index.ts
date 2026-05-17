@@ -11,6 +11,56 @@ interface RequestBody {
   token?: string;
 }
 
+function isEmailExistsError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const maybeError = error as { code?: string; message?: string; status?: number };
+
+  return (
+    maybeError.code === "email_exists" ||
+    maybeError.status === 422 &&
+      (maybeError.message ?? "").toLowerCase().includes("email")
+  );
+}
+
+async function findAuthUserIdByEmail(
+  supabase: ReturnType<typeof createServiceClient>,
+  email: string,
+): Promise<string | null> {
+  const normalizedEmail = email.toLowerCase();
+  let page = 1;
+
+  while (page <= 10) {
+    const { data, error } = await supabase.auth.admin.listUsers({
+      page,
+      perPage: 1000,
+    });
+
+    if (error) {
+      console.error("Failed to list auth users", error);
+      return null;
+    }
+
+    const user = data.users.find(
+      authUser => authUser.email?.toLowerCase() === normalizedEmail,
+    );
+
+    if (user) {
+      return user.id;
+    }
+
+    if (data.users.length < 1000) {
+      return null;
+    }
+
+    page += 1;
+  }
+
+  return null;
+}
+
 async function createOrGetAuthUserWithSession(
   supabase: ReturnType<typeof createServiceClient>,
   customer: {
@@ -37,9 +87,14 @@ async function createOrGetAuthUserWithSession(
   if (customer.auth_user_id) {
     authUserId = customer.auth_user_id;
 
-    await supabase.auth.admin.updateUserById(authUserId, {
+    const { error } = await supabase.auth.admin.updateUserById(authUserId, {
       password,
     });
+
+    if (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   // =====================================
@@ -59,12 +114,40 @@ async function createOrGetAuthUserWithSession(
         },
       });
 
-    if (error || !createdUser.user) {
+    if (error && isEmailExistsError(error)) {
+      const existingAuthUserId = await findAuthUserIdByEmail(supabase, email);
+
+      if (!existingAuthUserId) {
+        console.error("Auth user email exists but user was not found", {
+          email,
+        });
+        return null;
+      }
+
+      const { error: updateExistingError } =
+        await supabase.auth.admin.updateUserById(existingAuthUserId, {
+          password,
+          email_confirm: true,
+          user_metadata: {
+            customer_id: customer.id,
+            barbershop_id: customer.barbershop_id,
+            phone: customer.phone,
+            login_provider: "whatsapp",
+          },
+        });
+
+      if (updateExistingError) {
+        console.error(updateExistingError);
+        return null;
+      }
+
+      authUserId = existingAuthUserId;
+    } else if (error || !createdUser.user) {
       console.error(error);
       return null;
+    } else {
+      authUserId = createdUser.user.id;
     }
-
-    authUserId = createdUser.user.id;
 
     // salva auth_user_id
     await supabase
@@ -199,6 +282,25 @@ Deno.serve(async req => {
     if (customerWriteError || !customer) {
       console.error("Failed to persist WhatsApp customer", customerWriteError);
       return jsonResponse({ error: "Erro ao criar sessao do cliente" }, 500);
+    }
+
+    const { error: whatsappWindowError } = await supabase.rpc(
+      "upsert_whatsapp_window",
+      {
+        p_barbershop_id: customer.barbershop_id,
+        p_customer_id: customer.id,
+        p_phone: customer.phone ?? loginToken.phone,
+        p_last_message_at: now,
+      },
+    );
+
+    if (whatsappWindowError) {
+      console.error("Failed to persist WhatsApp window via RPC", {
+        code: whatsappWindowError.code,
+        message: whatsappWindowError.message,
+        details: whatsappWindowError.details,
+        hint: whatsappWindowError.hint,
+      });
     }
 
     // O frontend usa estes dados para criar a sessao local persistida.
