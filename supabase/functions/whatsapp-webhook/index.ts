@@ -351,13 +351,16 @@ async function upsertWhatsAppWindowsForPhone(
     return;
   }
 
-  const windowsByKey = new Map<string, {
-    barbershop_id: string;
-    customer_id: string;
-    phone: string;
-    last_message_at: string;
-    updated_at: string;
-  }>();
+  const windowsByKey = new Map<
+    string,
+    {
+      barbershop_id: string;
+      customer_id: string;
+      phone: string;
+      last_message_at: string;
+      updated_at: string;
+    }
+  >();
 
   for (const customer of customers ?? []) {
     if (!customer.barbershop_id || !customer.phone) {
@@ -396,30 +399,52 @@ async function upsertWhatsAppWindowsForPhone(
         phoneLast4: normalizedPhone.slice(-4),
         barbershopId: windowRow.barbershop_id,
       });
+
+      continue;
+    }
+
+    const { error: refreshError } = await supabase.rpc(
+      "refresh_manual_reminder_groups_after_whatsapp_window",
+      {
+        p_barbershop_id: windowRow.barbershop_id,
+        p_customer_id: windowRow.customer_id,
+        p_phone: windowRow.phone,
+      },
+    );
+
+    if (refreshError) {
+      console.error("Failed to refresh reminder groups after WhatsApp window", {
+        message: refreshError.message,
+        phoneLast4: normalizedPhone.slice(-4),
+        barbershopId: windowRow.barbershop_id,
+      });
     }
   }
 }
 
-function formatBrazilianPhoneForMessage(phone: string, withoutNine?: boolean): string {
+function formatBrazilianPhoneForMessage(
+  phone: string,
+  withoutNine?: boolean,
+): string {
   const digits = phone.replace(/\D/g, "").replace(/^55/, "");
 
   if (digits.length === 10) {
     let formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-    
+
     if (!withoutNine) {
       formatted = `(${digits.slice(0, 2)}) 9${digits.slice(2, 6)}-${digits.slice(6)}`;
     }
-    
+
     return formatted;
   }
 
   if (digits.length === 11) {
     let formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-    
+
     if (!withoutNine) {
       formatted = `(${digits.slice(0, 2)}) 9${digits.slice(3, 8)}-${digits.slice(8)}`;
     }
-    
+
     return formatted;
   }
 
