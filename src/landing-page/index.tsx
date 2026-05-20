@@ -1,12 +1,9 @@
 import {
   BadgeCheck,
   BarChart3,
-  CalendarDays,
   Check,
-  Clock3,
   Scissors,
   ShieldCheck,
-  Sparkles,
   Store,
   Users,
 } from "lucide-react";
@@ -62,6 +59,27 @@ const heroResources = [
   "Equipe com acesso à agenda",
   "Página personalizada",
   "Relatórios",
+];
+
+const comparisonRows = [
+  {
+    title: "Gestao",
+    without:
+      "Agenda bagunçada, clientes perdidos e dificuldade para organizar a rotina da equipe.",
+    with: "Agenda centralizada, clientes organizados e rotina mais previsível para a equipe.",
+  },
+  {
+    title: "Lembretes via WhatsApp",
+    without:
+      "Confirmações feitas uma por uma, muitos clientes esquecendo do atendimento.",
+    with: "Lembretes automáticos, reduzindo faltas e aumentando lucros.",
+  },
+  {
+    title: "Página com identidade própria",
+    without:
+      "Cliente depende de mensagem direta, link improvisado ou rede social sem agendamento fácil.",
+    with: "Página da barbearia com visual próprio e focada em melhorar experiência do cliente .",
+  },
 ];
 
 export function LandingPage() {
@@ -199,29 +217,57 @@ export function LandingPage() {
         </section>
 
         <section
-          id="beta"
+          id="comparativo"
           className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
         >
-          <div className="grid items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-            <div>
-              <p className="text-sm font-bold tracking-[0.18em] text-[#9bbcff] uppercase">
-                Beta de testes
+
+          <div className="mt-10 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-3xl border border-red-400/20 bg-red-500/[0.06] p-5 sm:p-6">
+              <p className="text-sm font-bold tracking-[0.16em] text-red-200 uppercase">
+                Sem Virtual Barber
               </p>
-              <h2 className="mt-3 text-3xl font-black text-white sm:text-5xl">
-                Gratis agora. Limitado enquanto a beta estiver aberta.
-              </h2>
-              <p className="mt-5 text-lg leading-8 text-white/70">
-                A Virtual Barber esta em fase beta. Isso significa acesso
-                gratuito para testar, validar recursos e ajudar a moldar a
-                ferramenta antes da versao final.
-              </p>
+              <div className="mt-6 flex flex-col gap-4">
+                {comparisonRows.map(item => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-white/10 bg-[#0b0922] p-4"
+                  >
+                    <h3 className="text-lg font-bold text-white">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2 leading-7 text-white/62">
+                      {item.without}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="rounded-3xl border border-white/12 bg-white/[0.04] p-6">
-              <div className="grid gap-4 sm:grid-cols-3">
-                <BetaPoint value="100%" label="gratis na beta" />
-                <BetaPoint value="0" label="limite de cadastros" />
-                <BetaPoint value="1" label="pagina para vender" />
+            <div className="rounded-3xl border border-[#0458EE]/45 bg-[#0458EE]/10 p-5 sm:p-6">
+              <p className="text-sm font-bold tracking-[0.16em] text-[#9bbcff] uppercase">
+                Com Virtual Barber
+              </p>
+              <div className="mt-6 flex flex-col gap-4">
+                {comparisonRows.map(item => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-[#0458EE]/30 bg-[#0b0922] p-4"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-700 text-white">
+                        <Check size={14} />
+                      </span>
+                      <div>
+                        <h3 className="text-lg font-bold text-white">
+                          {item.title}
+                        </h3>
+                        <p className="mt-2 leading-7 text-white/72">
+                          {item.with}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -246,15 +292,6 @@ export function LandingPage() {
       <footer className="relative flex w-full flex-col items-center bg-[#050419] px-4 py-8 sm:px-6 lg:px-8">
         <img src="/logo-dark.png" alt="" className="w-60" />
       </footer>
-    </div>
-  );
-}
-
-function BetaPoint({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-[#0b0922] p-5">
-      <p className="text-4xl font-black text-white">{value}</p>
-      <p className="mt-2 text-sm font-semibold text-white/62">{label}</p>
     </div>
   );
 }
