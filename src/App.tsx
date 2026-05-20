@@ -10,6 +10,7 @@ import { useAuthStore } from "./app/store/auth-store";
 import { LandingPage } from "./landing-page";
 import { PrivacyPolicyPage } from "./portal/pages/privacy-policy";
 import { DataDeletionPage } from "./portal/pages/data-deletion";
+import { TermsPage } from "./portal/pages/terms";
 
 export function App() {
   const { setCustomer, clearCustomer, setLoading } = useAuthStore();
@@ -33,6 +34,7 @@ export function App() {
           element={<PrivacyPolicyPage />}
         />
         <Route path="/exclusao-de-dados" element={<DataDeletionPage />} />
+        <Route path="/termos-de-servico" element={<TermsPage />} />
 
         {/* ROTAS DO PORTAL EM DESENVOLVIMENTO*/}
         {/* <Route path="/portal/:tag/:post" element={<PostPage />} />
