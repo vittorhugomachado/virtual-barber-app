@@ -138,7 +138,7 @@ export function LandingPage() {
 
   return (
     <div
-      className={`${isDarkTheme ? "dark" : ""}min-h-screen overflow-hidden bg-zinc-100 text-zinc-950 transition-colors duration-600 dark:bg-zinc-950 dark:text-white`}
+      className={`${isDarkTheme ? "dark bg-zinc-950 text-white" : "bg-zinc-100 text-zinc-950"} min-h-screen overflow-hidden transition-colors duration-600`}
     >
       <header className="inset-x-0 top-0 z-50 border-b border-zinc-200 bg-zinc-100 backdrop-blur transition-colors duration-600 sm:fixed dark:border-white/10 dark:bg-zinc-950">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:px-6 lg:px-8">
@@ -171,7 +171,7 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main className="bg-zinc-100/92 pt-[8.5rem] text-zinc-950 transition-colors duration-600 sm:pt-[5.75rem] dark:bg-zinc-950 dark:text-white">
+      <main className="bg-zinc-100/92 pt-34 text-zinc-950 transition-colors duration-600 sm:pt-23 dark:bg-zinc-950 dark:text-white">
         <section
           id="hero"
           className="relative isolate transition-colors duration-600"
@@ -221,7 +221,7 @@ export function LandingPage() {
                 {heroResources.map(resource => (
                   <div
                     key={resource}
-                    className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm transition-colors duration-600 dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none"
+                    className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm transition-colors duration-600 dark:border-white/10 dark:bg-white/4 dark:shadow-none"
                   >
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-700 text-white">
                       <Check size={16} />
@@ -238,7 +238,7 @@ export function LandingPage() {
 
         <section
           id="frase-impacto"
-          className="border-y border-zinc-200 bg-white/55 transition-colors duration-600 dark:border-white/10 dark:bg-white/[0.03]"
+          className="border-y border-zinc-200 bg-white/55 transition-colors duration-600 dark:border-white/10 dark:bg-white/3"
         >
           <div className="flex-colgap-8 mx-auto flex max-w-7xl flex-col px-4 py-14 sm:px-6 lg:items-center lg:px-8">
             <h2 className="max-w-3xl text-center text-3xl font-semibold sm:text-4xl">
@@ -255,7 +255,7 @@ export function LandingPage() {
           className="mx-auto w-full max-w-7xl px-4 py-16 transition-colors duration-600 sm:px-6 lg:px-8 lg:py-20"
         >
           <div className="mt-10 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-3xl border border-red-200 bg-red-400 p-5 shadow-sm transition-colors duration-600 sm:p-6 dark:border-red-400/20 dark:bg-red-500/[0.06] dark:shadow-none">
+            <div className="rounded-3xl bg-red-400 p-5 transition-colors duration-600 sm:p-6">
               <div className="flex items-center">
                 <p className="text-lg font-bold tracking-[0.16em] text-white uppercase">
                   <CircleX className="inline" size={30}/> Sem Virtual Barber
@@ -265,12 +265,12 @@ export function LandingPage() {
                 {comparisonRows.map(item => (
                   <div
                     key={item.withoutTitle}
-                    className="rounded-2xl border bg-white/80 p-4"
+                    className="rounded-2xl bg-white/80 p-4"
                   >
-                    <h3 className="text-lg font-bold text-zinc-950 dark:text-white">
+                    <h3 className="text-lg font-bold text-zinc-950 ">
                       {item.withoutTitle}
                     </h3>
-                    <p className="mt-2 leading-7 text-zinc-700 dark:text-white/62">
+                    <p className="mt-2 leading-7 text-zinc-700">
                       {item.without}
                     </p>
                   </div>
@@ -286,17 +286,17 @@ export function LandingPage() {
                 {comparisonRows.map(item => (
                   <div
                     key={item.withTitle}
-                    className="rounded-2xl border bg-white/80 p-4"
+                    className="rounded-2xl  bg-white/80 p-4"
                   >
                     <div className="flex items-start gap-3">
                       <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-700 text-white">
                         <Check size={14} />
                       </span>
                       <div>
-                        <h3 className="text-lg font-bold text-zinc-950 dark:text-white">
+                        <h3 className="text-lg font-bold text-zinc-950">
                           {item.withTitle}
                         </h3>
-                        <p className="mt-2 leading-7 text-zinc-700 dark:text-white/72">
+                        <p className="mt-2 leading-7 text-zinc-700">
                           {item.with}
                         </p>
                       </div>
@@ -342,7 +342,7 @@ export function LandingPage() {
 
         <section
           id="comece"
-          className="border-y border-zinc-200 bg-white/55 transition-colors duration-600 dark:border-white/10 dark:bg-white/[0.03]"
+          className="border-y border-zinc-200 bg-white/55 transition-colors duration-600 dark:border-white/10 dark:bg-white/3"
         >
           <div className="flex-colgap-8 mx-auto flex max-w-7xl flex-col px-4 py-14 sm:px-6 lg:items-center lg:px-8">
             <h2 className="mt-3 mb-16 max-w-3xl text-3xl font-black sm:text-5xl">

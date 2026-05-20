@@ -9,6 +9,7 @@ import { subscribeToSupabaseAuth } from "./app/lib/auth";
 import { useAuthStore } from "./app/store/auth-store";
 import { LandingPage } from "./landing-page";
 import { PrivacyPolicyPage } from "./portal/pages/privacy-policy";
+import { DataDeletionPage } from "./portal/pages/data-deletion";
 
 export function App() {
   const { setCustomer, clearCustomer, setLoading } = useAuthStore();
@@ -31,6 +32,7 @@ export function App() {
           path="/politica-de-privacidade"
           element={<PrivacyPolicyPage />}
         />
+        <Route path="/data-deletion" element={<DataDeletionPage />} />
 
         {/* ROTAS DO PORTAL EM DESENVOLVIMENTO*/}
         {/* <Route path="/portal/:tag/:post" element={<PostPage />} />
