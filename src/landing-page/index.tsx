@@ -359,9 +359,23 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="relative flex w-full flex-col items-center bg-zinc-100 px-4 py-8 transition-colors duration-600 sm:px-6 lg:px-8 dark:bg-zinc-950">
+      <footer className="relative flex w-full flex-col sm:flex-row sm:justify-between items-center gap-6 bg-zinc-100 px-4 py-8 transition-colors duration-600 sm:px-6 lg:px-8 dark:bg-zinc-950">
         <img src="/logo-dark.png" alt="" className="hidden w-60 dark:block" />
         <img src="/logo-light.png" alt="" className="w-60 dark:hidden" />
+        <nav
+          aria-label="Links institucionais"
+          className="flex items-center gap-3 sm:mx-8 sm:items-end text-sm font-medium text-zinc-700 sm:flex-col dark:text-white/70"
+        >
+          <a href="https://virtualbarber.com.br/politica-de-privacidade" className="transition text-end hover:text-[#0458EE]">
+            Política de Privacidade
+          </a>
+          <a href="#" className="transition text-end hover:text-[#0458EE]">
+            Termos e Condições
+          </a>
+          <a href="#" className="transition text-end hover:text-[#0458EE]">
+            Contato
+          </a>
+        </nav>
       </footer>
     </div>
   );
