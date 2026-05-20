@@ -66,21 +66,24 @@ const heroResources = [
 
 const comparisonRows = [
   {
-    title: "Organização",
+    withoutTitle: "Agenda desorganizada",
     without:
       "Agenda bagunçada, clientes perdidos e dificuldade para organizar a rotina da equipe.",
+    withTitle: "Agenda organizada",
     with: "Agenda centralizada, clientes organizados e rotina mais previsível para a equipe.",
   },
   {
-    title: "Lembretes via WhatsApp",
+    withoutTitle: "Lembretes manuais",
     without:
       "Confirmações feitas uma por uma, muitos clientes esquecendo do atendimento.",
+    withTitle: "Lembretes automáticos",
     with: "Lembretes automáticos, reduzindo faltas e aumentando lucros.",
   },
   {
-    title: "Página com identidade própria",
+    withoutTitle: "Presença improvisada",
     without:
       "Cliente depende de mensagem direta, link improvisado ou rede social sem agendamento fácil.",
+    withTitle: "Página com identidade própria",
     with: "Página da barbearia com visual próprio e focada em melhorar experiência do cliente .",
   },
 ];
@@ -261,11 +264,11 @@ export function LandingPage() {
               <div className="mt-6 flex flex-col gap-4">
                 {comparisonRows.map(item => (
                   <div
-                    key={item.title}
+                    key={item.withoutTitle}
                     className="rounded-2xl border bg-white/80 p-4"
                   >
                     <h3 className="text-lg font-bold text-zinc-950 dark:text-white">
-                      {item.title}
+                      {item.withoutTitle}
                     </h3>
                     <p className="mt-2 leading-7 text-zinc-700 dark:text-white/62">
                       {item.without}
@@ -282,7 +285,7 @@ export function LandingPage() {
               <div className="mt-6 flex flex-col gap-4">
                 {comparisonRows.map(item => (
                   <div
-                    key={item.title}
+                    key={item.withTitle}
                     className="rounded-2xl border bg-white/80 p-4"
                   >
                     <div className="flex items-start gap-3">
@@ -291,7 +294,7 @@ export function LandingPage() {
                       </span>
                       <div>
                         <h3 className="text-lg font-bold text-zinc-950 dark:text-white">
-                          {item.title}
+                          {item.withTitle}
                         </h3>
                         <p className="mt-2 leading-7 text-zinc-700 dark:text-white/72">
                           {item.with}
