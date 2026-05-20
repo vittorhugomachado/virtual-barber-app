@@ -85,7 +85,7 @@ const comparisonRows = [
 export function LandingPage() {
   return (
     <div className="dark min-h-screen overflow-hidden bg-zinc-100 text-zinc-950 dark:bg-zinc-950 dark:text-white">
-      <header className="sticky top-0 z-50 border-b border-zinc-200 bg-zinc-100 backdrop-blur dark:border-white/10 dark:bg-zinc-950">
+      <header className="sm:fixed inset-x-0 top-0 z-50 border-b border-zinc-200 bg-zinc-100 backdrop-blur dark:border-white/10 dark:bg-zinc-950">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:px-6 lg:px-8">
           <a href="/" aria-label="Virtual Barber" className="shrink-0">
             <img
@@ -116,10 +116,9 @@ export function LandingPage() {
         </div>
       </header>
 
-      <main className="bg-zinc-100/92 text-zinc-950 dark:bg-zinc-950 dark:text-white">
+      <main className="bg-zinc-100/92 pt-[8.5rem] text-zinc-950 sm:pt-[5.75rem] dark:bg-zinc-950 dark:text-white">
         <section id="hero" className="relative isolate">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#0458EE] to-transparent" />
-          <div className="mx-auto grid min-h-[calc(100vh-4.5rem)] w-full max-w-7xl items-center justify-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,1.04fr)_minmax(360px,0.96fr)] lg:px-8 lg:py-20">
+          <div className="mx-auto grid min-h-[calc(100vh-8.5rem)] w-full max-w-7xl items-center justify-center gap-10 px-4 py-16 sm:min-h-[calc(100vh-5.75rem)] sm:px-6 lg:grid-cols-[minmax(0,1.04fr)_minmax(360px,0.96fr)] lg:px-8 lg:py-20">
             <div className="flex max-w-3xl flex-col items-center lg:items-start">
               <h2 className="max-w-4xl text-center text-3xl leading-[0.98] font-semibold tracking-normal text-zinc-950 sm:text-6xl lg:w-full lg:text-start lg:text-7xl dark:text-white">
                 Mais organização <br />{" "}
@@ -179,7 +178,10 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section id="frase-impacto" className="border-y border-zinc-200 bg-white/55 dark:border-white/10 dark:bg-white/[0.03]">
+        <section
+          id="frase-impacto"
+          className="border-y border-zinc-200 bg-white/55 dark:border-white/10 dark:bg-white/[0.03]"
+        >
           <div className="flex-colgap-8 mx-auto flex max-w-7xl flex-col px-4 py-14 sm:px-6 lg:items-center lg:px-8">
             <h2 className="max-w-3xl text-center text-3xl font-semibold sm:text-4xl">
               A experiência que sua barbearia merece.
