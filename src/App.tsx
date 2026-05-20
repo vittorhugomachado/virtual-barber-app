@@ -32,7 +32,7 @@ export function App() {
           path="/politica-de-privacidade"
           element={<PrivacyPolicyPage />}
         />
-        <Route path="/data-deletion" element={<DataDeletionPage />} />
+        <Route path="/exclusao-de-dados" element={<DataDeletionPage />} />
 
         {/* ROTAS DO PORTAL EM DESENVOLVIMENTO*/}
         {/* <Route path="/portal/:tag/:post" element={<PostPage />} />
