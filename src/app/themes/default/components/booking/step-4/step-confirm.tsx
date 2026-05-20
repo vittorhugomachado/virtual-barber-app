@@ -67,7 +67,6 @@ function hasSelectionConflicts(
 
 export function StepConfirm({
   barbershopId,
-  customerId,
   services,
   date,
   serviceSelections,
@@ -115,11 +114,12 @@ export function StepConfirm({
       }
 
       if (requiresName) {
-        const { error: customerError } = await supabase
-          .from("customers")
-          .update({ name: normalizedDisplayName })
-          .eq("id", customerId)
-          .eq("auth", true);
+        const { error: customerError } = await supabase.rpc(
+          "vb_update_customer_profile",
+          {
+            p_name: normalizedDisplayName,
+          },
+        );
 
         if (customerError) {
           setError("Nao foi possivel salvar seu nome. Tente novamente.");
@@ -301,7 +301,7 @@ export function StepConfirm({
       </div>
 
       {error && (
-        <p className="rounded-xl bg-red-500 px-4 py-3 text-sm text-red-600">
+        <p className="rounded-xl bg-red-500 px-4 py-3 text-sm text-white">
           {error}
         </p>
       )}
