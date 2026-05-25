@@ -144,12 +144,12 @@ export function LandingPage() {
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:px-6 lg:px-8">
           <a href="/" aria-label="Virtual Barber" className="shrink-0">
             <img
-              src="/logo-dark.png"
+              src="/logo-dark-beta.png"
               alt="Virtual Barber"
               className="hidden h-auto w-60 dark:block"
             />
             <img
-              src="/logo-light.png"
+              src="/logo-light-beta.png"
               alt="Virtual Barber"
               className="h-auto w-60 dark:hidden"
             />
@@ -360,8 +360,8 @@ export function LandingPage() {
       </main>
 
       <footer className="relative flex w-full flex-col sm:flex-row sm:justify-between items-center gap-6 bg-zinc-100 px-4 py-8 transition-colors duration-600 sm:px-6 lg:px-8 dark:bg-zinc-950">
-        <img src="/logo-dark.png" alt="" className="hidden w-60 dark:block" />
-        <img src="/logo-light.png" alt="" className="w-60 dark:hidden" />
+        <img src="/logo-dark-beta.png" alt="" className="hidden w-60 dark:block" />
+        <img src="/logo-light-beta.png" alt="" className="w-60 dark:hidden" />
         <nav
           aria-label="Links institucionais"
           className="flex items-center gap-3 sm:mx-8 sm:items-end text-sm font-medium text-zinc-700 sm:flex-col dark:text-white/70"
