@@ -25,13 +25,22 @@ export function CartPanel() {
 
   return (
     <div className="lg:sticky lg:top-28 lg:w-80 lg:shrink-0 lg:pt-14">
-      <div className="rounded-2xl border border-current/15 p-5 shadow-sm" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
+      <div
+        className="rounded-2xl border border-current/15 p-5 shadow-sm"
+        style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}
+      >
         <div className="mb-4 flex items-center gap-2">
           <ShoppingCart size={16} className="text-current" />
           <span className="text-sm font-medium">
             Minha seleção
             {items.length > 0 && (
-              <span className="ml-1.5 rounded-full px-2 py-0.5 text-xs" style={{ backgroundColor: style.background_color, color: style.text_color }}>
+              <span
+                className="ml-1.5 rounded-full px-2 py-0.5 text-xs"
+                style={{
+                  backgroundColor: style.background_color,
+                  color: style.text_color,
+                }}
+              >
                 {items.length}
               </span>
             )}
@@ -48,8 +57,10 @@ export function CartPanel() {
               {items.map(service => (
                 <li
                   key={service.id}
-                  className="flex border-l-2 items-center justify-between gap-2 px-3 py-2.5"
-                  style={{ borderColor: darkenColor(style.background_color, 0.4) }}
+                  className="flex items-center justify-between gap-2 border-l-2 px-3 py-2.5"
+                  style={{
+                    borderColor: darkenColor(style.background_color, 0.4),
+                  }}
                 >
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="truncate text-sm font-medium">

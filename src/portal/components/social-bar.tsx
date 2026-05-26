@@ -8,11 +8,31 @@ type SocialBarProps = {
 };
 
 const LINKS = [
-  { href: "https://www.instagram.com/appvirtualbarber/", icon: <FaInstagram />, label: "Instagram" },
-  { href: "https://www.tiktok.com/@appvirtualbarber", icon: <FaTiktok />, label: "TikTok" },
-  { href: "https://www.facebook.com/profile.php?id=61575426003642", icon: <FaFacebook />, label: "Facebook" },
-  { href: "https://x.com/virtualbarber_", icon: <FaXTwitter />, label: "X (Twitter)" },
-  { href: "https://www.threads.com/@appvirtualbarber", icon: <RiThreadsLine />, label: "Threads" },
+  {
+    href: "https://www.instagram.com/appvirtualbarber/",
+    icon: <FaInstagram />,
+    label: "Instagram",
+  },
+  {
+    href: "https://www.tiktok.com/@appvirtualbarber",
+    icon: <FaTiktok />,
+    label: "TikTok",
+  },
+  {
+    href: "https://www.facebook.com/profile.php?id=61575426003642",
+    icon: <FaFacebook />,
+    label: "Facebook",
+  },
+  {
+    href: "https://x.com/virtualbarber_",
+    icon: <FaXTwitter />,
+    label: "X (Twitter)",
+  },
+  {
+    href: "https://www.threads.com/@appvirtualbarber",
+    icon: <RiThreadsLine />,
+    label: "Threads",
+  },
 ];
 
 export function SocialBar({ className, variant }: SocialBarProps) {
@@ -45,7 +65,7 @@ export function SocialBar({ className, variant }: SocialBarProps) {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#0458EE] transition-all duration-300"
+            className="transition-all duration-300 hover:text-[#0458EE]"
           >
             {icon}
           </a>

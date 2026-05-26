@@ -160,7 +160,6 @@ export function TermsMain() {
           .
         </p>
       </div>
-
     </main>
   );
 }

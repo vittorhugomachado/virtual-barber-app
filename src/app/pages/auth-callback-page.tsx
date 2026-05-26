@@ -55,9 +55,7 @@ export function AuthCallbackPage() {
       handled = true;
 
       const name =
-        user.user_metadata?.full_name ??
-        user.user_metadata?.name ??
-        "";
+        user.user_metadata?.full_name ?? user.user_metadata?.name ?? "";
       const phoneVariants = getPhoneVariants(user.phone);
 
       const existingQuery = supabase
@@ -67,9 +65,10 @@ export function AuthCallbackPage() {
         .order("created_at", { ascending: false })
         .limit(1);
 
-      const { data: existingCustomer, error: selectError } = phoneVariants.length
-        ? await existingQuery.in("phone", phoneVariants).maybeSingle()
-        : await existingQuery.maybeSingle();
+      const { data: existingCustomer, error: selectError } =
+        phoneVariants.length
+          ? await existingQuery.in("phone", phoneVariants).maybeSingle()
+          : await existingQuery.maybeSingle();
 
       if (selectError) {
         setError("Nao foi possivel concluir a autenticacao. Tente novamente.");
@@ -79,26 +78,26 @@ export function AuthCallbackPage() {
       const normalizedPhone = phoneVariants[0] ?? null;
       const { data: customerData, error: writeError } = existingCustomer
         ? await supabase
-          .from("customers")
-          .update({
-            auth: true,
-            name: existingCustomer.name || name,
-            phone: existingCustomer.phone ?? normalizedPhone,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", existingCustomer.id)
-          .eq("auth", true)
-          .select("id, name, phone, barbershop_id, auth")
-          .single()
+            .from("customers")
+            .update({
+              auth: true,
+              name: existingCustomer.name || name,
+              phone: existingCustomer.phone ?? normalizedPhone,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", existingCustomer.id)
+            .eq("auth", true)
+            .select("id, name, phone, barbershop_id, auth")
+            .single()
         : await supabase
-          .from("customers")
-          .insert({
-            name,
-            phone: normalizedPhone,
-            auth: true,
-          })
-          .select("id, name, phone, barbershop_id, auth")
-          .single();
+            .from("customers")
+            .insert({
+              name,
+              phone: normalizedPhone,
+              auth: true,
+            })
+            .select("id, name, phone, barbershop_id, auth")
+            .single();
 
       if (writeError || !customerData) {
         setError("Nao foi possivel concluir a autenticacao. Tente novamente.");
@@ -122,18 +121,18 @@ export function AuthCallbackPage() {
 
       const slug = redirect.startsWith("/") ? redirect.slice(1) : redirect;
 
-      navigate(
-        redirect === "/" ? "/" : getPostAuthRedirectPath(slug, from),
-        {
-          replace: true,
-        },
-      );
+      navigate(redirect === "/" ? "/" : getPostAuthRedirectPath(slug, from), {
+        replace: true,
+      });
     }
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session?.user) {
+      if (
+        (event === "SIGNED_IN" || event === "INITIAL_SESSION") &&
+        session?.user
+      ) {
         subscription.unsubscribe();
         handleSession(session.user);
       }

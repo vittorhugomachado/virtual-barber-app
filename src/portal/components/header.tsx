@@ -112,7 +112,7 @@ export function Header() {
               <a
                 key={item.label}
                 href={item.href}
-                className={`text-md font-semilight h-[90%] flex items-center text-neutral-100 transition-colors hover:text-neutral-300 border-b-3 lg:text-lg ${
+                className={`text-md font-semilight flex h-[90%] items-center border-b-3 text-neutral-100 transition-colors hover:text-neutral-300 lg:text-lg ${
                   isActivePath(item.href)
                     ? "border-b-[#0458EE] text-neutral-100"
                     : "border-b-transparent text-neutral-100 hover:text-neutral-300"

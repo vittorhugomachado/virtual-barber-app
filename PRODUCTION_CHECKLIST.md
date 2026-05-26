@@ -54,6 +54,7 @@ This checklist covers the customer app and the shared Supabase backend.
 ## Go/No-Go
 
 Go only if:
+
 - all automated checks are green
 - manual auth and booking smoke tests pass
 - timezone validation is signed off

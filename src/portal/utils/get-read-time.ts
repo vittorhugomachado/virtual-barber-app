@@ -1,4 +1,3 @@
-
 export function getReadTime(excerpt: string) {
   const wordsPerMinute = 200; // Média de palavras lidas por minuto
   const words = excerpt.split(" ").length; // Contagem de palavras no texto

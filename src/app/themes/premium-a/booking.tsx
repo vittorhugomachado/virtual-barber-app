@@ -1,1 +1,1 @@
-export { default } from '../default/booking'
+export { default } from "../default/booking";

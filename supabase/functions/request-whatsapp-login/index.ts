@@ -18,7 +18,7 @@ interface RequestBody {
 
 const CODE_TTL_SECONDS = 10 * 60;
 
-Deno.serve(async (req) => {
+Deno.serve(async req => {
   // Responde preflight do navegador antes do POST real.
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
@@ -43,7 +43,10 @@ Deno.serve(async (req) => {
 
   // Validacao minima para evitar consultas e inserts com dados incompletos.
   if (!barbershopId || !slug || !phone) {
-    return jsonResponse({ error: "barbershop_id, slug e phone sao obrigatorios" }, 400);
+    return jsonResponse(
+      { error: "barbershop_id, slug e phone sao obrigatorios" },
+      400,
+    );
   }
 
   let normalizedPhone: string;
@@ -51,7 +54,9 @@ Deno.serve(async (req) => {
   try {
     // Normaliza o telefone do cliente e o numero oficial do sistema para wa.me.
     normalizedPhone = normalizeBrazilianPhone(phone);
-    systemNumber = normalizeBrazilianPhone(getRequiredEnv("WHATSAPP_SYSTEM_NUMBER"));
+    systemNumber = normalizeBrazilianPhone(
+      getRequiredEnv("WHATSAPP_SYSTEM_NUMBER"),
+    );
   } catch (error) {
     return jsonResponse(
       { error: error instanceof Error ? error.message : "Telefone invalido" },
@@ -89,11 +94,16 @@ Deno.serve(async (req) => {
       .eq("used", false);
 
     if (invalidateError) {
-      console.error("Failed to invalidate previous WhatsApp login codes", invalidateError);
+      console.error(
+        "Failed to invalidate previous WhatsApp login codes",
+        invalidateError,
+      );
       return jsonResponse({ error: "Erro ao preparar novo codigo" }, 500);
     }
 
-    const expiresAt = new Date(Date.now() + CODE_TTL_SECONDS * 1000).toISOString();
+    const expiresAt = new Date(
+      Date.now() + CODE_TTL_SECONDS * 1000,
+    ).toISOString();
     let code = generateSixDigitCode();
     let codeAvailable = false;
 
@@ -110,7 +120,10 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
       if (existingError) {
-        console.error("Failed to check WhatsApp login code collision", existingError);
+        console.error(
+          "Failed to check WhatsApp login code collision",
+          existingError,
+        );
         return jsonResponse({ error: "Erro ao gerar codigo" }, 500);
       }
 
@@ -123,7 +136,10 @@ Deno.serve(async (req) => {
     }
 
     if (!codeAvailable) {
-      return jsonResponse({ error: "Nao foi possivel gerar codigo unico" }, 500);
+      return jsonResponse(
+        { error: "Nao foi possivel gerar codigo unico" },
+        500,
+      );
     }
 
     // Cria o registro que sera validado depois pelo whatsapp-webhook.

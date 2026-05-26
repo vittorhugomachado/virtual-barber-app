@@ -16,28 +16,29 @@ store/
 Armazena os dados do cliente logado. **Persiste no localStorage** — sobrevive ao refresh da página.
 
 ```typescript
-const { customer, isAuthenticated } = useAuthStore()
+const { customer, isAuthenticated } = useAuthStore();
 ```
 
-| Campo           | Tipo      | Descrição                        |
-|-----------------|-----------|----------------------------------|
-| customer        | Customer  | dados do cliente logado          |
-| isAuthenticated | boolean   | true se há cliente logado        |
-| isLoading       | boolean   | true durante chamadas de auth    |
+| Campo           | Tipo     | Descrição                     |
+| --------------- | -------- | ----------------------------- |
+| customer        | Customer | dados do cliente logado       |
+| isAuthenticated | boolean  | true se há cliente logado     |
+| isLoading       | boolean  | true durante chamadas de auth |
 
 ## bookingStore
 
 Armazena o estado do fluxo de agendamento em andamento. **Não persiste** — reseta se fechar o browser.
 
 ```typescript
-const { selection, step, setService, setDate, setBarberAndTime } = useBookingStore()
+const { selection, step, setService, setDate, setBarberAndTime } =
+  useBookingStore();
 ```
 
-| Campo        | Tipo    | Descrição                          |
-|--------------|---------|------------------------------------|
-| step         | number  | etapa atual (0-3)                  |
-| selection    | object  | serviço, data, barbeiro e hora     |
-| barbershopId | string  | ID da barbearia do agendamento     |
+| Campo        | Tipo   | Descrição                      |
+| ------------ | ------ | ------------------------------ |
+| step         | number | etapa atual (0-3)              |
+| selection    | object | serviço, data, barbeiro e hora |
+| barbershopId | string | ID da barbearia do agendamento |
 
 ### Fluxo dos steps
 
@@ -55,7 +56,7 @@ Cada setter avança o step e reseta as seleções posteriores para evitar estado
 Cache em memória dos dados da barbearia atual. **Não persiste** — rebusca a cada visita.
 
 ```typescript
-const { data, isLoading, error } = useBarbershopStore()
+const { data, isLoading, error } = useBarbershopStore();
 ```
 
 Nunca use este store diretamente nos componentes — use o hook `useBarbershop(slug)` que gerencia o cache automaticamente.

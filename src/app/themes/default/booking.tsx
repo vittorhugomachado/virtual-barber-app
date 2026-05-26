@@ -74,14 +74,17 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           <div className="flex flex-wrap justify-center gap-3">
             <Button
               variant="outline"
-              className="border-current rounded-full px-5 py-1 bg-transparent hover:bg-current/10 hover:text-current"
+              className="rounded-full border-current bg-transparent px-5 py-1 hover:bg-current/10 hover:text-current"
               onClick={() => navigate(`/${props.slug}/perfil`)}
             >
               Meus agendamentos
             </Button>
             <Button
               className="rounded-full px-5 py-1"
-              style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
+              style={{
+                backgroundColor: style.primary_color,
+                color: style.text_button_color,
+              }}
               onClick={() => navigate(`/${props.slug}`)}
             >
               Voltar a loja
@@ -114,12 +117,13 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
         <div className="relative mx-auto mb-8 max-w-86 md:max-w-126">
           <div className="mb-3 flex items-center justify-between">
             {STEPS.map((label, index) => (
-              <div key={label} className="flex w-20 flex-col items-center gap-1">
+              <div
+                key={label}
+                className="flex w-20 flex-col items-center gap-1"
+              >
                 <div
                   className={`sm:text-md flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors sm:h-9 sm:w-9 ${
-                    index <= step
-                      ? ""
-                      : "bg-current/15 text-current"
+                    index <= step ? "" : "bg-current/15 text-current"
                   }`}
                   style={
                     index <= step
@@ -157,7 +161,9 @@ export default function DefaultBookingPage(props: BarbershopPageProps) {
           </div>
         )}
 
-        <h1 className="mb-6 text-center text-2xl font-semibold">{STEPS[step]}</h1>
+        <h1 className="mb-6 text-center text-2xl font-semibold">
+          {STEPS[step]}
+        </h1>
 
         {step === 0 && <StepServices onContinue={() => setStep(1)} />}
 

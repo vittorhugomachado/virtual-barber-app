@@ -16,7 +16,7 @@ lib/
 Exporta uma única instância do cliente Supabase configurada com as variáveis de ambiente.
 
 ```typescript
-import { supabase } from '@/app/lib/supabase'
+import { supabase } from "@/app/lib/supabase";
 ```
 
 Nunca instancie o cliente Supabase fora deste arquivo.
@@ -27,7 +27,7 @@ Contém todas as queries de leitura do banco. Cada função retorna dados já fo
 
 ```typescript
 // busca todos os dados de uma barbearia pelo slug
-const data = await getBarbershopBySlug('barbearia-do-joao')
+const data = await getBarbershopBySlug("barbearia-do-joao");
 ```
 
 ### Regras

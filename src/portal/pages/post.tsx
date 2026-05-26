@@ -55,8 +55,14 @@ export function PostPage() {
       document.querySelector(selector)?.setAttribute("content", value);
 
     const prevTitle = document.title;
-    const prevDesc = document.querySelector('meta[name="description"]')?.getAttribute("content") ?? "";
-    const prevOgImage = document.querySelector('meta[property="og:image"]')?.getAttribute("content") ?? "";
+    const prevDesc =
+      document
+        .querySelector('meta[name="description"]')
+        ?.getAttribute("content") ?? "";
+    const prevOgImage =
+      document
+        .querySelector('meta[property="og:image"]')
+        ?.getAttribute("content") ?? "";
 
     document.title = `${postData.title} | Virtual Barber`;
     setMeta('meta[name="description"]', postData.excerpt);
@@ -73,7 +79,9 @@ export function PostPage() {
       document.title = prevTitle;
       setMeta('meta[name="description"]', prevDesc);
       setMeta('meta[property="og:image"]', prevOgImage);
-      document.querySelector('link[rel="canonical"]')?.setAttribute("href", "https://virtualbarber.com.br/");
+      document
+        .querySelector('link[rel="canonical"]')
+        ?.setAttribute("href", "https://virtualbarber.com.br/");
     };
   }, [postData]);
 
@@ -82,9 +90,7 @@ export function PostPage() {
       <Header />
       {isLoading && <PostMainSkeleton />}
       {!isLoading && error && <ErrorState isDark={false} message={error} />}
-      {!isLoading && !error && postData && (
-        <PostMain post={postData} />
-      )}
+      {!isLoading && !error && postData && <PostMain post={postData} />}
       <Footer />
     </>
   );

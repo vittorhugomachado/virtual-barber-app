@@ -176,7 +176,10 @@ export function Navbar() {
                   <SheetContent
                     side="left"
                     className="flex w-fit flex-col gap-6 pt-3"
-                    style={{ backgroundColor: style.background_color, color: style.text_color }}
+                    style={{
+                      backgroundColor: style.background_color,
+                      color: style.text_color,
+                    }}
                   >
                     <SheetTitle className="sr-only">
                       Menu de navegação
@@ -185,7 +188,10 @@ export function Navbar() {
                       Links de navegação do site
                     </SheetDescription>
                     <div className="flex flex-col gap-1 pl-4">
-                      <BarbershopLogo name={name} className="text-2xl text-current" />
+                      <BarbershopLogo
+                        name={name}
+                        className="text-2xl text-current"
+                      />
                       <StatusBadge openingHours={openingHours} />
                     </div>
                     <nav className="mx-auto flex max-w-40 flex-col gap-4">

@@ -1,4 +1,9 @@
-import { DAYS_FULL, MONTHS_SHORT, type BarberAvailability, type OpeningHour } from "@/app/themes/types";
+import {
+  DAYS_FULL,
+  MONTHS_SHORT,
+  type BarberAvailability,
+  type OpeningHour,
+} from "@/app/themes/types";
 
 export function formatTime(time: string) {
   return time.slice(0, 5);
@@ -41,7 +46,9 @@ export function getEffectivePeriodsForDay(
   openingHours: OpeningHour[],
   barberAvailability: BarberAvailability[],
 ): { opens_at: string; closes_at: string }[] {
-  const dayRecords = barberAvailability.filter(a => a.day_of_week === dayOfWeek);
+  const dayRecords = barberAvailability.filter(
+    a => a.day_of_week === dayOfWeek,
+  );
   const explicitAvailability = dayRecords
     .filter(a => a.starts_at && a.ends_at && !a.is_day_off)
     .sort((x, y) => x.period_order - y.period_order)

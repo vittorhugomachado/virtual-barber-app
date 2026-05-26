@@ -32,7 +32,7 @@ O `ThemeResolver` recebe os dados da barbearia + o plano e decide qual template 
 ## Acesso por plano
 
 | Template   | Iniciante | Profissional | Master |
-|------------|-----------|--------------|--------|
+| ---------- | --------- | ------------ | ------ |
 | vintage    | ✅        | ✅           | ✅     |
 | modern     | ❌        | ✅           | ✅     |
 | minimalist | ❌        | ✅           | ✅     |

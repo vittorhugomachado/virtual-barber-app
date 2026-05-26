@@ -90,9 +90,7 @@ export function ServiceSlotCard({
             {isComplete ? (
               <span className="text-xs text-current">
                 {selection.barber.name} | {selection.time}
-                {duration
-                  ? ` - ${addMinutes(selection.time, duration)}`
-                  : ""}
+                {duration ? ` - ${addMinutes(selection.time, duration)}` : ""}
               </span>
             ) : (
               <span className="text-xs text-current">

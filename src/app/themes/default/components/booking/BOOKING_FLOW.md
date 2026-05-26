@@ -1,9 +1,11 @@
 # Booking Flow
 
 ## Objetivo
+
 Este documento descreve como o fluxo de agendamento consome dados, como eles circulam entre os componentes e qual e a responsabilidade de cada hook, funcao e componente principal.
 
 ## Visao geral do fluxo
+
 O fluxo de booking do tema `default` e dividido em 4 passos:
 
 1. Selecionar servicos
@@ -18,6 +20,7 @@ Arquivo raiz do fluxo:
 ## Fontes de dados
 
 ### 1. Dados da barbearia
+
 Origem:
 
 - [queries.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\lib\queries.ts)
@@ -37,6 +40,7 @@ Principais dados consumidos no booking:
 - `barber.availability`
 
 ### 2. Dados do carrinho
+
 Origem:
 
 - [use-cart.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\hooks\use-cart.ts)
@@ -48,6 +52,7 @@ Responsabilidade:
 - permitir adicionar e remover servicos
 
 ### 3. Dados do cliente autenticado
+
 Origem:
 
 - `useAuthStore()` usado no fluxo de booking
@@ -58,6 +63,7 @@ Responsabilidade:
 - fornecer nome atual do cliente para confirmacao
 
 ### 4. Agenda do barbeiro e agenda do cliente
+
 Origem:
 
 - [booking-queries.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\lib\booking-queries.ts)
@@ -77,6 +83,7 @@ Responsabilidade:
 ## Orquestracao principal
 
 ### `DefaultBookingPage`
+
 Arquivo:
 
 - [booking.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\booking.tsx)
@@ -104,7 +111,7 @@ Record<
     barber: Barber;
     time: string;
   }
->
+>;
 ```
 
 Chave:
@@ -114,6 +121,7 @@ Chave:
 ## Componentes por etapa
 
 ### Etapa 1: `StepServices`
+
 Arquivo:
 
 - [step-services.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\components\booking\step-1\step-services.tsx)
@@ -136,6 +144,7 @@ Nao faz:
 - nao acessa agenda
 
 ### Etapa 2: `StepDate`
+
 Arquivo:
 
 - [step-date.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\components\booking\step-2\step-date.tsx)
@@ -156,6 +165,7 @@ Nao faz:
 - nao calcula slots
 
 ### Etapa 3: `StepBarberTime`
+
 Arquivo:
 
 - [step-barber-time.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\components\booking\step-3\step-barber-time.tsx)
@@ -179,6 +189,7 @@ Importante:
 - isso evita que servicos removidos continuem bloqueando horarios
 
 ### Etapa 3.1: `ServiceSlotCard`
+
 Arquivo:
 
 - [service-slot-card.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\components\booking\step-3\components\service-slot-card.tsx)
@@ -204,6 +215,7 @@ Detalhe importante:
 - por isso um horario pode aparecer na grade e ainda assim estar indisponivel
 
 ### Etapa 3.2: `BarberGrid`
+
 Arquivo:
 
 - [barber-grid.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\components\booking\step-3\components\barber-grid.tsx)
@@ -219,6 +231,7 @@ Nao faz:
 - nao consulta agenda
 
 ### Etapa 3.3: `TimeSlots`
+
 Arquivo:
 
 - [time-slots.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\components\booking\step-3\components\time-slots.tsx)
@@ -235,6 +248,7 @@ Nao decide disponibilidade:
 - ele apenas exibe o resultado recebido
 
 ### Etapa 4: `StepConfirm`
+
 Arquivo:
 
 - [step-confirm.tsx](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\themes\default\components\booking\step-4\step-confirm.tsx)
@@ -262,6 +276,7 @@ Protecoes importantes:
 ## Hooks principais
 
 ### `useAggregatedBookingData`
+
 Arquivo:
 
 - [use-aggregated-booking-data.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\hooks\use-aggregated-booking-data.ts)
@@ -297,6 +312,7 @@ Motivacao:
 - reduzir chamadas repetidas ao banco
 
 ### `useAvailableSlots`
+
 Arquivo:
 
 - [use-available-slots.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\hooks\use-available-slots.ts)
@@ -321,6 +337,7 @@ Saida:
 - `loading`
 
 ### `calculateAvailableSlots`
+
 Arquivo:
 
 - [use-available-slots.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\hooks\use-available-slots.ts)
@@ -340,6 +357,7 @@ Bloqueios aplicados:
 ## Funcoes utilitarias importantes
 
 ### `getEffectivePeriodsForDay`
+
 Arquivo:
 
 - [format-time.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\utils\format-time.ts)
@@ -356,6 +374,7 @@ Prioridade da regra:
 4. caso contrario, volta para `openingHours`
 
 ### `getAllSlotsForDay`
+
 Arquivo:
 
 - [format-time.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\utils\format-time.ts)
@@ -372,6 +391,7 @@ Observacao:
 - a indisponibilidade fica por conta de `availableSet`
 
 ### `timeToMinutes`
+
 Arquivo:
 
 - [format-time.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\utils\format-time.ts)
@@ -382,6 +402,7 @@ Responsabilidade:
 - base de comparacao de intervalos
 
 ### `addMinutes`
+
 Arquivo:
 
 - [format-time.ts](C:\Users\Vitor Hugo\OneDrive\Desktop\virtual-barber-front-end\virtual-barber-app\src\utils\format-time.ts)
@@ -403,6 +424,7 @@ Para um slot ser considerado disponivel, ele precisa passar por todas estas regr
 ## Camadas de protecao contra conflito
 
 ### Camada 1: agenda real
+
 Feita em:
 
 - `getAppointmentsForBarberOnDate`
@@ -415,6 +437,7 @@ Protege contra:
 - conflito com agenda ja gravada
 
 ### Camada 2: carrinho atual
+
 Feita em:
 
 - `ServiceSlotCard`
@@ -424,6 +447,7 @@ Protege contra:
 - sobreposicao entre os servicos escolhidos no fluxo atual
 
 ### Camada 3: validacao final antes de salvar
+
 Feita em:
 
 - `StepConfirm`

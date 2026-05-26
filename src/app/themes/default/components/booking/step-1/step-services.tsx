@@ -65,7 +65,7 @@ export function StepServices({ onContinue }: StepServicesProps) {
               <Button
                 size="sm"
                 variant={inCart ? "default" : "outline"}
-                className="shrink-0 rounded-full bg-transparent hover:text-current hover:bg-current/50"
+                className="shrink-0 rounded-full bg-transparent hover:bg-current/50 hover:text-current"
                 style={
                   inCart
                     ? { backgroundColor: "green", color: "white" }
@@ -80,7 +80,10 @@ export function StepServices({ onContinue }: StepServicesProps) {
         })}
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 rounded-xl border border-current/20 px-3.5 py-2.5 text-sm" style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}>
+      <div
+        className="flex items-center justify-center gap-1.5 rounded-xl border border-current/20 px-3.5 py-2.5 text-sm"
+        style={{ backgroundColor: darkenColor(style.background_color, 0.15) }}
+      >
         <Scissors className="hidden h-3.5 w-3.5 text-current sm:block" />
         <span className="font-medium text-current">
           {items.length} serviço{items.length > 1 ? "s" : ""}
@@ -97,7 +100,10 @@ export function StepServices({ onContinue }: StepServicesProps) {
 
       <Button
         className="h-11 w-full rounded-full"
-        style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
+        style={{
+          backgroundColor: style.primary_color,
+          color: style.text_button_color,
+        }}
         disabled={items.length === 0}
         onClick={onContinue}
       >

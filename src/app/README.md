@@ -3,6 +3,7 @@
 Codigo do sistema atual da barbearia.
 
 Estrutura sugerida:
+
 - `components/`: componentes compartilhados do app
 - `contexts/`: providers e contexts do app
 - `hooks/`: hooks do app

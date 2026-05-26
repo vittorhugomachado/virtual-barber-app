@@ -132,7 +132,8 @@ export async function getBarbershopBySlug(
           serviceIds,
           services,
           availability: (barber.barber_availability ?? []).sort(
-            (a, b) => a.day_of_week - b.day_of_week || a.period_order - b.period_order,
+            (a, b) =>
+              a.day_of_week - b.day_of_week || a.period_order - b.period_order,
           ),
         };
       });

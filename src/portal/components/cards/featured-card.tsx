@@ -52,7 +52,9 @@ export function FeaturedCard({
           >
             {categoryMeta.label}
           </span>
-          <span className="text-[13px] text-neutral-500">{formatDate(published_at)}</span>
+          <span className="text-[13px] text-neutral-500">
+            {formatDate(published_at)}
+          </span>
         </div>
         <h3
           style={{

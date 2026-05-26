@@ -16,12 +16,16 @@ function isEmailExistsError(error: unknown) {
     return false;
   }
 
-  const maybeError = error as { code?: string; message?: string; status?: number };
+  const maybeError = error as {
+    code?: string;
+    message?: string;
+    status?: number;
+  };
 
   return (
     maybeError.code === "email_exists" ||
-    maybeError.status === 422 &&
-      (maybeError.message ?? "").toLowerCase().includes("email")
+    (maybeError.status === 422 &&
+      (maybeError.message ?? "").toLowerCase().includes("email"))
   );
 }
 
@@ -101,18 +105,17 @@ async function createOrGetAuthUserWithSession(
   // CRIA NOVO USUÁRIO
   // =====================================
   else {
-    const { data: createdUser, error } =
-      await supabase.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: {
-          customer_id: customer.id,
-          barbershop_id: customer.barbershop_id,
-          phone: customer.phone,
-          login_provider: "whatsapp",
-        },
-      });
+    const { data: createdUser, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        customer_id: customer.id,
+        barbershop_id: customer.barbershop_id,
+        phone: customer.phone,
+        login_provider: "whatsapp",
+      },
+    });
 
     if (error && isEmailExistsError(error)) {
       const existingAuthUserId = await findAuthUserIdByEmail(supabase, email);

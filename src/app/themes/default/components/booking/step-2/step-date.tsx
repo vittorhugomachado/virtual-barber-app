@@ -83,7 +83,7 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
           <button
             onClick={nextMonth}
             disabled={isNextDisabled}
-            className="rounded-full p-1.5 text-current disabled:text-opacity-30"
+            className="disabled:text-opacity-30 rounded-full p-1.5 text-current"
           >
             <ChevronRight size={18} />
           </button>
@@ -94,7 +94,7 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
           {DAYS_SHORT.map(d => (
             <div
               key={d}
-              className="py-1 text-center text-xs font-medium current"
+              className="current py-1 text-center text-xs font-medium"
             >
               {d}
             </div>
@@ -118,12 +118,15 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
                   isSelected
                     ? ""
                     : disabled
-                      ? "cursor-not-allowed text-current/20 "
-                      : "hover:bg-current/10 text-current"
+                      ? "cursor-not-allowed text-current/20"
+                      : "text-current hover:bg-current/10"
                 }`}
                 style={
                   isSelected && style.primary_color
-                    ? { backgroundColor: style.primary_color, color: style.text_button_color }
+                    ? {
+                        backgroundColor: style.primary_color,
+                        color: style.text_button_color,
+                      }
                     : undefined
                 }
               >
@@ -136,7 +139,10 @@ export function StepDate({ selected, onSelect, onContinue }: StepDateProps) {
 
       <Button
         className="h-11 w-full rounded-full"
-        style={{ backgroundColor: style.primary_color, color: style.text_button_color }}
+        style={{
+          backgroundColor: style.primary_color,
+          color: style.text_button_color,
+        }}
         disabled={!selected}
         onClick={onContinue}
       >

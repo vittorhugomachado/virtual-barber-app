@@ -312,7 +312,7 @@ export function Gallery() {
               {gallery.length > 1 && (
                 <>
                   <CarouselPrevious className="left-2 border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white" />
-                  <CarouselNext className="right-2  border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white" />
+                  <CarouselNext className="right-2 border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white" />
                 </>
               )}
             </Carousel>

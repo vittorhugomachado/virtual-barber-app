@@ -45,13 +45,10 @@ export async function updateCustomerAppointmentStatus(
     };
   }
 
-  const { data, error } = await supabase.rpc(
-    "vb_cancel_customer_appointment",
-    {
-      p_appointment_id: appointmentId,
-      p_barbershop_id: barbershopId,
-    },
-  );
+  const { data, error } = await supabase.rpc("vb_cancel_customer_appointment", {
+    p_appointment_id: appointmentId,
+    p_barbershop_id: barbershopId,
+  });
 
   if (error) return { data: null, error };
 

@@ -1,14 +1,14 @@
-import { useAuthStore } from '@/app/store/auth-store'
-import { supabase } from '@/app/lib/supabase'
+import { useAuthStore } from "@/app/store/auth-store";
+import { supabase } from "@/app/lib/supabase";
 
 export function useAuth() {
   const { customer, isAuthenticated, isLoading, clearCustomer, setLoading } =
-    useAuthStore()
+    useAuthStore();
   async function signOut() {
-    setLoading(true)
-    await supabase.auth.signOut()
-    clearCustomer({ force: true })
-    setLoading(false)
+    setLoading(true);
+    await supabase.auth.signOut();
+    clearCustomer({ force: true });
+    setLoading(false);
   }
 
   return {
@@ -16,5 +16,5 @@ export function useAuth() {
     isAuthenticated,
     isLoading,
     signOut,
-  }
+  };
 }

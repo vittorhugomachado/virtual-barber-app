@@ -1,12 +1,14 @@
 function SkeletonBlock({ className }: { className: string }) {
   return (
-    <div className={`animate-pulse rounded-md bg-neutral-300/70 ${className}`} />
+    <div
+      className={`animate-pulse rounded-md bg-neutral-300/70 ${className}`}
+    />
   );
 }
 
 function FeaturedCardLargeSkeleton() {
   return (
-    <div className="h-fit w-full max-w-176 mx-auto rounded-lg bg-white p-2">
+    <div className="mx-auto h-fit w-full max-w-176 rounded-lg bg-white p-2">
       {/* Imagem */}
       <SkeletonBlock className="h-80 w-full rounded-md" />
       <div className="px-3 pt-3 pb-3">
@@ -54,7 +56,7 @@ function FeaturedCardSmallSkeleton() {
 
 export function SectionHeroSkeleton() {
   return (
-    <section className="w-full max-w-7xl pt-8 mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
       {/* Título "Destaques" */}
       <SkeletonBlock className="mb-4 h-10 w-44" />
 

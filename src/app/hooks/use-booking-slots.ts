@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/app/lib/supabase";
-import type { ServiceBookingSlots, UseBookingSlotsParams } from "../themes/types";
+import type {
+  ServiceBookingSlots,
+  UseBookingSlotsParams,
+} from "../themes/types";
 
 export function useBookingSlots({
   barbershopId,

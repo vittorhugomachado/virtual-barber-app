@@ -50,7 +50,9 @@ export function PostCard({
           >
             {categoryMeta.label}
           </span>
-          <span className="text-[13px] text-neutral-700">{formatDate(published_at)}</span>
+          <span className="text-[13px] text-neutral-700">
+            {formatDate(published_at)}
+          </span>
         </div>
         <h3 className="mt-4 line-clamp-2 min-h-14 text-xl font-semibold text-[#212039]">
           {title}

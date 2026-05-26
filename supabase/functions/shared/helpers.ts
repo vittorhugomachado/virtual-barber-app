@@ -9,7 +9,8 @@ export const WHATSAPP_GRAPH_VERSION =
 // Headers compartilhados para permitir chamadas do frontend e preflight OPTIONS.
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
@@ -107,7 +108,7 @@ export function generateSecureToken(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
 
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return Array.from(array, byte => byte.toString(16).padStart(2, "0")).join("");
 }
 
 // Calcula SHA-256 em hexadecimal para comparar tokens sem armazenar o valor puro.
@@ -115,8 +116,8 @@ export async function sha256(value: string): Promise<string> {
   const data = new TextEncoder().encode(value);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
-  return Array.from(new Uint8Array(hashBuffer), (byte) =>
-    byte.toString(16).padStart(2, "0")
+  return Array.from(new Uint8Array(hashBuffer), byte =>
+    byte.toString(16).padStart(2, "0"),
   ).join("");
 }
 

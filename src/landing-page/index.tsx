@@ -258,7 +258,7 @@ export function LandingPage() {
             <div className="rounded-3xl bg-red-400 p-5 transition-colors duration-600 sm:p-6">
               <div className="flex items-center">
                 <p className="text-lg font-bold tracking-[0.16em] text-white uppercase">
-                  <CircleX className="inline" size={30}/> Sem Virtual Barber
+                  <CircleX className="inline" size={30} /> Sem Virtual Barber
                 </p>
               </div>
               <div className="mt-6 flex flex-col gap-4">
@@ -267,7 +267,7 @@ export function LandingPage() {
                     key={item.withoutTitle}
                     className="rounded-2xl bg-white/80 p-4"
                   >
-                    <h3 className="text-lg font-bold text-zinc-950 ">
+                    <h3 className="text-lg font-bold text-zinc-950">
                       {item.withoutTitle}
                     </h3>
                     <p className="mt-2 leading-7 text-zinc-700">
@@ -279,14 +279,15 @@ export function LandingPage() {
             </div>
 
             <div className="rounded-3xl bg-green-500 p-5 shadow-sm transition-colors duration-600 sm:p-6 dark:border-[#0458EE]/45 dark:shadow-none">
-                <p className="text-lg font-bold tracking-[0.16em] text-white uppercase">
-                  <CircleCheckBig className="inline" size={30} /> Com Virtual Barber
-                </p>
+              <p className="text-lg font-bold tracking-[0.16em] text-white uppercase">
+                <CircleCheckBig className="inline" size={30} /> Com Virtual
+                Barber
+              </p>
               <div className="mt-6 flex flex-col gap-4">
                 {comparisonRows.map(item => (
                   <div
                     key={item.withTitle}
-                    className="rounded-2xl  bg-white/80 p-4"
+                    className="rounded-2xl bg-white/80 p-4"
                   >
                     <div className="flex items-start gap-3">
                       <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-700 text-white">
@@ -359,20 +360,27 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="relative flex w-full flex-col sm:flex-row sm:justify-between items-center gap-6 bg-zinc-100 px-4 py-8 transition-colors duration-600 sm:px-6 lg:px-8 dark:bg-zinc-950">
-        <img src="/logo-dark-beta.png" alt="" className="hidden w-60 dark:block" />
+      <footer className="relative flex w-full flex-col items-center gap-6 bg-zinc-100 px-4 py-8 transition-colors duration-600 sm:flex-row sm:justify-between sm:px-6 lg:px-8 dark:bg-zinc-950">
+        <img
+          src="/logo-dark-beta.png"
+          alt=""
+          className="hidden w-60 dark:block"
+        />
         <img src="/logo-light-beta.png" alt="" className="w-60 dark:hidden" />
         <nav
           aria-label="Links institucionais"
-          className="flex items-center gap-3 sm:mx-8 sm:items-end text-sm font-medium text-zinc-700 sm:flex-col dark:text-white/70"
+          className="flex items-center gap-3 text-sm font-medium text-zinc-700 sm:mx-8 sm:flex-col sm:items-end dark:text-white/70"
         >
-          <a href="https://virtualbarber.com.br/politica-de-privacidade" className="transition text-end hover:text-[#0458EE]">
+          <a
+            href="https://virtualbarber.com.br/politica-de-privacidade"
+            className="text-end transition hover:text-[#0458EE]"
+          >
             Política de Privacidade
           </a>
-          <a href="#" className="transition text-end hover:text-[#0458EE]">
+          <a href="#" className="text-end transition hover:text-[#0458EE]">
             Termos e Condições
           </a>
-          <a href="#" className="transition text-end hover:text-[#0458EE]">
+          <a href="#" className="text-end transition hover:text-[#0458EE]">
             Contato
           </a>
         </nav>

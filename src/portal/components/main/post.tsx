@@ -34,14 +34,23 @@ function processContent(content: string): string {
   return (
     content
       // bloco info — fundo rosa #FEDCEA
-      .replace(/:::info\r?\n([\s\S]*?):::/g, (_, inner) => `<div class="callout-info">${processInlineMarkdown(inner)}</div>`)
+      .replace(
+        /:::info\r?\n([\s\S]*?):::/g,
+        (_, inner) =>
+          `<div class="callout-info">${processInlineMarkdown(inner)}</div>`,
+      )
       // bloco warning — fundo amarelo #FFEBC2
       .replace(
         /:::warning\r?\n([\s\S]*?):::/g,
-        (_, inner) => `<div class="callout-warning">${processInlineMarkdown(inner)}</div>`,
+        (_, inner) =>
+          `<div class="callout-warning">${processInlineMarkdown(inner)}</div>`,
       )
       // bloco tip — fundo azul #D6EDFF
-      .replace(/:::tip\r?\n([\s\S]*?):::/g, (_, inner) => `<div class="callout-tip">${processInlineMarkdown(inner)}</div>`)
+      .replace(
+        /:::tip\r?\n([\s\S]*?):::/g,
+        (_, inner) =>
+          `<div class="callout-tip">${processInlineMarkdown(inner)}</div>`,
+      )
       // embed YouTube
       .replace(/::youtube\[([^\]]+)\]/g, (_, url) => {
         const id = getYouTubeId(url);
@@ -76,7 +85,9 @@ const markdownComponents: Components = {
       <table className="w-full border-collapse text-sm">{children}</table>
     </div>
   ),
-  thead: ({ children }) => <thead className="bg-neutral-100 border-b-neutral-700">{children}</thead>,
+  thead: ({ children }) => (
+    <thead className="border-b-neutral-700 bg-neutral-100">{children}</thead>
+  ),
   th: ({ children }) => (
     <th className="border-b border-neutral-700 px-4 py-3 text-left font-semibold text-neutral-700">
       {children}
@@ -187,7 +198,6 @@ export function PostMain({ post }: PostMainProps) {
       <section className="relative w-full bg-neutral-100">
         <SocialBar variant="sidebar" />
         <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
